@@ -1,5 +1,7 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany, ManyToMany, OneToOne } from "typeorm";
+import { Connect } from "./connect.entity";
 import { Skill } from "./skill.entity";
+import { User } from "./user.entity";
 
 @Entity()
 export class Company {
@@ -29,4 +31,7 @@ export class Company {
 
   @OneToMany((type) => Skill, (skill) => skill.name, { nullable: true })
   stacks: Skill[];
+
+  @OneToMany((type) => Connect, (connect) => connect.usedCompany, { nullable: true })
+  connects: Connect[];
 }
