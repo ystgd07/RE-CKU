@@ -1,5 +1,6 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany, ManyToMany, JoinTable, ManyToOne } from "typeorm";
 import { Skill } from "./skill.entity";
+import { Stack } from "./stacks.entity";
 
 @Entity()
 export class Resume {
@@ -9,6 +10,6 @@ export class Resume {
   @Column()
   name: string;
 
-  @ManyToMany((type) => Skill, (skill) => skill.used)
-  used: Skill[];
+  @OneToMany((type) => Stack, (stack) => stack.resume_id)
+  stacks: Skill[];
 }
