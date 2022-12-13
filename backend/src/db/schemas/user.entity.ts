@@ -1,30 +1,61 @@
-// import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from "typeorm";
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany, OneToOne } from "typeorm";
+import { Company } from "./company.entity";
+import { Connect } from "./connect.entity";
+import { Resume } from "./resume.entity";
+import { Stack } from "./stacks.entity";
+import { Board } from "./board.entity";
+import { Comment } from "./comment.entity";
 
-// export enum roleEnum {
-//   COMPANY = "기업",
-//   USER = "개인",
-//   ADMIN = "관리자",
-// }
-// @Entity()
-// export class Company {
-//   @PrimaryGeneratedColumn()
-//   id: number;
+export enum roleEnum {
+  COMPANY = "기업",
+  USER = "개인",
+  ADMIN = "관리자",
+}
 
-//   @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP" })
-//   created: Date;
+@Entity()
+export class User {
+  @PrimaryGeneratedColumn()
+  id: number;
 
-//   @Column()
-//   username: roleEnum;
+  @Column({ length: 20, nullable: false })
+  username: string;
 
-//   @Column({ type: "enum", enum: roleEnum })
-//   role: string;
+  @Column({ unique: true, nullable: false })
+  email: string;
 
-//   @Column()
-//   email: string;
+  @Column({ unique: true, nullable: true })
+  phoneNumber: string;
 
-//   @Column()
-//   phoneNumber: string;
-//   //   @OneToMany((type) => Topic, (topic) => topic.owner, { eager: false })
-//   @OneToMany((type) => Topic, (resume) => resume.owner, { nullable: true })
-//   ownResume: Resume[];
-// }
+  @Column()
+  password: string;
+
+  @Column({ type: "enum", enum: roleEnum })
+  role: roleEnum;
+
+  @Column()
+  RT: string;
+
+  @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP" })
+  created: Date;
+
+  @Column({ default: true })
+  active: boolean;
+
+  @OneToMany((type) => Resume, (resume) => resume.usedUser, { nullable: true })
+  resumes: Resume[];
+
+  @OneToMany((type) => Board, (board) => board.fromUser, { nullable: true })
+  notices: Board[]
+
+  @OneToMany((type) => Comment, (comment) => comment.fromUser, { nullable: true })
+  ownComments : Comment[]
+
+  @OneToMany((type) => Connect, (connect) => connect.usedUser, { nullable: true })
+  connects: Connect[];
+
+  @OneToMany((type) => Stack, (stack) => stack.user_id, { nullable: true })
+  stacks: Stack[];
+  //기업회원 전용
+  @OneToOne((type) => Company, (company) => company.owner)
+  ownCompany: Company;
+}

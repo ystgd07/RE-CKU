@@ -1,5 +1,7 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany, ManyToMany, JoinTable, ManyToOne } from "typeorm";
 import { Company } from "./company.entity";
+import { Resume } from "./resume.entity";
+import { Stack } from "./stacks.entity";
 
 @Entity()
 export class Skill {
@@ -9,10 +11,6 @@ export class Skill {
   @Column()
   name: string;
 
-  @ManyToMany((type) => Company, (company) => company.stacks)
-  @JoinTable({
-    name: "stacks",
-    // inverseJoinColumn: [{ name: "skil_id" }],
-  })
-  used: Company[];
+  @OneToMany((type) => Stack, (stack) => stack.skill_id)
+  stacks: Stack;
 }
