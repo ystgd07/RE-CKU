@@ -1,6 +1,6 @@
 import { dataSource } from "./db/index";
 import express, { Request, Response, NextFunction } from "express";
-import { Company } from "./db/schemas/company.entity";
+// import { Company } from "./db/schemas/company.entity";
 import { Skill } from "./db/schemas/skill.entity";
 import { Stack } from "./db/schemas/stacks.entity";
 import { errorHandler } from "./middlewares/error-handdler";

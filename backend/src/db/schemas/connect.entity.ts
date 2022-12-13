@@ -1,12 +1,10 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany, ManyToMany, JoinTable, ManyToOne } from "typeorm";
-import { Company } from "./company.entity";
-import { Resume } from "./resume.entity";
-import { Stack } from "./stacks.entity";
+// import { Company } from "./company.entity";
 import { User } from "./user.entity";
 export enum stepEnum {
-  receipt = "접수",
-  interview = "면접",
-  employ = "채용",
+  receipt = "시작전",
+  interview = "진행중",
+  reward = "완료",
 }
 @Entity()
 export class Connect {
@@ -16,9 +14,16 @@ export class Connect {
   @Column()
   step: stepEnum;
 
-  @ManyToOne((type) => User, (user) => user.connects)
-  usedUser: User;
+  @ManyToOne((type) => User, (user) => user.asMento)
+  mento: User;
 
-  @ManyToOne((type) => Company, (company) => company.connects)
-  usedCompany: User;
+  @ManyToOne((type) => User, (user) => user.asMentee)
+  mentee: User;
+
+  // @ManyToOne((type) => Company, (company) => company.connects)
+  // usedCompany: User;
 }
+
+// 고인물에게 요청을하려면
+// 1.
+//

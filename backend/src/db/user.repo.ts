@@ -17,13 +17,13 @@ export const findOneUser = async (data: number | string) => {
 };
 
 export const createIndiUser = async (data: CreateUserDto) => {
-  const newUser = dataSource.getRepository(User).create({ ...data, role: roleEnum.USER });
+  const newUser = dataSource.getRepository(User).create({ ...data });
   await dataSource.getRepository(User).save(newUser);
   return newUser;
 };
 
 export const createCompanyUser = async (data: CreateUserDto) => {
-  const newUser = dataSource.getRepository(User).create({ ...data, role: roleEnum.COMPANY });
+  const newUser = dataSource.getRepository(User).create({ ...data });
   await dataSource.getRepository(User).save(newUser);
   // company 정보도 추가해야함
   return newUser;

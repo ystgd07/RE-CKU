@@ -10,7 +10,8 @@ import { EmailAuth } from "../db/schemas";
 export const join = async (data: CreateUserDto): Promise<Object> => {
   // 우선 인증을 완료했는지 검증,
   const statusVerify = await findOneAuthData(data.email);
-  if (statusVerify.verify === false)
+  if (!statusVerify) throw Error(`404, [${data.email}] 해당 이메일로 진행된 인증절차가 없습니다.`);
+  if (statusVerify.verify === false && !statusVerify)
     throw Error(`404, [${data.email}] 해당 이메일에 대한 인증 내역을 확인할 수 없습니다.`);
 
   // 이미 가입한 회원이지 확인,
