@@ -1,1 +1,1 @@
-//
+export * from "./company.service";
