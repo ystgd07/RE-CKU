@@ -3,6 +3,8 @@ import { Company } from "./company.entity";
 import { Connect } from "./connect.entity";
 import { Resume } from "./resume.entity";
 import { Stack } from "./stacks.entity";
+import { Board } from "./board.entity";
+import { Comment } from "./comment.entity";
 
 export enum roleEnum {
   COMPANY = "기업",
@@ -39,11 +41,11 @@ export class User {
   @OneToMany((type) => Resume, (resume) => resume.usedUser, { nullable: true })
   resumes: Resume[];
 
-  //   @OneToMany((type) => Resume, (resume) => resume.owner, { nullable: true })
-  //   notices: Board[]
+  @OneToMany((type) => Board, (board) => board.fromUser, { nullable: true })
+  notices: Board[]
 
-  //   @OneToMany((type) => Resume, (resume) => resume.owner, { nullable: true })
-  //   ownComments : Comment[]
+  @OneToMany((type) => Comment, (comment) => comment.fromUser, { nullable: true })
+  ownComments : Comment[]
 
   @OneToMany((type) => Connect, (connect) => connect.usedUser, { nullable: true })
   connects: Connect[];

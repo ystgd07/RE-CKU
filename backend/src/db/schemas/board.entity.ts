@@ -12,6 +12,6 @@ export class Board {
     @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP" })
     created: Date;
 
-    @ManyToOne((type) => User, (user) => user.id )
-    user_id: User[];
+    @ManyToOne((type) => User, (user) => user.notices )
+    fromUser: User[];
 }
