@@ -1,4 +1,5 @@
-import { dataSource } from "../db";
+import bcrypt from "bcrypt";
+import { dataSource, updateUser } from "../db";
 import { createIndiUser, findOneAuthData, findOneUser, createAuthData, updateAuthData } from "../db";
 import { CreateUserDto } from "../routes/dto/";
 import jwt from "jsonwebtoken";
@@ -19,6 +20,47 @@ export const join = async (data: CreateUserDto): Promise<Object> => {
   // 검증끝났으면 만들어!
   const newUser = await createIndiUser(data);
   return newUser;
+};
+
+// 로그인 서비스
+export const login = async (email: string, password: string) => {
+  // 가입한 이메일 있는지 확인
+  const user = await findOneUser(email);
+  if (!user) throw Error(`404, ${email}로 가입한 회원이 없습니다.`);
+
+  // 비밀번호 일치하는지 확인
+  const existence = user.password;
+  const comparePw = await bcrypt.compare(password, existence);
+  if (!comparePw) throw Error(`400, 비밀번호가 일치하지 않습니다.`);
+
+  // 로그인시작 - JWT 발급해야함
+  // accessToken 은 10분, refreshToken 은 하루동안 유효
+  const accessToken = jwt.sign(
+    {
+      id: user.id,
+      role: user.role,
+      type: "AT",
+    },
+    process.env.JWT_SECRET_KEY,
+    { expiresIn: 60 * 10 }
+  );
+  const refreshToken = jwt.sign(
+    {
+      id: user.id,
+      role: user.role,
+      type: "RT",
+    },
+    process.env.JWT_SECRET_KEY,
+    { expiresIn: 60 * 60 * 24 }
+  );
+  const ToChange = { RT: refreshToken };
+  await updateUser(user.id, ToChange);
+  // 옵젝으로 묶어서 리턴
+  const result = {
+    accessToken,
+    refreshToken,
+  };
+  return result;
 };
 
 // 회원가입시 이메일 인증 부분

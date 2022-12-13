@@ -28,3 +28,8 @@ export const createCompanyUser = async (data: CreateUserDto) => {
   // company 정보도 추가해야함
   return newUser;
 };
+
+export const updateUser = async (id: number, data: any) => {
+  await dataSource.getRepository(User).update(id, { ...data });
+  return;
+};

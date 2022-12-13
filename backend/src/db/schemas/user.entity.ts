@@ -30,6 +30,9 @@ export class User {
   @Column({ type: "enum", enum: roleEnum })
   role: roleEnum;
 
+  @Column()
+  RT: string;
+
   @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP" })
   created: Date;
 
