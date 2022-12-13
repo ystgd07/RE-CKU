@@ -25,7 +25,7 @@ app.post("/", async (req: Request, res: Response) => {
   });
 });
 app.post("/skill", async (req: Request, res: Response) => {
-  const { name } = req.body;
+  const { name, used } = req.body;
   const user = dataSource.getRepository(Skill).create({
     name,
   });
@@ -47,6 +47,20 @@ app.get("/skill", async (req: Request, res: Response) => {
   return res.status(200).json({
     msg: "zz",
     data: zz,
+  });
+});
+app.put("/", async (req: Request, res: Response) => {
+  const { name, update, id } = req.body;
+  console.log(typeof name);
+  console.log(update);
+  const user = await dataSource.getRepository(Company).findOneBy({ id: Number(id) });
+  console.log(user);
+  dataSource.getRepository(Company).update(user, { name });
+  const aa = await dataSource.getRepository(Company).save(user);
+  console.log(aa);
+  return res.status(200).json({
+    msg: "OK",
+    data: user,
   });
 });
 
