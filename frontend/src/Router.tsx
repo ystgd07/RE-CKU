@@ -1,7 +1,8 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Main from './pages/Main';
 import Login from './pages/Login';
-const Router = () => {
+
+function Router() {
    return (
       <BrowserRouter basename={process.env.PUBLIC_URL}>
          <Routes>
@@ -10,6 +11,6 @@ const Router = () => {
          </Routes>
       </BrowserRouter>
    );
-};
+}
 
 export default Router;
