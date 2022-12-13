@@ -1,10 +1,12 @@
 import bcrypt from "bcrypt";
 import express, { Request, Response, NextFunction } from "express";
-import { join, sendEmail } from "../services";
+import { authEmail, join, sendEmail } from "../services";
 import { validateBody } from "../middlewares/dto-validator";
-import { CreateUserDto, CreateAuthDataDto } from "./dto";
-import { random, send } from "../config/sendMail";
+import { CreateUserDto, CreateAuthDataDto, AuthEmailDto } from "./dto";
+import { random } from "../config/sendMail";
 const userRoute = express();
+
+// 회원가입시 인증번호 보내는 라우트
 userRoute.post("/email", validateBody(CreateAuthDataDto), async (req, res, next) => {
   const toEmail = req.body.email;
   // 내용에 들어갈 랜덤 수
@@ -13,15 +15,30 @@ userRoute.post("/email", validateBody(CreateAuthDataDto), async (req, res, next)
   try {
     await sendEmail(toEmail, number);
     // 실제로 보내는 함수
-    return res.status(203).json({
-      msg: "전송완료",
+    return res.status(200).json({
+      status: 200,
+      msg: "전송완료 4분이내 인증을 완료해주세요.",
       data: number,
     });
   } catch (err) {
     next(err);
   }
 });
+// 회원가입시 이메일 인증하는 라우트
+userRoute.post("/email/auth", validateBody(AuthEmailDto), async (req, res, next) => {
+  const { email, code } = req.body.email;
+  try {
+    await authEmail(email, code);
+    return res.status(200).json({
+      status: 200,
+      msg: `인증 완료`,
+    });
+  } catch (err) {
+    next(err);
+  }
+});
 
+// 개인 회원가입 라우트
 userRoute.post("/individual", validateBody(CreateUserDto), async (req: Request, res: Response, next: NextFunction) => {
   const { username, email, phoneNumber, password } = req.body;
   console.log("들어옴?");

@@ -1,13 +1,22 @@
+import { dataSource } from "../db";
 import { createIndiUser, findOneAuthData, findOneUser, createAuthData, updateAuthData } from "../db";
 import { CreateUserDto } from "../routes/dto/";
 import jwt from "jsonwebtoken";
 import { send } from "../config/sendMail";
+import { EmailAuth } from "../db/schemas";
 
-// export const login = async (params: any) => {};
-
+// 회원가입 서비스
 export const join = async (data: CreateUserDto): Promise<Object> => {
+  // 우선 인증을 완료했는지 검증,
+  const statusVerify = await findOneAuthData(data.email);
+  if (statusVerify.verify === false)
+    throw Error(`404, [${data.email}] 해당 이메일에 대한 인증 내역을 확인할 수 없습니다.`);
+
+  // 이미 가입한 회원이지 확인,
   const overlapUser = await findOneUser(data.email);
   if (overlapUser) throw Error("400, 이미 가입한 회원입니다.");
+
+  // 검증끝났으면 만들어!
   const newUser = await createIndiUser(data);
   return newUser;
 };
@@ -33,7 +42,25 @@ export const sendEmail = async (toEmail: string, number?: number) => {
     인증번호 입력란에 ${number} 를 입력해주세요.`,
   };
   //발송
-  send(mailInfo);
+  // 아래 try/catch 문은 배포시 삭제해야함. 네이버로그인이 안되는것에 대한 오류를 잡은것.
+  try {
+    send(mailInfo);
+    return;
+  } catch (err) {
+    return;
+  }
+};
 
+export const authEmail = async (email: string, code: number) => {
+  // 우선 해당하는 이메일 찾아서
+  const statusVerify = await findOneAuthData(email);
+  if (!statusVerify) throw Error(`404, [${email}] 해당 이메일로 인증번호가 보내지지 않았습니다.`);
+  if (statusVerify.code === code) throw Error(`400, 입력된 코드가 올바르지 않습니다.`);
+  // 4분안에 인증했을 경우
+  if (statusVerify.time.getTime() + 30000 - Date.now() <= 0)
+    throw Error(`400, 인증시간이 지났습니다. 인증번호를 재발급 해주세요.`);
+  statusVerify.verify = true;
+  await dataSource.getRepository(EmailAuth).save(statusVerify);
   return;
+  // 이메일의 verify 상태가 false? 그럼 에러
 };
