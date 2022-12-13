@@ -15,13 +15,13 @@ export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ length: 20, nullable: false })
   username: string;
 
-  @Column()
+  @Column({ unique: true, nullable: false })
   email: string;
 
-  @Column()
+  @Column({ unique: true, nullable: true })
   phoneNumber: string;
 
   @Column()
@@ -33,7 +33,7 @@ export class User {
   @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP" })
   created: Date;
 
-  @Column()
+  @Column({ default: true })
   active: boolean;
 
   @OneToMany((type) => Resume, (resume) => resume.usedUser, { nullable: true })

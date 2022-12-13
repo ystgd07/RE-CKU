@@ -23,7 +23,7 @@ export class Company {
   @Column()
   businessNumber: number;
 
-  @Column()
+  @Column({ length: 1000 })
   description: string;
 
   @OneToOne((type) => User, (user) => user.ownCompany)

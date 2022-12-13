@@ -18,15 +18,15 @@ export class Carreer {
   @Column()
   company: string;
 
-  @Column()
+  @Column({ length: 100 })
   work: string;
 
-  @Column()
+  @Column({ length: 200 })
   reward: string;
 
-  @Column()
+  @Column({ nullable: false })
   position: positonEnum;
 
-  @ManyToOne((type) => Resume, (resume) => resume.carreer)
+  @ManyToOne((type) => Resume, (resume) => resume.carreer, { nullable: false })
   usedResume: Resume;
 }

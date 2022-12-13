@@ -12,3 +12,6 @@ export const dataSource = new DataSource({
   logging: false,
   synchronize: true,
 });
+
+export * from "./auth.repo";
+export * from "./user.repo";
