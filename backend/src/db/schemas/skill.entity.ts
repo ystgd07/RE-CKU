@@ -9,7 +9,10 @@ export class Skill {
   @Column()
   name: string;
 
-  @ManyToOne((type) => Company, (company) => company.stacks, { nullable: true })
-  @JoinTable()
-  used: Company;
+  @ManyToMany((type) => Company, (company) => company.stacks)
+  @JoinTable({
+    name: "stacks",
+    // inverseJoinColumn: [{ name: "skil_id" }],
+  })
+  used: Company[];
 }

@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from "typeorm";
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany, ManyToMany } from "typeorm";
 import { Skill } from "./skill.entity";
 
 @Entity()
@@ -12,6 +12,6 @@ export class Company {
   @Column()
   name: string;
 
-  @OneToMany((type) => Skill, (skill) => skill.name, { nullable: true })
+  @ManyToMany((type) => Skill, (skill) => skill.name, { nullable: true })
   stacks: Skill[];
 }

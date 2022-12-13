@@ -1,4 +1,5 @@
 import server from "./server";
+require("dotenv").config();
 import { dataSource } from "./db/index";
 dataSource
   .initialize()
@@ -11,4 +12,4 @@ dataSource
 
 const PORT = 5000;
 
-server.listen(PORT, () => console.log("✅ Server Connecting Port", PORT));
+server.listen(PORT, () => console.log("✅ Server Connecting Port, ", process.env.MYSQL_PW === ".wlsgml1403", PORT));
