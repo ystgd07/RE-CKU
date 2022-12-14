@@ -6,10 +6,6 @@ const style = css`
     font-size: 62.5%;
   }
 
-  body{
-    background-color: green;
-  }
-
   select,
   input,
   button,
