@@ -9,7 +9,13 @@ export class Board {
   id: number;
 
   @Column()
+  title: string;
+
+  @Column()
   content: string;
+
+  @Column()
+  hashTags: string;
 
   @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP" })
   created: Date;

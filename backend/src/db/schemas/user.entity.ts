@@ -29,7 +29,7 @@ export class User {
   @Column({ unique: true, nullable: false })
   email: string;
 
-  @Column({ unique: true, nullable: true })
+  @Column({ unique: true, nullable: true, default: null })
   phoneNumber: string;
 
   @Column()

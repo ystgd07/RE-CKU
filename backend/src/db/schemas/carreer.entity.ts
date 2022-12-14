@@ -10,11 +10,20 @@ export class Carreer {
   @Column()
   company: string;
 
-  @Column({ length: 100 })
-  work: string;
-
   @Column({ length: 200 })
   reward: string;
+
+  @Column()
+  notDevlop: boolean; // 비개발경력
+
+  @Column()
+  workNow: boolean;
+
+  @Column()
+  startDate: string;
+
+  @Column()
+  endDate: string;
 
   @Column({ nullable: false })
   position: positonEnum;

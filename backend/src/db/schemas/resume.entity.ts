@@ -5,10 +5,10 @@ import { ResumeLikeMaping } from "./resumeLikeMaping.entity";
 import { User } from "./user.entity";
 
 export enum positonEnum {
-  BE = "백엔드",
-  FE = "프론트엔드",
-  PM = "프로덕트매니저",
-  FS = "풀스택",
+  BE = "BE",
+  FE = "FE",
+  PM = "PM",
+  FS = "FS",
 }
 @Entity()
 export class Resume {
@@ -20,9 +20,6 @@ export class Resume {
 
   @Column({ length: 200 })
   infomation: string;
-
-  @Column({ type: "varchar" })
-  year: string;
 
   @Column()
   position: positonEnum;

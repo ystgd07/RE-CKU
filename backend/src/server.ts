@@ -18,6 +18,7 @@ app.use(express.urlencoded({ extended: false }));
 
 // routes
 app.use("/users", userRoute);
+app.use("/board", userRoute);
 
 // 에러 미들웨어
 app.use(errorHandler);
