@@ -9,20 +9,24 @@ export class Project {
   id: number;
 
   @Column()
-  project: string;
+  projectName: string;
+
+  @Column()
+  startDate: string; // YYMM
+
+  @Column()
+  finishDate: string; // YYMM
 
   @Column()
   infomation: string;
 
   @Column()
-  imgUrl: string;
-
-  @Column()
   link1: string;
   @Column()
   link2: string;
-  @Column()
-  link3: string;
+
+  @OneToMany((type) => Stack, (stack) => stack.project)
+  stacks: Stack[];
 
   @ManyToOne((type) => Resume, (resume) => resume.projects)
   usedResume: Resume;

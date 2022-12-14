@@ -1,5 +1,5 @@
 export * from "./carreer.entity";
-export * from "./company.entity";
+// export * from "./company.entity";
 export * from "./project.entity";
 export * from "./resume.entity";
 export * from "./skill.entity";
