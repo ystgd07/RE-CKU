@@ -5,6 +5,8 @@ import { Resume } from "./resume.entity";
 import { Stack } from "./stacks.entity";
 import { Board } from "./board.entity";
 import { Comment } from "./comment.entity";
+import { ResumeLikeMaping } from "./resumeLikeMaping.entity";
+import { BoardLikeMaping } from "./boardLikeMaping.entity";
 
 export enum roleEnum {
   bronze = "브론즈",
@@ -51,21 +53,18 @@ export class User {
   @OneToMany((type) => Board, (board) => board.fromUser, { nullable: true })
   notices: Board[]; // 작성한 게시글
 
-  @OneToMany((type) => Board, (board) => board.fromUser, { nullable: true })
-  likeNotice: Board[]; // 좋아하는 게시글
+  @OneToMany((type) => BoardLikeMaping, (board) => board.user, { nullable: true })
+  likesBoard: BoardLikeMaping[]; // 좋아하는 게시글 맵핑
 
-  @OneToMany((type) => Comment, (comment) => comment.fromUser, { nullable: true })
-  ownComments: Comment[];
+  @OneToMany((type) => ResumeLikeMaping, (resume) => resume.user)
+  likesResume: ResumeLikeMaping[]; //  좋아하는 이력서 맵핑
+
+  @OneToMany((type) => Comment, (comment) => comment.user, { nullable: true })
+  writeComments: Comment[];
 
   @OneToMany((type) => Connect, (connect) => connect.mento, { nullable: true })
   asMento: Connect[];
 
   @OneToMany((type) => Connect, (connect) => connect.mentee, { nullable: true })
   asMentee: Connect[];
-
-  @OneToMany((type) => Stack, (stack) => stack.user_id, { nullable: true })
-  stacks: Stack[];
-  //기업회원 전용
-  // @OneToOne((type) => Company, (company) => company.owner)
-  // ownCompany: Company;
 }

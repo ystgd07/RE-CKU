@@ -19,9 +19,6 @@ export class Connect {
 
   @ManyToOne((type) => User, (user) => user.asMentee)
   mentee: User;
-
-  // @ManyToOne((type) => Company, (company) => company.connects)
-  // usedCompany: User;
 }
 
 // 고인물에게 요청을하려면

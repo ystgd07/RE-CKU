@@ -1,6 +1,6 @@
 import { CreateUserDto } from "src/routes/dto/create-individual.dto";
-import { dataSource } from ".";
-import { roleEnum, User } from "./schemas";
+import { dataSource } from "./index.schema";
+import { roleEnum, User } from "./schemas/index.schema";
 
 export const findOneUser = async (data: number | string) => {
   let user = null;

@@ -1,5 +1,5 @@
-import { dataSource } from "./index";
-import { EmailAuth } from "./schemas";
+import { dataSource } from "./index.schema";
+import { EmailAuth } from "./schemas/index.schema";
 
 export const findOneAuthData = async (email: string) => {
   const data = await dataSource.getRepository(EmailAuth).findOne({ where: { email } });

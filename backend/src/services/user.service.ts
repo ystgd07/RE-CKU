@@ -1,10 +1,10 @@
 import bcrypt from "bcrypt";
-import { dataSource, updateUser } from "../db";
-import { createIndiUser, findOneAuthData, findOneUser, createAuthData, updateAuthData } from "../db";
-import { CreateUserDto } from "../routes/dto/";
+import { dataSource, updateUser } from "../db/index.schema";
+import { createIndiUser, findOneAuthData, findOneUser, createAuthData, updateAuthData } from "../db/index.schema";
+import { CreateUserDto } from "../routes/dto/index.dto";
 import jwt from "jsonwebtoken";
 import { send } from "../config/sendMail";
-import { EmailAuth } from "../db/schemas";
+import { EmailAuth } from "../db/schemas/index.schema";
 
 // 회원가입 서비스
 export const join = async (data: CreateUserDto): Promise<Object> => {

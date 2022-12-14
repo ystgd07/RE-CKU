@@ -1,13 +1,6 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany, ManyToMany, JoinTable, ManyToOne, OneToOne } from "typeorm";
-import { Resume } from "./resume.entity";
+import { positonEnum, Resume } from "./resume.entity";
 import { Stack } from "./stacks.entity";
-
-export enum positonEnum {
-  BE = "백엔드",
-  FE = "프론트엔드",
-  PM = "프로덕트매니저",
-  FS = "풀스택",
-}
 
 @Entity()
 export class Carreer {

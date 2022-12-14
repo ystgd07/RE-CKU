@@ -1,10 +1,10 @@
-import { dataSource } from "./db/index";
+import { dataSource } from "./db/index.schema";
 import express, { Request, Response, NextFunction } from "express";
 // import { Company } from "./db/schemas/company.entity";
 import { Skill } from "./db/schemas/skill.entity";
 import { Stack } from "./db/schemas/stacks.entity";
 import { errorHandler } from "./middlewares/error-handdler";
-import userRoute from "./routes/user.route";
+import userRoute from "./routes/user.routes";
 
 const app = express();
 
