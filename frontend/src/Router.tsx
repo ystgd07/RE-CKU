@@ -5,6 +5,8 @@ import Resume from 'components/Resume/index';
 // import CreatePost from 'pages/CreatePost';
 import Join from './pages/Join';
 import FindPw from './pages/FindPw';
+import MyPortfolio from "./pages/MyPortfolio";
+import Profile from "./pages/Profile";
 
 const Router = () => {
    return (
@@ -16,6 +18,8 @@ const Router = () => {
             {/* <Route path="/create-post" element={<CreatePost />} /> */}
             <Route path="/Join" element={<Join />} />
             <Route path="/FindPw" element={<FindPw />} />
+            <Route path="/myportfolio" element={<MyPortfolio />} />
+            <Route path="/profile" element={<Profile />} />
          </Routes>
       </BrowserRouter>
    );
