@@ -13,7 +13,9 @@ export const tokenValidator: RequestHandler = (req, res, next) => {
   try {
     const secretKey = process.env.JWT_SECRET_KEY || "secret";
     const jwtDecoded = jwt.verify(userToken, secretKey);
+
     req.body = { ...req.body, jwtDecoded };
+    if (req.body.jwtDecoded.type === "RT") throw new Error("is not access token");
     next();
   } catch (error) {
     // jwt.verify 함수가 에러를 발생시키는 경우는 토큰이 정상적으로 decode 안되었을 경우임.
@@ -27,6 +29,10 @@ export const tokenValidator: RequestHandler = (req, res, next) => {
       case "jwt expired":
         const expired = new Error("403, 만료된 토큰입니다.");
         next(expired);
+        break;
+      case "is not access token":
+        const notAT = new Error("400, AT로 인증해주시길 바랍니다. ");
+        next(notAT);
         break;
       default:
         next(new Error("400, 토큰 검증 도중 오류가 발생했습니다."));

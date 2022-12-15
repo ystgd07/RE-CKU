@@ -47,8 +47,6 @@ export const login = async (email: string, password: string) => {
   );
   const refreshToken = jwt.sign(
     {
-      id: user.id,
-      role: user.role,
       type: "RT",
     },
     process.env.JWT_SECRET_KEY || "secret",

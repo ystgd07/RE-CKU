@@ -1,6 +1,7 @@
 import { CreateUserDto } from "src/routes/dto/create-individual.dto";
 import { dataSource, db } from "./index.schema";
 import { roleEnum, User } from "./schemas/index.schema";
+import { updateData } from "./utils/transData";
 
 export const findOneUser = async (data: number | string) => {
   let user = null;
@@ -30,8 +31,8 @@ export const createIndiUser = async (data: CreateUserDto) => {
   return newUser;
 };
 
-export const updateUser = async (id: number, data: Record<string, string | boolean>): Promise<boolean> => {
-  const { phoneNumber, password, role, RT, active } = data;
+export const updateUser = async (id: number, data: Record<string, string | boolean | number>): Promise<boolean> => {
+  // const { phoneNumber, password, role, RT, active } = data;
   // const toUpdate = {
   //   ...(phoneNumber && { phoneNumber }),
   //   ...(password && { password }),
@@ -39,14 +40,7 @@ export const updateUser = async (id: number, data: Record<string, string | boole
   //   ...(RT && { RT }),
   //   ...(active && { active }),
   // };
-  const [keys, values] = Object.entries(data).reduce(
-    (a, [key, value]) => {
-      a[0].push(`${key} = ?`);
-      a[1].push(value);
-      return a;
-    },
-    [[], []] as [string[], Array<string | boolean>]
-  );
+  const [keys, values] = updateData(data);
   await db.query(`UPDATE user SET ${keys.join(", ")} WHERE id = ?`, [...values, id]);
   // typeORM 코드
   // await dataSource.getRepository(User).update(id, toUpdate);
