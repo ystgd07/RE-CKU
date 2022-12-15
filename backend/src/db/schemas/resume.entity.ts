@@ -1,4 +1,5 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany, ManyToMany, JoinTable, ManyToOne } from "typeorm";
+import { Board } from "./board.entity";
 import { Carreer } from "./carreer.entity";
 import { Project } from "./project.entity";
 import { ResumeLikeMaping } from "./resumeLikeMaping.entity";
@@ -23,6 +24,9 @@ export class Resume {
 
   @Column()
   position: positonEnum;
+
+  @OneToMany((type) => Board, (board) => board.hasResume)
+  usedBoards: Board[];
 
   @OneToMany((type) => Project, (project) => project.usedResume)
   projects: Project[];

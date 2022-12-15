@@ -1,6 +1,7 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, OneToMany } from "typeorm";
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, OneToMany, OneToOne } from "typeorm";
 import { BoardLikeMaping } from "./boardLikeMaping.entity";
 import { Comment } from "./comment.entity";
+import { Resume } from "./resume.entity";
 import { User } from "./user.entity";
 
 @Entity()
@@ -19,6 +20,9 @@ export class Board {
 
   @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP" })
   created: Date;
+
+  @ManyToOne((type) => Resume, (resume) => resume.usedBoards) // 좋아하고있는 유저들
+  hasResume: Resume;
 
   @OneToMany((type) => BoardLikeMaping, (board) => board.board) // 좋아하고있는 유저들
   likesBoard: BoardLikeMaping[];

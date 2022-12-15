@@ -47,15 +47,13 @@ export const login = async (email: string, password: string) => {
   );
   const refreshToken = jwt.sign(
     {
-      id: user.id,
-      role: user.role,
       type: "RT",
     },
     process.env.JWT_SECRET_KEY || "secret",
     { expiresIn: 60 * 60 * 24 }
   );
   const data = {
-    username: "우두루",
+    username: "킹디르",
     phoneNumber: "0000",
     RT: refreshToken,
   };
