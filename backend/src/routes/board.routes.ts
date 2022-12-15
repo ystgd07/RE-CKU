@@ -1,8 +1,7 @@
 import { CreateBoardDto } from "./dto/create-board.dto";
 import express from "express";
 import { postNotice, updateNotice } from "../services/board.service";
-import { tokenValidator } from "../middlewares/verify-JWT";
-import { validateBody } from "../middlewares/dto-validator";
+import { boardImg, validateBody, tokenValidator } from "../middlewares/index.middleware";
 
 const boardRoute = express();
 boardRoute.post("/jwttest", tokenValidator, (req, res) => {
@@ -11,7 +10,8 @@ boardRoute.post("/jwttest", tokenValidator, (req, res) => {
 });
 
 // 게시글 작성 API
-boardRoute.post("/", validateBody(CreateBoardDto), tokenValidator, async (req, res, next) => {
+boardRoute.post("/", validateBody(CreateBoardDto), async (req, res, next) => {
+  console.log(req.file);
   const { id } = req.body.jwtDecoded;
   const { title, content, hashTags } = req.body;
   let { resumeId } = req.body;

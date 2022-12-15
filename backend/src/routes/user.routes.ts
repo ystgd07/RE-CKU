@@ -1,17 +1,16 @@
 import bcrypt from "bcrypt";
 import express, { Request, Response, NextFunction } from "express";
 import { authEmail, findPassword, join, login, sendEmail, updateInfo } from "../services/index.service";
-import { validateBody } from "../middlewares/dto-validator";
 import { CreateUserDto, CreateAuthDataDto, AuthEmailDto, LoginUserDto } from "./dto/index.dto";
 import { random } from "../config/sendMail";
-import { createIndiUser, findOneUser } from "../db/user.repo";
-import { tokenValidator } from "../middlewares/verify-JWT";
+import { createIndiUser } from "../db/user.repo";
+import { avatarImg, tokenValidator, validateBody } from "../middlewares/index.middleware";
 const userRoute = express();
 
 // 개인 회원가입 라우트
 userRoute.post("/individual", validateBody(CreateUserDto), async (req: Request, res: Response, next: NextFunction) => {
   const { username, email, phoneNumber, password } = req.body;
-  console.log(req.body)
+  console.log(req.body);
   console.log("들어옴?");
   // hash 화 된 비번
   const hashedPassword = await bcrypt.hash(password, 10);
@@ -50,12 +49,17 @@ userRoute.post("/", validateBody(LoginUserDto), async (req, res, next) => {
 });
 
 // 개인정보 수정 라우트
-userRoute.patch("/", tokenValidator, async (req, res, next) => {
+userRoute.patch("/", tokenValidator, avatarImg.single("image"), async (req, res, next) => {
   const id = Number(req.body.jwtDecoded.id);
   const currentPw = req.body.currentPw;
   if (!currentPw) next(new Error("400, 기존 비밀번호를 입력하세요."));
   const password = req.body.password;
   const phoneNumber = req.body.phoneNumber;
+  let avatarUrl = "";
+  if (req.file) {
+    avatarUrl = req.file.path;
+  }
+  console.log("아바타 유알엘", avatarUrl);
   // const avatarUrl = req.body.avatarUrl;
   const toUpdate = {
     ...(password && { password }),

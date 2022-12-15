@@ -72,7 +72,6 @@ export const updateInfo = async (id: number, currentPw: string, data: Record<str
   if (data.password) {
     data.password = await bcrypt.hash(data.password, 10);
   }
-  console.log(data.password);
   try {
     await updateUser(id, data);
   } catch (err) {
