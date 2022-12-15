@@ -4,48 +4,124 @@ import { useDispatch } from "react-redux";
 import axios from 'axios';
 import * as S  from './style';
 import Logo from "assets/images/iogo.png";
-
+import { EmailAuth } from './../../../../backend/src/db/schemas/email-auth.entity';
+import e from "express";
 
 
 const Join = () => {
 
-   const [Email, setEmail] = useState("");
-   const [Password, setPassword] = useState("");
-   const [PasswordCheck, setPasswordCheck] = useState("");
-   const [Name, setName] = useState("");
-   const [Phone, setPhone] = useState("");
-   const [Confirm, setConfirm] = useState("");
+   const [email, setEmail] = useState("");
+   const [password, setPassword] = useState("");
+   const [passwordCheck, setPasswordCheck] = useState("");
+   const [name, setName] = useState("");
+   const [phone, setPhone] = useState("");
+   const [confirm, setConfirm] = useState("");
 
-   const onSubmitHandler = (e : any) => {
+   const navigate = useNavigate();
+   const data = {
+      email: email,
+      password: password,
+      name : name,
+      phone : phone,
+      code : confirm,
+   }
+
+
+   const onSubmitHandler = async (e : React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
+      try {
+         console.log('data', data);
+         const res = await axios.post("/users/individual", data);
+         console.log(res, '성공')
 
+         alert("회원가입이 완료되었습니다.");
+         navigate('/login');
 
-      
-      // dispatch();
+      } catch (err : any)  {
+         console.error(err.stack);
+         
+      }
+   }
+
+      const sendEmail = async (e : any ) => {
+         e.preventDefault();
+         console.log('email', email);
+         
+         try {
+            const res = await axios.post("/users/email",{ email } );
+            console.log(res, '성공')
+
+         // const reqConfirm = res.data.data
+
+         // reqConfirm === 
+
+         } catch (err : any)  {
+            console.error(err.stack);
+            
+
+         }
    };
+
+   const emailAuth = async (e : any ) => {
+      e.preventDefault();
+      console.log('data', data);
+      
+      try {
+         const res = await axios.post("/email/auth", data );
+         console.log(res, '성공')
+
+         // const reqConfirm = res.data.data
+
+      } catch (err : any)  {
+         console.error(err.stack);
+         
+
+         }
+   };
+
+
+
+   const errStyle = () => {
+      if(password !== passwordCheck){
+         return {border : "3px solid red"}
+
+      }
+   }
+
+   const errjoin = () => {
+         
+         if(!(email && password && passwordCheck && name &&  phone && confirm) ){
+            return { display: "none" } 
+         }
+         if(( password !== passwordCheck)){
+            return { display: "none" }
+         }
+   }
 
    return (
       <S.Div>
          <S.MobileDiv >
             <p ><S.Image src={Logo} alt="로고"/></p>
             <form onSubmit={onSubmitHandler}>
-               <div style={{width: "400px" ,minWidth:"320px" , textAlign: "center" }}>
+               <div style={{ display : "flex", flexDirection: "column", width: "400px" ,minWidth:"320px" , textAlign: "center",paddingBottom: "30px"  }}>
                   <h1>회원가입</h1>
                   <p>이메일</p>
-                  <input type="email" value={Email} placeholder='이메일 입력' onChange={e => {setEmail(e.currentTarget.value)}}/>
+                  <input type="email" value={email} placeholder='이메일 입력' onChange={e => {setEmail(e.currentTarget.value)}}/>
+                     <button onClick={sendEmail} >인증번호 보내기</button>
                   <div style={{ display: "flex" ,textAlign: "left" }}>
-                     <button >인증</button>
-                     <input placeholder='인증번호를 입력해주세요' value={Confirm} onChange={e => {setConfirm(e.currentTarget.value)}}></input>
+                     <input placeholder='인증번호를 입력해주세요' value={confirm} onChange={e => {setConfirm(e.currentTarget.value)}}></input>
+                  <button onClick={emailAuth}>인증하기</button>
                   </div>
                   <p>비밀번호</p>
-                  <input type="password" value={Password} placeholder='비밀번호 입력' onChange={e => {setPassword(e.currentTarget.value)}}/>
+                  <input type="password" value={password} placeholder='비밀번호 입력' onChange={e => {setPassword(e.currentTarget.value)}}/>
                   <p>비밀번호 확인</p>
-                  <input type="password" value={PasswordCheck} placeholder='비밀번호 입력' onChange={e => {setPasswordCheck(e.currentTarget.value)}}/>
+                  <input type="password" style={errStyle()}  value={passwordCheck} placeholder='비밀번호 입력' onChange={e => {setPasswordCheck(e.currentTarget.value)}} />
                   <p>이름</p>
-                  <input type="email"  value={Name} placeholder='이름 입력' onChange={e => {setName(e.currentTarget.value)}}/> 
+                  <input type="string"  value={name} placeholder='이름 입력' onChange={e => {setName(e.currentTarget.value)}}/> 
                   <p>휴대폰</p>
-                  <input type="email" value={Phone} placeholder='- 빼고 입력해주세요' onChange={e => {setPhone(e.currentTarget.value)}}/> 
-                  <button  formAction=''>회원가입</button> 
+                  <input type="string" value={phone} placeholder='- 빼고 입력해주세요' onChange={e => {setPhone(e.currentTarget.value)}}/> 
+                  <button  formAction='' style={errjoin()} >회원가입</button> 
+                  <Link to="/login" style={{ textDecoration: 'none' , color:"black", fontSize: "10px", fontWeight:"bold" }}>로그인  </Link> 
                </div>
             </form>
          </S.MobileDiv>

@@ -38,12 +38,12 @@ export const MobileDiv = styled.div`
     }
 
     & button{
-        margin: 40px;
+        margin: auto;
         padding : 20px; 
         border: 1px none #c9cacc;
         border-radius: 10px;
         width: 80%;
-        font-size: 14px;
+        font-size: 10px;
         line-height: 22px;
         background-color : rgba(0,0,0,0.08);
         font-size: 16px;
@@ -63,10 +63,10 @@ export const MobileDiv = styled.div`
         & div{
             & button{
                 margin: 8px;
-                padding : 10px; 
+                padding : 20px; 
                 border: 1px none #c9cacc;
                 border-radius: 10px;
-                width: 30%;
+                width: 50%;
                 line-height: 12px;
                 background-color : rgba(0,0,0,0.08);
                 font-size: 16px;
@@ -87,7 +87,7 @@ export const MobileDiv = styled.div`
 `;
 
 export const Button = styled.button`  
-    margin: 40px;
+    margin: 20px;
     padding : 20px; 
     border: 1px none #c9cacc;
     border-radius: 10px;

@@ -1,6 +1,6 @@
 import bcrypt from "bcrypt";
 import express, { Request, Response, NextFunction } from "express";
-import { authEmail, join, login, sendEmail } from "../services";
+import { authEmail, join, login, sendEmail } from "../services/index.service";
 import { validateBody } from "../middlewares/dto-validator";
 import { CreateUserDto, CreateAuthDataDto, AuthEmailDto, LoginUserDto } from "./dto/index.dto";
 import { random } from "../config/sendMail";
@@ -9,6 +9,7 @@ const userRoute = express();
 // 개인 회원가입 라우트
 userRoute.post("/individual", validateBody(CreateUserDto), async (req: Request, res: Response, next: NextFunction) => {
   const { username, email, phoneNumber, password } = req.body;
+  console.log(req.body)
   console.log("들어옴?");
   // hash 화 된 비번
   const hashedPassword = await bcrypt.hash(password, 10);
@@ -66,7 +67,7 @@ userRoute.post("/email", validateBody(CreateAuthDataDto), async (req, res, next)
 });
 // 회원가입시 이메일 인증하는 라우트
 userRoute.post("/email/auth", validateBody(AuthEmailDto), async (req, res, next) => {
-  const { email, code } = req.body.email;
+  const { email, code } = req.body;
   try {
     await authEmail(email, code);
     return res.status(200).json({
