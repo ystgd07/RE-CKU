@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { ResumeContainer, ResumeFrame, UserInfo, FormTitle, InputForm } from './style';
-import { BsPlusCircle } from '@react-icons/all-files/bs/BsPlusCircle';
+import { BiPlus } from '@react-icons/all-files/bi/BiPlus';
 import { DatePicker } from 'antd';
 import Pica from 'assets/images/pica.jpeg';
 
 const Resume = () => {
-    const [toggle, setToggle] = useState<boolean>(false);
+    const [swtich, setSwtich] = useState<boolean>(true);
+    const [formToggle, setFormToggle] = useState<boolean>(false);
+
     return (
         <ResumeContainer>
             <ResumeFrame>
@@ -56,97 +58,106 @@ const Resume = () => {
                         <section>
                             <FormTitle>
                                 <label>업무경험</label>
-                                <span>
-                                    <BsPlusCircle />
+                                <span onClick={(): void => setFormToggle(!formToggle)}>
+                                    <BiPlus className={formToggle ? 'rotate' : ''} />
                                 </span>
                             </FormTitle>
-                            <form>
-                                <div className="formWrap">
-                                    <ul>
-                                        <li>
-                                            <dl>
-                                                <dt>회사명</dt>
-                                                <dd>
-                                                    <input type="text" placeholder="회사 이름" />
-                                                </dd>
-                                            </dl>
-                                            <dl>
-                                                <dt>직무</dt>
-                                                <dd>
-                                                    <input type="text" placeholder="프론트엔드" />
-                                                </dd>
-                                            </dl>
-                                            <dl className="noneDevelop">
-                                                <dt>
-                                                    <input type="checkbox" />
-                                                </dt>
-                                                <dd>
-                                                    <label>비개발 경력</label>
-                                                </dd>
-                                            </dl>
-                                        </li>
-                                    </ul>
 
-                                    <ul>
-                                        <li>
-                                            <dl>
-                                                <dt>
-                                                    <label>입사</label>
-                                                    <small>재직 중 </small>
-                                                    <label className="switch">
-                                                        <input
-                                                            type="checkbox"
-                                                            checked={toggle ? true : false}
-                                                            onChange={(): void =>
-                                                                setToggle(!toggle)
-                                                            }
-                                                        />
-                                                        <span className="slider"></span>
-                                                    </label>
-                                                </dt>
-
-                                                <dd>
-                                                    <DatePicker
-                                                        placeholder="YYYY-MM"
-                                                        picker="month"
-                                                        onChange={(date, dateString): void =>
-                                                            console.log('asd', dateString)
-                                                        }
-                                                    />
-                                                </dd>
-                                            </dl>
-                                            {toggle && (
+                            {formToggle && (
+                                <form>
+                                    <div className="formWrap">
+                                        <ul>
+                                            <li>
                                                 <dl>
-                                                    <dt>퇴사</dt>
+                                                    <dt>회사명</dt>
+                                                    <dd>
+                                                        <input
+                                                            type="text"
+                                                            placeholder="회사 이름"
+                                                        />
+                                                    </dd>
+                                                </dl>
+                                                <dl>
+                                                    <dt>직무</dt>
+                                                    <dd>
+                                                        <input
+                                                            type="text"
+                                                            placeholder="프론트엔드"
+                                                        />
+                                                    </dd>
+                                                </dl>
+                                                <dl className="noneDevelop">
+                                                    <dt>
+                                                        <input type="checkbox" />
+                                                    </dt>
+                                                    <dd>
+                                                        <label>비개발 경력</label>
+                                                    </dd>
+                                                </dl>
+                                            </li>
+                                        </ul>
+
+                                        <ul>
+                                            <li>
+                                                <dl>
+                                                    <dt>
+                                                        <label>입사</label>
+                                                        <small>재직 중 </small>
+                                                        <label className="switch">
+                                                            <input
+                                                                type="checkbox"
+                                                                checked={swtich ? true : false}
+                                                                onChange={(): void =>
+                                                                    setSwtich(!swtich)
+                                                                }
+                                                            />
+                                                            <span className="slider"></span>
+                                                        </label>
+                                                    </dt>
+
                                                     <dd>
                                                         <DatePicker
                                                             placeholder="YYYY-MM"
                                                             picker="month"
+                                                            onChange={(date, dateString): void =>
+                                                                console.log('asd', dateString)
+                                                            }
                                                         />
                                                     </dd>
                                                 </dl>
-                                            )}
-                                        </li>
-                                    </ul>
+                                                {swtich && (
+                                                    <dl>
+                                                        <dt>퇴사</dt>
+                                                        <dd>
+                                                            <DatePicker
+                                                                placeholder="YYYY-MM"
+                                                                picker="month"
+                                                            />
+                                                        </dd>
+                                                    </dl>
+                                                )}
+                                            </li>
+                                        </ul>
 
-                                    <ul>
-                                        <li>
-                                            <label>업무 성과</label>
-                                        </li>
-                                        <li>
-                                            <textarea
-                                                maxLength={500}
-                                                placeholder={`구체적인 역할과 성과 위주의 글을 작성해보세요. \n수치와 함께 표현되면 경험이 잘 전달될 수 있습니다.`}
-                                            ></textarea>
-                                        </li>
-                                    </ul>
-                                </div>
+                                        <ul>
+                                            <li>
+                                                <label>업무 성과</label>
+                                            </li>
+                                            <li>
+                                                <textarea
+                                                    maxLength={500}
+                                                    placeholder={`구체적인 역할과 성과 위주의 글을 작성해보세요. \n수치와 함께 표현되면 경험이 잘 전달될 수 있습니다.`}
+                                                ></textarea>
+                                            </li>
+                                        </ul>
+                                    </div>
 
-                                <div>
-                                    <button type="button">취소</button>
-                                    <button type="submit">저장</button>
-                                </div>
-                            </form>
+                                    <div className="formBtn">
+                                        <button type="button">취소</button>
+                                        <button type="submit">저장</button>
+                                    </div>
+                                </form>
+                            )}
                         </section>
 
                         <section>
