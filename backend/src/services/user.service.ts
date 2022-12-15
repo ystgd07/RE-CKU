@@ -55,13 +55,15 @@ export const login = async (email: string, password: string) => {
     { expiresIn: 60 * 60 * 24 }
   );
   const data = {
-    phoneNumber: undefined,
-    password: undefined,
-    role: undefined,
+    username: "우두루",
+    phoneNumber: "0000",
     RT: refreshToken,
-    active: undefined,
   };
-  await updateUser(user.id, data);
+  try {
+    await updateUser(user.id, data);
+  } catch (err) {
+    throw Error("500, DB에러");
+  }
   // 옵젝으로 묶어서 리턴
   const result = {
     accessToken,

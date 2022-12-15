@@ -30,32 +30,25 @@ export const createIndiUser = async (data: CreateUserDto) => {
   return newUser;
 };
 
-//  const toUpdate = {
-//     ...(name && { name }),
-//     ...(password && { password }),
-//     ...(address && { address }),
-//     ...(phoneNumber && { phoneNumber }),
-//   }; //
-type UpdateData = {
-  phoneNumber: string | undefined;
-  password: string | undefined;
-  role: roleEnum | undefined;
-  RT: string | undefined;
-  active: boolean | undefined;
-};
-
-export const updateUser = async (id: number, data: UpdateData) => {
+export const updateUser = async (id: number, data: Record<string, string | boolean>): Promise<boolean> => {
   const { phoneNumber, password, role, RT, active } = data;
-  const toUpdate = {
-    ...(phoneNumber && { phoneNumber }),
-    ...(password && { password }),
-    ...(role && { role }),
-    ...(RT && { RT }),
-    ...(active && { active }),
-  };
-
-  console.log(toUpdate);
-  // await db.query(`UPDATE user SET phoneNumber=?,  `,[])// 코치님께 질문
-  await dataSource.getRepository(User).update(id, toUpdate);
-  return;
+  // const toUpdate = {
+  //   ...(phoneNumber && { phoneNumber }),
+  //   ...(password && { password }),
+  //   ...(role && { role }),
+  //   ...(RT && { RT }),
+  //   ...(active && { active }),
+  // };
+  const [keys, values] = Object.entries(data).reduce(
+    (a, [key, value]) => {
+      a[0].push(`${key} = ?`);
+      a[1].push(value);
+      return a;
+    },
+    [[], []] as [string[], Array<string | boolean>]
+  );
+  await db.query(`UPDATE user SET ${keys.join(", ")} WHERE id = ?`, [...values, id]);
+  // typeORM 코드
+  // await dataSource.getRepository(User).update(id, toUpdate);
+  return true;
 };
