@@ -1,8 +1,9 @@
 import express from "express";
+import { postNotice } from "../services/board.service";
 import { tokenValidator } from "../middlewares/verify-JWT";
 
 const boardRoute = express();
-boardRoute.post("/", tokenValidator, (req, res) => {
+boardRoute.post("/jwttest", tokenValidator, (req, res) => {
   console.log("req.body ", req.body);
   return res.json({ data: req.headers });
 });
@@ -11,15 +12,16 @@ boardRoute.post("/", tokenValidator, (req, res) => {
 boardRoute.post("/", tokenValidator, async (req, res, next) => {
   const { id, role } = req.body.jwtDecoded;
   const { title, content, hashTags, resumeId } = req.body;
-  const data = {
-    id,
-    title,
+  const data: Record<string, string | boolean | number> = {
     content,
+    fromUserId: id,
+    title,
     hashTags,
-    resumeId,
+    hasResumeId: resumeId,
   };
+  console.log("바디의 데이터 : ", data);
   try {
-    // const result = await postNotice(data)
+    const result = await postNotice(data);
   } catch (err) {
     next(err);
   }

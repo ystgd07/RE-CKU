@@ -1,7 +1,7 @@
 import { CreateUserDto } from "src/routes/dto/create-individual.dto";
 import { dataSource, db } from "./index.schema";
 import { roleEnum, User } from "./schemas/index.schema";
-import { transData } from "./utils/transData";
+import { updateData } from "./utils/transData";
 
 export const findOneUser = async (data: number | string) => {
   let user = null;
@@ -40,7 +40,7 @@ export const updateUser = async (id: number, data: Record<string, string | boole
   //   ...(RT && { RT }),
   //   ...(active && { active }),
   // };
-  const [keys, values] = transData(data);
+  const [keys, values] = updateData(data);
   await db.query(`UPDATE user SET ${keys.join(", ")} WHERE id = ?`, [...values, id]);
   // typeORM 코드
   // await dataSource.getRepository(User).update(id, toUpdate);

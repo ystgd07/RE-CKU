@@ -12,17 +12,17 @@ export class Board {
   @Column()
   title: string;
 
-  @Column()
+  @Column({ nullable: true, default: null })
   content: string;
 
-  @Column()
+  @Column({ default: null, nullable: true })
   hashTags: string;
 
   @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP" })
   created: Date;
 
-  @ManyToOne((type) => Resume, (resume) => resume.usedBoards) // 좋아하고있는 유저들
-  hasResume: Resume;
+  @ManyToOne((type) => Resume, (resume) => resume.usedBoards, { nullable: true }) // 좋아하고있는 유저들
+  hasResume: Resume | null;
 
   @OneToMany((type) => BoardLikeMaping, (board) => board.board) // 좋아하고있는 유저들
   likesBoard: BoardLikeMaping[];
