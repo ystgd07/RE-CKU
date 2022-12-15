@@ -3,7 +3,7 @@ import { dataSource, db } from "./index.schema";
 import { roleEnum, User } from "./schemas/index.schema";
 import { updateData } from "./utils/transData";
 
-export const findOneUser = async (data: number | string) => {
+export const findOneUser = async (data: number | string, reason?: string) => {
   let user = null;
   // 파라미터로 들어온 data 값이 num이면 id로 찾고, 아니면 email로 찾음
   switch (typeof data) {
@@ -13,8 +13,10 @@ export const findOneUser = async (data: number | string) => {
     default:
       // user = await dataSource.getRepository(User).findOne({ where: { id: data } });
       user = await db.query(`SELECT * FROM user WHERE id=?`, [data]);
+      break;
   }
-
+  if (reason)
+    user = await db.query(`SELECT id,username,email,phoneNumber,created,avatarUrl FROM user WHERE id=?`, [data]);
   return user[0][0];
 };
 

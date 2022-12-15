@@ -1,9 +1,24 @@
 import { CreateBoardDto } from "./dto/create-board.dto";
 import express from "express";
-import { postNotice, updateNotice } from "../services/board.service";
+import { getOneNotice, postNotice, updateNotice } from "../services/board.service";
 import { boardImg, validateBody, tokenValidator } from "../middlewares/index.middleware";
 
 const boardRoute = express();
+
+boardRoute.get("/:id", async (req, res, next) => {
+  const id = Number(req.params.id);
+  try{
+    const Notice = await getOneNotice(id);
+    return res.status(200).json({
+      status: 200,
+      msg: "찾아냈습니다.",
+      data: Notice,
+    });
+  }catch(err){
+    next(err)
+  }
+});
+
 boardRoute.post("/jwttest", tokenValidator, (req, res) => {
   console.log("req.body ", req.body);
   return res.json({ data: req.headers });
@@ -35,7 +50,6 @@ boardRoute.post("/", validateBody(CreateBoardDto), async (req, res, next) => {
   }
 });
 
-//
 // 게시글 수정 API
 boardRoute.patch("/:boardId", tokenValidator, async (req, res, next) => {
   const boardId = Number(req.params.boardId);
@@ -60,4 +74,18 @@ boardRoute.patch("/:boardId", tokenValidator, async (req, res, next) => {
   return res.send("zz");
 });
 
+boardRoute.post("/comment/:boardId", tokenValidator, async (req, res, next) => {
+  const userId = req.body.jwtDecoded.id;
+  const boardId = req.params.boardId;
+  const { content } = req.body;
+  const data = {
+    userId,
+    boardId,
+    content,
+  };
+  try {
+  } catch (err) {
+    next(err);
+  }
+});
 export default boardRoute;

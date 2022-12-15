@@ -44,6 +44,9 @@ export class User {
   @Column({ nullable: true, default: null })
   RT: string;
 
+  @Column({ default: 0 })
+  point: number;
+
   @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP" })
   created: Date;
 

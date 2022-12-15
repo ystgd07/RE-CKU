@@ -12,10 +12,7 @@ export class Project {
   projectName: string;
 
   @Column()
-  startDate: string; // YYMM
-
-  @Column()
-  finishDate: string; // YYMM
+  year: string; // YYMM
 
   @Column()
   infomation: string;
