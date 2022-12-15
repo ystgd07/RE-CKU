@@ -13,11 +13,15 @@ const resumeRoute = express();
 resumeRoute.post("/resume", tokenValidator, async (req, res, next) => {
     const data = req.body.jwtDecoded.id;
 
-    const newResume = await createResume(data);
-    console.log(newResume);
-    return res.json({
-        data: newResume,
-    });
+    try {
+        const newResume = await createResume(data);
+
+        return res.json({
+            data: newResume,
+        });
+    } catch (err) {
+        next(err);
+    }
 })
 
 // 2. 내 이력서 목록 조회

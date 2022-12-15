@@ -2,6 +2,7 @@
 import { dataSource, db } from "./index.schema";
 import { positonEnum, Resume } from "./schemas/index.schema";
 
+// 이력서
 // 1. 이력서 (틀) 생성
 export const createResumeQ = async (id: number) => {
     const newResume = await db.query(`INSERT INTO resume(usedUserId) VALUES (?)`, id);
@@ -14,6 +15,32 @@ export const findResumeListQ = async (userId: number) => {
     const myResumeList = await db.query(`SELECT * FROM resume WHERE usedUserId=?`, userId);
 
     return myResumeList;
+};
+
+// 2. 이력서 상세 조회
+export const findResumeQ = async (userId: number, resumeId: number) => {
+    const myResume = await db.query(`SELECT * FROM resume WHERE usedUserId=?`, userId);
+
+    return myResume;
+};
+
+// 업무경험
+// 1. 업무경험 생성
+export const createCareerQ = async (resumeId: number, careerInfo: object) => {
+    //const { company, position, notDevelop, workNow, startDate, endDate, reward } = careerInfo
+
+    const newCareer = await db.query(`INSERT INTO career(
+        usedResume
+        company,
+        position,
+        notDevelop,
+        workNow,
+        startDate,
+        endDate,
+        reward
+    ) VALUES (?,?,?,?,?,?,?)`, [resumeId, careerInfo] );
+
+    return newCareer;
 };
 
 /*

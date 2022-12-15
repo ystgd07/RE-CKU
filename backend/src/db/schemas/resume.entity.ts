@@ -1,6 +1,6 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany, ManyToMany, JoinTable, ManyToOne } from "typeorm";
 import { Board } from "./board.entity";
-import { Carreer } from "./carreer.entity";
+import { Career } from "./career.entity";
 import { Project } from "./project.entity";
 import { ResumeLikeMaping } from "./resumeLikeMaping.entity";
 import { User } from "./user.entity";
@@ -31,8 +31,8 @@ export class Resume {
   @OneToMany((type) => Project, (project) => project.usedResume)
   projects: Project[];
 
-  @OneToMany((type) => Carreer, (carreer) => carreer.usedResume)
-  carreer: Carreer[];
+  @OneToMany((type) => Career, (career) => career.usedResume)
+  career: Career[];
 
   @OneToMany((type) => ResumeLikeMaping, (resume) => resume.resume)
   likesResume: ResumeLikeMaping[];
