@@ -4,7 +4,6 @@ export const ResumeContainer = styled.section`
     background-color: #f9fafb;;
     display: flex;
     justify-content: center;
-
     
 `
 
@@ -67,7 +66,7 @@ export const UserInfo = styled.div`
                         padding-top: 0.5rem;
                         height: 60px;
                         text-indent: 10px;
-                        background-color: #fbfbfd;
+                        background-color: #fff;
                     }
                 }
             }
@@ -150,7 +149,7 @@ export const InputForm = styled.div`
                         & li{
                             display: flex;
                             & dl{
-                                width: 33.3333333%;
+                                width: 50%;
                                 & dt{
                                     font-size: 1.1rem;
                                     font-weight: 400;
@@ -265,8 +264,9 @@ export const InputForm = styled.div`
                                     padding-left: 1rem;
                                     border-left: 1px solid #B0E0E6;
                                     height: unset;
+                                    min-width: 5.2rem;
                                     & label{
-                                        font-size: 1.2rem;
+                                        font-size: 1.1rem;
                                     }
                                 }
 
@@ -284,7 +284,7 @@ export const InputForm = styled.div`
 
                         & textarea{
                             border: 1px solid #B0E0E6;
-                            background-color: #fbfbfd;
+                            background-color: #fff;
                             resize: vertical;
                             width: 100%;
                             padding-left: 1rem;

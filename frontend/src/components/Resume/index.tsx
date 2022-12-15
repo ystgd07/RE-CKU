@@ -46,7 +46,7 @@ const Resume = () => {
                                         <li>
                                             <dl>
                                                 <dt>회사명</dt>
-                                                <dd><input type="text" placeholder="회사 이름을 입력해주세요." /></dd>
+                                                <dd><input type="text" placeholder="회사 이름" /></dd>
                                             </dl>
                                             <dl>
                                                 <dt>직무</dt>
@@ -93,6 +93,11 @@ const Resume = () => {
                                             <textarea maxLength={500} placeholder={`구체적인 역할과 성과 위주의 글을 작성해보세요. \n수치와 함께 표현되면 경험이 잘 전달될 수 있습니다.`}></textarea>
                                         </li>
                                     </ul>
+                                </div>
+
+                                <div>
+                                    <button type="button">취소</button>
+                                    <button type="submit">저장</button>
                                 </div>
                             </form>
                         </section>
@@ -165,9 +170,6 @@ const Resume = () => {
                             <p><input type="text" placeholder="저장소 URL" /></p>
                         </section>
 
-                        <div>
-                            <button type="submit">저장하기</button>
-                        </div>
                     </div>
                 </InputForm>
             </ResumeFrame>
