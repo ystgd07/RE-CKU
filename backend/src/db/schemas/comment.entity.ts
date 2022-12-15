@@ -4,18 +4,18 @@ import { Board } from "./board.entity";
 
 @Entity()
 export class Comment {
-    @PrimaryGeneratedColumn()
-    id: number;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column()
-    content: string;
+  @Column()
+  content: string;
 
-    @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP" })
-    created: Date;
+  @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP" })
+  created: Date;
 
-    @ManyToOne((type) => User, (user) => user.ownComments, { nullable: false })
-    fromUser: User[];
+  @ManyToOne((type) => User, (user) => user.writeComments)
+  user: User[];
 
-    @ManyToOne((type) => Board, (board) => board.id, { nullable: false })
-    fromBoard: Board[];
+  @ManyToOne((type) => Board, (board) => board.ownComments)
+  board: Board[];
 }

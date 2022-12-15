@@ -2,7 +2,7 @@ import bcrypt from "bcrypt";
 import express, { Request, Response, NextFunction } from "express";
 import { authEmail, join, login, sendEmail } from "../services";
 import { validateBody } from "../middlewares/dto-validator";
-import { CreateUserDto, CreateAuthDataDto, AuthEmailDto, LoginUserDto } from "./dto";
+import { CreateUserDto, CreateAuthDataDto, AuthEmailDto, LoginUserDto } from "./dto/index.dto";
 import { random } from "../config/sendMail";
 const userRoute = express();
 
