@@ -4,7 +4,13 @@ import { createIndiUser, findOneAuthData, findOneUser, createAuthData, updateAut
 import { CreateUserDto } from "../routes/dto/index.dto";
 import jwt from "jsonwebtoken";
 import { send } from "../config/sendMail";
-import { EmailAuth } from "../db/schemas/index.schema";
+import { EmailAuth, User } from "../db/schemas/index.schema";
+
+// 유저한명정보 불러오기 섭스
+export const indiInfo = async (id: number): Promise<User> => {
+  const user = await findOneUser(id, "비번빼고");
+  return user;
+};
 
 // 회원가입 서비스
 export const join = async (data: CreateUserDto): Promise<Object> => {
@@ -72,7 +78,6 @@ export const updateInfo = async (id: number, currentPw: string, data: Record<str
   if (data.password) {
     data.password = await bcrypt.hash(data.password, 10);
   }
-  console.log(data.password);
   try {
     await updateUser(id, data);
   } catch (err) {

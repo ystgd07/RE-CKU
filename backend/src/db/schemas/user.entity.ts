@@ -35,7 +35,7 @@ export class User {
   @Column()
   password: string;
 
-  @Column({ default: "" })
+  @Column({ default: "zz" })
   avatarUrl: string;
 
   @Column({ type: "enum", enum: roleEnum, default: roleEnum.bronze })
@@ -43,6 +43,9 @@ export class User {
 
   @Column({ nullable: true, default: null })
   RT: string;
+
+  @Column({ default: 0 })
+  point: number;
 
   @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP" })
   created: Date;

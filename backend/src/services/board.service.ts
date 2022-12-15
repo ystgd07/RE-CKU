@@ -1,4 +1,13 @@
-import { create } from "../db/board.repo";
+import { CreateCommentDto } from "../routes/dto/index.dto";
+import { create, findOneBoard } from "../db/board.repo";
+import { Board } from "../db/schemas/index.schema";
+
+export const getOneNotice = async (id: number): Promise<Board> => {
+  const Notice = await findOneBoard(id);
+  if (!Notice) throw Error("404, 해당 게시물은 존재하지 않습니다.");
+
+  return Notice;
+};
 
 export const postNotice = async (data: Record<string, string | boolean | number>): Promise<string> => {
   if (data.resumeId !== null) {
@@ -18,3 +27,5 @@ export const postNotice = async (data: Record<string, string | boolean | number>
 };
 
 export const updateNotice = async (boardId: number, userId: number, data: Record<string, string | number>) => {};
+
+export const postComment = async (data: CreateCommentDto) => {};
