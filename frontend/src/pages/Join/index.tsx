@@ -4,8 +4,6 @@ import { useDispatch } from "react-redux";
 import axios from 'axios';
 import * as S  from './style';
 import Logo from "assets/images/iogo.png";
-import { EmailAuth } from './../../../../backend/src/db/schemas/email-auth.entity';
-import e from "express";
 
 
 const Join = () => {
