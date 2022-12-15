@@ -6,40 +6,43 @@
 // import { createIndiUser, findOneAuthData, findOneUser, createAuthData, updateAuthData } from "../db/index.schema";
 // import { send } from "../config/sendMail";
 // import { EmailAuth } from "../db/schemas/index.schema";
-import { createResumeQ, findResumeListQ } from "../db/index.schema";
+import { createResumeQ, findResumeListQ, createCareerQ, findCareerQ, createProjectQ } from "../db/index.schema";
 
-// 1. 내 이력서 목록 조회
+// 1. 이력서 생성
+export const createResume = async (id: number): Promise<Object> => {
+  const newResume = await createResumeQ(id);
+
+  return newResume;
+};
+
+// 2. 내 이력서 목록 조회
 export const findResumeList = async (data: any): Promise<Object> => {
-  // 우선 인증을 완료했는지 검증,
-  // const statusVerify = await findOneAuthData(data.email);
-  // if (!statusVerify) throw Error(`404, [${data.email}] 해당 이메일로 진행된 인증절차가 없습니다.`);
-  // if (statusVerify.verify === false && !statusVerify)
-  //     throw Error(`404, [${data.email}] 해당 이메일에 대한 인증 내역을 확인할 수 없습니다.`);
+  const myResumeList = await findResumeListQ(data);
 
-  // 이미 가입한 회원이지 확인,
-  // const overlapUser = await findOneUser(data.email);
-  // if (overlapUser) throw Error("400, 이미 가입한 회원입니다.");
-
-  // 검증끝났으면 만들어!
-  const myResumeList = await findResumeList(data);
   return myResumeList;
 };
 
-// 2. 이력서 생성
-export const createResume = async (id: number): Promise<Object> => {
-  // 우선 인증을 완료했는지 검증,
-  // const statusVerify = await findOneAuthData(data.email);
-  // if (!statusVerify) throw Error(`404, [${data.email}] 해당 이메일로 진행된 인증절차가 없습니다.`);
-  // if (statusVerify.verify === false && !statusVerify)
-  //     throw Error(`404, [${data.email}] 해당 이메일에 대한 인증 내역을 확인할 수 없습니다.`);
+// 업무경험
+// 1. 업무경험 생성
+export const createCareer = async (resumeId: number, careerInfo: Record<string, string | number | boolean>): Promise<Object> => {
+  const newCareer = await createCareerQ(resumeId, careerInfo);
 
-  // 이미 가입한 회원이지 확인,
-  // const overlapUser = await findOneUser(data.email);
-  // if (overlapUser) throw Error("400, 이미 가입한 회원입니다.");
+  return newCareer;
+};
 
-  // 검증끝났으면 만들어!
-  const newResume = await createResumeQ(id);
-  return newResume;
+// 2. 업무경험 조회
+export const findCareer = async (resumeId: number): Promise<Object> => {
+  const careers = await findCareerQ(resumeId);
+
+  return careers;
+};
+
+// 프로젝트
+// 1. 프로젝트 생성
+export const createProject = async (resumeId: number, projectInfo: Record<string, string | number | boolean>): Promise<Object> => {
+  const newProject = await createProjectQ(resumeId, projectInfo);
+
+  return newProject;
 };
 
 /*

@@ -1,6 +1,7 @@
 //import { CreateUserDto } from "src/routes/dto/create-individual.dto";
 import { dataSource, db } from "./index.schema";
 import { positonEnum, Resume } from "./schemas/index.schema";
+import { updateData, insertData } from "./utils/transData";
 
 // 이력서
 // 1. 이력서 (틀) 생성
@@ -26,22 +27,30 @@ export const findResumeQ = async (userId: number, resumeId: number) => {
 
 // 업무경험
 // 1. 업무경험 생성
-export const createCareerQ = async (resumeId: number, careerInfo: object) => {
-    //const { company, position, notDevelop, workNow, startDate, endDate, reward } = careerInfo
+export const createCareerQ = async (resumeId: number, careerInfo: Record<string, string | number | boolean>) => {
+    const [keys, values, arrValues] = insertData(careerInfo);
 
-    const newCareer = await db.query(`INSERT INTO career(
-        usedResume
-        company,
-        position,
-        notDevelop,
-        workNow,
-        startDate,
-        endDate,
-        reward
-    ) VALUES (?,?,?,?,?,?,?)`, [resumeId, careerInfo] );
+    const newCareer = await db.query(`INSERT INTO career (usedResumeId, ${keys.join(", ")}) VALUES (?, ${values.join(",")})`,  [resumeId, ...arrValues]);
 
     return newCareer;
 };
+
+// 2. 업무경험 조회
+export const findCareerQ = async (resumeId: number) => {
+    const Careers = await db.query(`SELECT * FROM career WHERE usedResumeId = ?`, resumeId);
+
+    return Careers;
+};
+
+// 프로젝트
+// 1. 프로젝트 생성
+export const createProjectQ = async (resumeId: number, projectInfo: Record<string, string | number | boolean>) => {
+    const [keys, values, arrValues] = insertData(projectInfo);
+
+    const newProject = await db.query(`INSERT INTO project (usedResumeId, ${keys.join(", ")}) VALUES (?, ${values.join(",")})`,  [resumeId, ...arrValues]);
+
+    return newProject;
+}
 
 /*
 export const findOneUser = async (data: number | string) => {

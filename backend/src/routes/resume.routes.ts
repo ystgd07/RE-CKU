@@ -3,7 +3,7 @@ import express, { Request, Response, NextFunction } from "express";
 import { validateBody } from "../middlewares/dto-validator";
 import {tokenValidator} from "../middlewares/verify-JWT"
 import { CreateUserDto, CreateAuthDataDto, AuthEmailDto, LoginUserDto } from "./dto/index.dto";
-import { findResumeList, createResume } from "../services/index.service";
+import { findResumeList, createResume, createCareer, findCareer, createProject } from "../services/index.service";
 //import { findResumeList } from "../db/resume.repo";
 //import { random } from "../config/sendMail";
 
@@ -11,10 +11,21 @@ const resumeRoute = express();
 
 // 1. 이력서 (틀) 생성
 resumeRoute.post("/resume", tokenValidator, async (req, res, next) => {
-    const data = req.body.jwtDecoded.id;
+    const userId = req.body.jwtDecoded.id;
+    let resumeName = [];
 
     try {
-        const newResume = await createResume(data);
+        const myResumeList = await findResumeList(userId);
+
+        for (let i=0; i<myResumeList[0].length; i++) {
+            const [name, num] = myResumeList[0][i].name.split(" ");
+
+            if (name == '')
+            resumeName.push(myResumeList[0][i].name)
+        }
+        console.log(resumeName)
+        return
+        const newResume = await createResume(userId);
 
         return res.json({
             data: newResume,
@@ -40,6 +51,56 @@ resumeRoute.get("/myportfolio/list", tokenValidator, async (req: Request, res: R
         next(err);
     }
 });
+
+// 업무경험
+// 1. 업무경험 생성
+resumeRoute.post("/resume/career/:resumeId", async (req, res, next) => {
+    const resumeId = Number(req.params.resumeId);
+    const careerInfo = req.body
+
+    try {
+        const newCareer = await createCareer(resumeId, careerInfo);
+
+        return res.json({
+            data: newCareer,
+        });
+    } catch (err) {
+        next(err);
+    }
+})
+
+// 2. 업무경험 조회
+resumeRoute.get("/resume/career/:resumeId", async (req, res, next) => {
+    const resumeId = Number(req.params.resumeId);
+
+    try {
+        const Careers = await findCareer(resumeId);
+
+        return res.json({
+            data: Careers[0],
+        });
+    } catch (err) {
+        next(err);
+    }
+})
+
+// 프로젝트
+// 1. 프로젝트 생성
+resumeRoute.post("/resume/project/:resumeId", async (req, res, next) => {
+    const resumeId = Number(req.params.resumeId);
+    const projectInfo = req.body
+
+    try {
+        const newProject = await createProject(resumeId, projectInfo);
+
+        return res.json({
+            data: newProject,
+        });
+    } catch (err) {
+        next(err);
+    }
+})
+
 
 /*
 // 로그인 서비스
