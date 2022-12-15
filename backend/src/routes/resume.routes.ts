@@ -3,7 +3,7 @@ import express, { Request, Response, NextFunction } from "express";
 import { validateBody } from "../middlewares/dto-validator";
 import { CreateUserDto, CreateAuthDataDto, AuthEmailDto, LoginUserDto } from "./dto/index.dto";
 import { authEmail, join, login, sendEmail } from "../services/index.service";
-import { createIndiUser, findOneUser } from "../db/resume.repo";
+import { findResumeList } from "../db/resume.repo";
 //import { random } from "../config/sendMail";
 
 const resumeRoute = express();
