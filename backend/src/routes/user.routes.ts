@@ -11,6 +11,7 @@ const userRoute = express();
 // 개인 회원가입 라우트
 userRoute.post("/individual", validateBody(CreateUserDto), async (req: Request, res: Response, next: NextFunction) => {
   const { username, email, phoneNumber, password } = req.body;
+  console.log(req.body)
   console.log("들어옴?");
   // hash 화 된 비번
   const hashedPassword = await bcrypt.hash(password, 10);
