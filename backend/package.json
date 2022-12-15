@@ -17,23 +17,26 @@
   "author": "team 6",
   "license": "ISC",
   "dependencies": {
+    "@types/multer": "^1.4.7",
+    "bcrypt": "^5.1.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
-    "mysql": "^2.18.1",
-    "reflect-metadata": "^0.1.13",
-    "typeorm": "^0.3.11",
-    "bcrypt": "^5.1.0",
     "jsonwebtoken": "^8.5.1",
-    "nodemailer": "^6.8.0"
+    "multer": "^1.4.5-lts.1",
+    "mysql": "^2.18.1",
+    "mysql2": "^2.3.3",
+    "nodemailer": "^6.8.0",
+    "reflect-metadata": "^0.1.13",
+    "typeorm": "^0.3.11"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.0",
-    "@types/jsonwebtoken": "^8.5.9",
-    "@types/nodemailer": "^6.4.6",
     "@types/express": "^4.17.14",
+    "@types/jsonwebtoken": "^8.5.9",
     "@types/mysql": "^2.15.21",
+    "@types/nodemailer": "^6.4.6",
     "nodemon": "^2.0.20",
     "ts-node": "^10.9.1",
     "typescript": "^4.9.4"

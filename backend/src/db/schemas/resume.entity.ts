@@ -1,31 +1,32 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany, ManyToMany, JoinTable, ManyToOne } from "typeorm";
+import { Board } from "./board.entity";
 import { Carreer } from "./carreer.entity";
 import { Project } from "./project.entity";
 import { ResumeLikeMaping } from "./resumeLikeMaping.entity";
 import { User } from "./user.entity";
 
 export enum positonEnum {
-  BE = "백엔드",
-  FE = "프론트엔드",
-  PM = "프로덕트매니저",
-  FS = "풀스택",
+  BE = "BE",
+  FE = "FE",
+  PM = "PM",
+  FS = "FS",
 }
 @Entity()
 export class Resume {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ nullable: true })
   name: string;
 
-  @Column({ length: 200 })
+  @Column({ nullable: true, length: 200 })
   infomation: string;
 
-  @Column({ type: "varchar" })
-  year: string;
-
-  @Column()
+  @Column({ nullable: true })
   position: positonEnum;
+
+  @OneToMany((type) => Board, (board) => board.hasResume)
+  usedBoards: Board[];
 
   @OneToMany((type) => Project, (project) => project.usedResume)
   projects: Project[];
