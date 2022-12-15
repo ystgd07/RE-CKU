@@ -35,6 +35,9 @@ export class User {
   @Column()
   password: string;
 
+  @Column({ default: "" })
+  avatarUrl: string;
+
   @Column({ type: "enum", enum: roleEnum, default: roleEnum.bronze })
   role: roleEnum;
 
