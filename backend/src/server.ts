@@ -20,7 +20,6 @@ app.use(express.urlencoded({ extended: false }));
 
 // routes
 app.use("/users", userRoute);
-app.use("/board", userRoute);
 app.use("/myportpolio", resumeRoute);
 app.use("/boards", boardRoute);
 
