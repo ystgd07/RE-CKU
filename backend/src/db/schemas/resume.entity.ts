@@ -25,6 +25,9 @@ export class Resume {
   @Column({ nullable: true })
   position: positonEnum;
 
+  @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP" })
+  updatedAt: Date;
+
   @OneToMany((type) => Board, (board) => board.hasResume)
   usedBoards: Board[];
 

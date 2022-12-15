@@ -11,46 +11,51 @@ export const createResumeQ = async (id: number, newName: string) => {
     return newResume;
 };
 
-// 2. 내 이력서 목록 조회
+// 2-2. 내 이력서 목록 조회
 export const findResumeListQ = async (userId: number) => {
     const myResumeList = await db.query(`SELECT * FROM resume WHERE usedUserId=?`, userId);
 
     return myResumeList;
 };
 
-// 2. 이력서 상세 조회
-export const findResumeQ = async (userId: number, resumeId: number) => {
-    const myResume = await db.query(`SELECT * FROM resume WHERE usedUserId=?`, userId);
+// 2-3. 이력서 상세 조회
+export const findResumeQ = async (resumeId: number) => {
+    const myResume = await db.query(`SELECT * FROM resume A JOIN user B ON A.usedUserId = B.id JOIN project C ON A.id = C.usedResumeId WHERE A.id = ?`, resumeId);
 
     return myResume;
 };
 
 // 업무경험
-// 1. 업무경험 생성
-export const createCareerQ = async (resumeId: number, careerInfo: Record<string, string | number | boolean>) => {
-    const [keys, values, arrValues] = insertData(careerInfo);
+// 1. 업무경험 / 프로젝트 생성
+export const createDetailQ = async (resumeId: number, createInfo: Record<string, string | number | boolean>, dbname: string) => {
+    const [keys, values, arrValues] = insertData(createInfo);
 
-    const newCareer = await db.query(`INSERT INTO career (usedResumeId, ${keys.join(", ")}) VALUES (?, ${values.join(",")})`,  [resumeId, ...arrValues]);
+    const newCareer = await db.query(`INSERT INTO ${dbname} (usedResumeId, ${keys.join(", ")}) VALUES (?, ${values.join(",")})`,  [resumeId, ...arrValues]);
 
     return newCareer;
 };
 
-// 2. 업무경험 조회
-export const findCareerQ = async (resumeId: number) => {
-    const Careers = await db.query(`SELECT * FROM career WHERE usedResumeId = ?`, resumeId);
+// 2. 업무경험 / 프로젝트 조회
+export const findDetailQ = async (detailId: number, dbname: string, type: string) => {
+    if (type == "all") {
+        if (dbname == "resume") {
+            const details = await db.query(`SELECT * FROM ${dbname} WHERE id = ?`, detailId);
 
-    return Careers;
+            return details;
+        }
+        const details = await db.query(`SELECT * FROM ${dbname} WHERE usedResumeId = ?`, detailId);
+
+        return details;
+    } else {
+        const details = await db.query(`SELECT *
+                                        FROM ${dbname}
+                                        WHERE id = ?`, detailId);
+
+        return details;
+    }
+
+    // return details;
 };
-
-// 프로젝트
-// 1. 프로젝트 생성
-export const createProjectQ = async (resumeId: number, projectInfo: Record<string, string | number | boolean>) => {
-    const [keys, values, arrValues] = insertData(projectInfo);
-
-    const newProject = await db.query(`INSERT INTO project (usedResumeId, ${keys.join(", ")}) VALUES (?, ${values.join(",")})`,  [resumeId, ...arrValues]);
-
-    return newProject;
-}
 
 /*
 export const findOneUser = async (data: number | string) => {

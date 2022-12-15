@@ -6,7 +6,7 @@
 // import { createIndiUser, findOneAuthData, findOneUser, createAuthData, updateAuthData } from "../db/index.schema";
 // import { send } from "../config/sendMail";
 // import { EmailAuth } from "../db/schemas/index.schema";
-import { createResumeQ, findResumeListQ, createCareerQ, findCareerQ, createProjectQ } from "../db/index.schema";
+import { createResumeQ, findResumeListQ, findResumeQ, createDetailQ, findDetailQ } from "../db/index.schema";
 
 // 1. 이력서 생성
 export const createResume = async (id: number, newName: string): Promise<Object> => {
@@ -15,34 +15,33 @@ export const createResume = async (id: number, newName: string): Promise<Object>
   return newResume;
 };
 
-// 2. 내 이력서 목록 조회
+// 2-2. 내 이력서 목록 조회
 export const findResumeList = async (data: any): Promise<Object> => {
   const myResumeList = await findResumeListQ(data);
 
   return myResumeList;
 };
 
-// 업무경험
-// 1. 업무경험 생성
-export const createCareer = async (resumeId: number, careerInfo: Record<string, string | number | boolean>): Promise<Object> => {
-  const newCareer = await createCareerQ(resumeId, careerInfo);
+// 2-3. 이력서 상세 조회
+export const findResume = async (resumeId: number): Promise<Object> => {
+  const findResume = await findResumeQ(resumeId);
 
-  return newCareer;
+  return findResume;
 };
 
-// 2. 업무경험 조회
-export const findCareer = async (resumeId: number): Promise<Object> => {
-  const careers = await findCareerQ(resumeId);
+// 업무경험 / 프로젝트
+// 1. 생성
+export const createDetail = async (resumeId: number, createInfo: Record<string, string | number | boolean>, dbname: string): Promise<Object> => {
+  const newDetail = await createDetailQ(resumeId, createInfo, dbname);
 
-  return careers;
+  return newDetail;
 };
 
-// 프로젝트
-// 1. 프로젝트 생성
-export const createProject = async (resumeId: number, projectInfo: Record<string, string | number | boolean>): Promise<Object> => {
-  const newProject = await createProjectQ(resumeId, projectInfo);
+// 2. 조회
+export const findDetail = async (detailId: number, dbname: string, type: string): Promise<Object> => {
+  const details = await findDetailQ(detailId, dbname, type);
 
-  return newProject;
+  return details;
 };
 
 /*

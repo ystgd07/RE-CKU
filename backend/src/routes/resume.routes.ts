@@ -3,7 +3,7 @@ import express, { Request, Response, NextFunction } from "express";
 import { validateBody } from "../middlewares/dto-validator";
 import {tokenValidator} from "../middlewares/verify-JWT"
 import { CreateUserDto, CreateAuthDataDto, AuthEmailDto, LoginUserDto } from "./dto/index.dto";
-import { indiInfo, findResumeList, createResume, createCareer, findCareer, createProject } from "../services/index.service";
+import { indiInfo, findResumeList, findResume, createResume, createDetail, findDetail } from "../services/index.service";
 import {isNumber} from "class-validator";
 //import { findResumeList } from "../db/resume.repo";
 //import { random } from "../config/sendMail";
@@ -34,6 +34,8 @@ resumeRoute.post("/resume", tokenValidator, async (req, res, next) => {
         const newResume = await createResume(userId, newName);
 
         return res.json({
+            status: 201,
+            msg: "이력서 생성 성공",
             data: newResume,
         });
     } catch (err) {
@@ -41,7 +43,7 @@ resumeRoute.post("/resume", tokenValidator, async (req, res, next) => {
     }
 })
 
-// 2. 내 이력서 목록 조회
+// 2-2. 내 이력서 목록 조회
 resumeRoute.get("/myportfolio/list", tokenValidator, async (req: Request, res: Response, next: NextFunction) => { // validateBody(CreateUserDto),
     const userId = req.body.jwtDecoded.id;
 
@@ -58,6 +60,26 @@ resumeRoute.get("/myportfolio/list", tokenValidator, async (req: Request, res: R
     }
 });
 
+// 2-3. 이력서 상세 조회
+resumeRoute.get("/resume/:resumeId", tokenValidator, async (req: Request, res: Response, next: NextFunction) => { // validateBody(CreateUserDto),
+    const resumeId = Number(req.params.resumeId);
+
+    try {
+        // const resumes = await findResume(resumeId);
+        const resumes = await findDetail(resumeId, "resume", "all");
+        const careers = await findDetail(resumeId, "career", "all");
+        const projects = await findDetail(resumeId, "project", "all");
+
+        return res.json({
+            resumeData: resumes[0],
+            careerData: careers[0],
+            projectData: projects[0]
+        });
+    } catch (err) {
+        next(err);
+    }
+});
+
 // 업무경험
 // 1. 업무경험 생성
 resumeRoute.post("/resume/career/:resumeId", async (req, res, next) => {
@@ -65,7 +87,7 @@ resumeRoute.post("/resume/career/:resumeId", async (req, res, next) => {
     const careerInfo = req.body
 
     try {
-        const newCareer = await createCareer(resumeId, careerInfo);
+        const newCareer = await createDetail(resumeId, careerInfo, "career");
 
         return res.json({
             data: newCareer,
@@ -75,15 +97,15 @@ resumeRoute.post("/resume/career/:resumeId", async (req, res, next) => {
     }
 })
 
-// 2. 업무경험 조회
-resumeRoute.get("/resume/career/:resumeId", async (req, res, next) => {
-    const resumeId = Number(req.params.resumeId);
+// 2. 업무경험 조회 (하나)
+resumeRoute.get("/resume/career/:careerId", async (req, res, next) => {
+    const careerId = Number(req.params.careerId);
 
     try {
-        const Careers = await findCareer(resumeId);
+        const careers = await findDetail(careerId, "career", "one");
 
         return res.json({
-            data: Careers[0],
+            data: careers[0],
         });
     } catch (err) {
         next(err);
@@ -97,7 +119,7 @@ resumeRoute.post("/resume/project/:resumeId", async (req, res, next) => {
     const projectInfo = req.body
 
     try {
-        const newProject = await createProject(resumeId, projectInfo);
+        const newProject = await createDetail(resumeId, projectInfo, "project");
 
         return res.json({
             data: newProject,
@@ -107,6 +129,20 @@ resumeRoute.post("/resume/project/:resumeId", async (req, res, next) => {
     }
 })
 
+// 2. 프로젝트 조회 (하나)
+resumeRoute.get("/resume/project/:resumeId", async (req, res, next) => {
+    const resumeId = Number(req.params.resumeId);
+
+    try {
+        const projects = await findDetail(resumeId, "project", "one");
+
+        return res.json({
+            data: projects[0],
+        });
+    } catch (err) {
+        next(err);
+    }
+})
 
 /*
 // 로그인 서비스
