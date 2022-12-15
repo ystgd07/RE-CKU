@@ -3,7 +3,8 @@ import express, { Request, Response, NextFunction } from "express";
 import { validateBody } from "../middlewares/dto-validator";
 import {tokenValidator} from "../middlewares/verify-JWT"
 import { CreateUserDto, CreateAuthDataDto, AuthEmailDto, LoginUserDto } from "./dto/index.dto";
-import { findResumeList, createResume, createCareer, findCareer, createProject } from "../services/index.service";
+import { indiInfo, findResumeList, createResume, createCareer, findCareer, createProject } from "../services/index.service";
+import {isNumber} from "class-validator";
 //import { findResumeList } from "../db/resume.repo";
 //import { random } from "../config/sendMail";
 
@@ -12,20 +13,25 @@ const resumeRoute = express();
 // 1. 이력서 (틀) 생성
 resumeRoute.post("/resume", tokenValidator, async (req, res, next) => {
     const userId = req.body.jwtDecoded.id;
-    let resumeName = [];
+    const userInfo = await indiInfo(userId);
+
+    let resumeNameNum = [];
 
     try {
         const myResumeList = await findResumeList(userId);
 
         for (let i=0; i<myResumeList[0].length; i++) {
-            const [name, num] = myResumeList[0][i].name.split(" ");
+            const spl = myResumeList[0][i].name.split(" ");
 
-            if (name == '')
-            resumeName.push(myResumeList[0][i].name)
+            if (spl.length == 2 && spl[0] == userInfo.username && isNumber(Number(spl[1]))) {
+                resumeNameNum.push(Number(spl[1]));
+            }
+
         }
-        console.log(resumeName)
-        return
-        const newResume = await createResume(userId);
+
+        const newName = `${userInfo.username} ${Math.max(...resumeNameNum) + 1}`
+
+        const newResume = await createResume(userId, newName);
 
         return res.json({
             data: newResume,

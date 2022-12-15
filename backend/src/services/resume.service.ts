@@ -9,8 +9,8 @@
 import { createResumeQ, findResumeListQ, createCareerQ, findCareerQ, createProjectQ } from "../db/index.schema";
 
 // 1. 이력서 생성
-export const createResume = async (id: number): Promise<Object> => {
-  const newResume = await createResumeQ(id);
+export const createResume = async (id: number, newName: string): Promise<Object> => {
+  const newResume = await createResumeQ(id, newName);
 
   return newResume;
 };

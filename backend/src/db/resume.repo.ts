@@ -5,8 +5,8 @@ import { updateData, insertData } from "./utils/transData";
 
 // 이력서
 // 1. 이력서 (틀) 생성
-export const createResumeQ = async (id: number) => {
-    const newResume = await db.query(`INSERT INTO resume(usedUserId) VALUES (?)`, id);
+export const createResumeQ = async (id: number, newName: string) => {
+    const newResume = await db.query(`INSERT INTO resume(usedUserId, name) VALUES (?,?)`, [id, newName]);
 
     return newResume;
 };
