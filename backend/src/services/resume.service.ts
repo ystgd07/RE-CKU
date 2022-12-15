@@ -6,7 +6,7 @@
 // import { createIndiUser, findOneAuthData, findOneUser, createAuthData, updateAuthData } from "../db/index.schema";
 // import { send } from "../config/sendMail";
 // import { EmailAuth } from "../db/schemas/index.schema";
-import { createResumeQ } from "../db/index.schema";
+import { createResumeQ, findResumeListQ } from "../db/index.schema";
 
 // 1. 내 이력서 목록 조회
 export const findResumeList = async (data: any): Promise<Object> => {

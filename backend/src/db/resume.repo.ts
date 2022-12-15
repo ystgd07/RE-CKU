@@ -2,26 +2,18 @@
 import { dataSource, db } from "./index.schema";
 import { positonEnum, Resume } from "./schemas/index.schema";
 
-export const findResumeList = async (data: any) => {
-    // let user = null;
-    // 파라미터로 들어온 data 값이 num이면 id로 찾고, 아니면 email로 찾음
-    // switch (typeof data) {
-    //     case "string":
-    //         user = await db.query(`SELECT * FROM user WHERE email=?`, [data]);
-    //         break;
-    //     default:
-    //         // user = await dataSource.getRepository(User).findOne({ where: { id: data } });
-    //         user = await db.query(`SELECT * FROM user WHERE id=?`, [data]);
-    // }
-    const myresume = await db.query(`SELECT * FROM resume WHERE id=?`, 1122);
-    console.log(myresume)
-    return true;
-};
-
+// 1. 이력서 (틀) 생성
 export const createResumeQ = async (id: number) => {
     const newResume = await db.query(`INSERT INTO resume(usedUserId) VALUES (?)`, id);
 
     return newResume;
+};
+
+// 2. 내 이력서 목록 조회
+export const findResumeListQ = async (userId: number) => {
+    const myResumeList = await db.query(`SELECT * FROM resume WHERE usedUserId=?`, userId);
+
+    return myResumeList;
 };
 
 /*

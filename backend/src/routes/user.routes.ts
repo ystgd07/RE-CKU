@@ -106,7 +106,7 @@ userRoute.post("/email/auth", validateBody(AuthEmailDto), async (req, res, next)
   }
 });
 
-// 비밀번호 찾기 라우트
+// 임시 비번 보내기 라우트
 userRoute.post("/password", validateBody(CreateAuthDataDto), async (req, res, next) => {
   const { email } = req.body;
   try {
