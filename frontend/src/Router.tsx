@@ -3,10 +3,10 @@ import Main from 'pages/Main';
 import Login from 'pages/Login';
 import Resume from 'components/Resume/index';
 // import CreatePost from 'pages/CreatePost';
-import Join from './pages/Join';
-import FindPw from './pages/FindPw';
-import MyPortfolio from "./pages/MyPortfolio";
-import Profile from "./pages/Profile";
+import Join from 'pages/Join';
+import FindPw from 'pages/FindPw';
+import MyPortfolio from "pages/MyPortfolio";
+import Profile from "pages/Profile";
 
 const Router = () => {
    return (
