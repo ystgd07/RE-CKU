@@ -1,4 +1,4 @@
-export * from "./carreer.entity";
+export * from "./career.entity";
 // export * from "./company.entity";
 export * from "./project.entity";
 export * from "./resume.entity";

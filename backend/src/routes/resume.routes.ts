@@ -9,41 +9,37 @@ import { findResumeList, createResume } from "../services/index.service";
 
 const resumeRoute = express();
 
-// 1. 내 이력서 목록 조회
-resumeRoute.get("/myportfolio/list", async (req: Request, res: Response, next: NextFunction) => { // validateBody(CreateUserDto),
-    const { id } = req.body;
-
-    // hash 화 된 비번
-    // const hashedPassword = await bcrypt.hash(password, 10);
-    // const data = {
-    //     username,
-    //     email,
-    //     phoneNumber,
-    //     password: hashedPassword,
-    // };
+// 1. 이력서 (틀) 생성
+resumeRoute.post("/resume", tokenValidator, async (req, res, next) => {
+    const data = req.body.jwtDecoded.id;
 
     try {
-        const success = await findResumeList(id);
+        const newResume = await createResume(data);
+
+        return res.json({
+            data: newResume,
+        });
+    } catch (err) {
+        next(err);
+    }
+})
+
+// 2. 내 이력서 목록 조회
+resumeRoute.get("/myportfolio/list", tokenValidator, async (req: Request, res: Response, next: NextFunction) => { // validateBody(CreateUserDto),
+    const userId = req.body.jwtDecoded.id;
+
+    try {
+        const success = await findResumeList(userId);
+
         return res.status(200).json({
             status: 200,
             msg: "내 이력서 목록 조회 성공",
-            data: success,
+            data: success[0],
         });
     } catch (err) {
         next(err);
     }
 });
-
-// 2. 이력서 생성
-resumeRoute.post("/resume", tokenValidator, async (req, res, next) => {
-    const data = req.body.jwtDecoded.id;
-
-    const newResume = await createResume(data);
-    console.log(newResume);
-    return res.json({
-        data: newResume,
-    });
-})
 
 /*
 // 로그인 서비스

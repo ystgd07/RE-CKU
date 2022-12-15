@@ -5,8 +5,7 @@ import { updateData, insertData } from "./utils/transData";
 
 export const create = async (data: Record<string, string | number | boolean>): Promise<boolean> => {
   console.log("서비스가 받아온 data : ", data);
-  const [keys, values, keyValue, valueValue] = insertData(data);
-  console.log(`INSERT INTO board(${keys}) VALUES(${values})`, [...keyValue, ...valueValue]);
-  await db.query(`INSERT INTO board(${keys}) VALUES(${values})`, [...keyValue, ...valueValue]);
+  const [keys, values, arrValues] = insertData(data);
+  await db.query(`INSERT INTO board (${keys.join(", ")}) VALUES (${values.join(",")})`, [...arrValues]);
   return true;
 };

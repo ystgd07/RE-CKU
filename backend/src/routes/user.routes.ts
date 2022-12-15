@@ -1,16 +1,16 @@
 import bcrypt from "bcrypt";
 import express, { Request, Response, NextFunction } from "express";
-import { authEmail, join, login, sendEmail } from "../services/index.service";
-import { validateBody } from "../middlewares/dto-validator";
+import { authEmail, findPassword, join, login, sendEmail, updateInfo } from "../services/index.service";
 import { CreateUserDto, CreateAuthDataDto, AuthEmailDto, LoginUserDto } from "./dto/index.dto";
 import { random } from "../config/sendMail";
-import { createIndiUser, findOneUser } from "../db/user.repo";
+import { createIndiUser } from "../db/user.repo";
+import { avatarImg, tokenValidator, validateBody } from "../middlewares/index.middleware";
 const userRoute = express();
 
 // 개인 회원가입 라우트
 userRoute.post("/individual", validateBody(CreateUserDto), async (req: Request, res: Response, next: NextFunction) => {
   const { username, email, phoneNumber, password } = req.body;
-  console.log(req.body)
+  console.log(req.body);
   console.log("들어옴?");
   // hash 화 된 비번
   const hashedPassword = await bcrypt.hash(password, 10);
@@ -32,8 +32,7 @@ userRoute.post("/individual", validateBody(CreateUserDto), async (req: Request, 
   }
 });
 
-// 로그인 서비스
-// 비밀
+// 로그인 라우트
 userRoute.post("/", validateBody(LoginUserDto), async (req, res, next) => {
   const { email, password } = req.body;
   try {
@@ -43,6 +42,36 @@ userRoute.post("/", validateBody(LoginUserDto), async (req, res, next) => {
       msg: "로그인 성공",
       accessToken: success.accessToken,
       refreshToken: success.refreshToken,
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// 개인정보 수정 라우트
+userRoute.patch("/", tokenValidator, avatarImg.single("image"), async (req, res, next) => {
+  const id = Number(req.body.jwtDecoded.id);
+  const currentPw = req.body.currentPw;
+  if (!currentPw) next(new Error("400, 기존 비밀번호를 입력하세요."));
+  const password = req.body.password;
+  const phoneNumber = req.body.phoneNumber;
+  let avatarUrl = "";
+  if (req.file) {
+    avatarUrl = req.file.path;
+  }
+  console.log("아바타 유알엘", avatarUrl);
+  // const avatarUrl = req.body.avatarUrl;
+  const toUpdate = {
+    ...(password && { password }),
+    ...(phoneNumber && { phoneNumber }),
+    // ...(avatarUrl && { avatarUrl }),
+  };
+  console.log(toUpdate);
+  try {
+    const update = await updateInfo(id, currentPw, toUpdate);
+    return res.status(200).json({
+      status: 200,
+      msg: "회원정보가 수정되었습니다.",
     });
   } catch (err) {
     next(err);
@@ -67,6 +96,7 @@ userRoute.post("/email", validateBody(CreateAuthDataDto), async (req, res, next)
     next(err);
   }
 });
+
 // 회원가입시 이메일 인증하는 라우트
 userRoute.post("/email/auth", validateBody(AuthEmailDto), async (req, res, next) => {
   try {
@@ -80,6 +110,22 @@ userRoute.post("/email/auth", validateBody(AuthEmailDto), async (req, res, next)
     next(err);
   }
 });
+
+// 임시 비번 보내기 라우트
+userRoute.post("/password", validateBody(CreateAuthDataDto), async (req, res, next) => {
+  const { email } = req.body;
+  try {
+    const newPassword = await findPassword(email);
+    return res.status(200).json({
+      status: 200,
+      msg: `임시 비밀번호가 ${email}로 발송되었습니다.`,
+      data: newPassword, // 배포시 수정 -삭제
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
 userRoute.post("/zz", async (req, res, next) => {
   const data = req.body;
   const zz = await createIndiUser(data);
