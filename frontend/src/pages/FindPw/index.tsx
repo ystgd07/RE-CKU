@@ -10,13 +10,23 @@ import Logo from "assets/images/iogo.png";
 const FindPw = () => {
 
    const [Email, setEmail] = useState("");
-   
-   const onSubmitHandler = (e : any) => {
+   const navigate = useNavigate();
+
+   const onSubmitHandler =  async (e : any) => {
       e.preventDefault();
+      try {
 
+         const res = await axios.post("/", );
+         console.log(res, '성공')
 
-      
-      // dispatch();
+         alert("회원가입이 완료되었습니다.");
+         navigate('/login');
+
+      } catch (err : any)  {
+         console.error(err.stack);
+         
+      }
+
    };
 
    return (

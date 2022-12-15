@@ -15,15 +15,19 @@ const Join = () => {
    const [passwordCheck, setPasswordCheck] = useState("");
    const [name, setName] = useState("");
    const [phone, setPhone] = useState("");
-   const [confirm, setConfirm] = useState("");
+   const [code, setCode] = useState("");
 
    const navigate = useNavigate();
    const data = {
       email: email,
       password: password,
-      name : name,
-      phone : phone,
-      code : confirm,
+      username : name,
+      phoneNumber : phone,
+   }
+
+   const data2 = {
+      email: email,
+      code : Number(code),
    }
 
 
@@ -51,10 +55,6 @@ const Join = () => {
             const res = await axios.post("/users/email",{ email } );
             console.log(res, '성공')
 
-         // const reqConfirm = res.data.data
-
-         // reqConfirm === 
-
          } catch (err : any)  {
             console.error(err.stack);
             
@@ -64,13 +64,16 @@ const Join = () => {
 
    const emailAuth = async (e : any ) => {
       e.preventDefault();
-      console.log('data', data);
+      console.log('data', data2);
       
       try {
-         const res = await axios.post("/email/auth", data );
+         const res = await axios.post("/users/email/auth", data2 );
          console.log(res, '성공')
 
-         // const reqConfirm = res.data.data
+         const reqConfirm = res.data.msg
+
+         sessionStorage.setItem("reqConfirm", reqConfirm);
+         sessionStorage.setItem("email", email);
 
       } catch (err : any)  {
          console.error(err.stack);
@@ -90,10 +93,16 @@ const Join = () => {
 
    const errjoin = () => {
          
-         if(!(email && password && passwordCheck && name &&  phone && confirm) ){
+         if(!(email && password && passwordCheck && name &&  phone && code) ){
             return { display: "none" } 
          }
          if(( password !== passwordCheck)){
+            return { display: "none" }
+         }
+         if(!(email === sessionStorage.getItem('email'))){
+            return { display: "none" }
+         }
+         if(!(sessionStorage.getItem('reqConfirm'))){
             return { display: "none" }
          }
    }
@@ -109,7 +118,7 @@ const Join = () => {
                   <input type="email" value={email} placeholder='이메일 입력' onChange={e => {setEmail(e.currentTarget.value)}}/>
                      <button onClick={sendEmail} >인증번호 보내기</button>
                   <div style={{ display: "flex" ,textAlign: "left" }}>
-                     <input placeholder='인증번호를 입력해주세요' value={confirm} onChange={e => {setConfirm(e.currentTarget.value)}}></input>
+                     <input placeholder='인증번호를 입력해주세요' value={code} onChange={e => {setCode(e.currentTarget.value)}}></input>
                   <button onClick={emailAuth}>인증하기</button>
                   </div>
                   <p>비밀번호</p>

@@ -4,6 +4,7 @@ import { authEmail, join, login, sendEmail } from "../services/index.service";
 import { validateBody } from "../middlewares/dto-validator";
 import { CreateUserDto, CreateAuthDataDto, AuthEmailDto, LoginUserDto } from "./dto/index.dto";
 import { random } from "../config/sendMail";
+import { createIndiUser, findOneUser } from "../db/user.repo";
 const userRoute = express();
 
 // 개인 회원가입 라우트
@@ -32,6 +33,7 @@ userRoute.post("/individual", validateBody(CreateUserDto), async (req: Request, 
 });
 
 // 로그인 서비스
+// 비밀
 userRoute.post("/", validateBody(LoginUserDto), async (req, res, next) => {
   const { email, password } = req.body;
   try {
@@ -67,8 +69,8 @@ userRoute.post("/email", validateBody(CreateAuthDataDto), async (req, res, next)
 });
 // 회원가입시 이메일 인증하는 라우트
 userRoute.post("/email/auth", validateBody(AuthEmailDto), async (req, res, next) => {
-  const { email, code } = req.body;
   try {
+    const { email, code } = req.body;
     await authEmail(email, code);
     return res.status(200).json({
       status: 200,
@@ -78,5 +80,12 @@ userRoute.post("/email/auth", validateBody(AuthEmailDto), async (req, res, next)
     next(err);
   }
 });
-
+userRoute.post("/zz", async (req, res, next) => {
+  const data = req.body;
+  const zz = await createIndiUser(data);
+  console.log(zz);
+  return res.json({
+    data: zz,
+  });
+});
 export default userRoute;
