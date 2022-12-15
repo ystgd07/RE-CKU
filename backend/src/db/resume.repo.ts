@@ -18,6 +18,12 @@ export const findResumeList = async (data: any) => {
     return true;
 };
 
+export const createResumeQ = async (id: number) => {
+    const newResume = await db.query(`INSERT INTO resume(usedUserId) VALUES (?)`, id);
+
+    return newResume;
+};
+
 /*
 export const findOneUser = async (data: number | string) => {
     let user = null;

@@ -54,16 +54,7 @@ export const login = async (email: string, password: string) => {
     process.env.JWT_SECRET_KEY || "secret",
     { expiresIn: 60 * 60 * 24 }
   );
-  const data = {
-    username: "우두루",
-    phoneNumber: "0000",
-    RT: refreshToken,
-  };
-  try {
-    await updateUser(user.id, data);
-  } catch (err) {
-    throw Error("500, DB에러");
-  }
+
   // 옵젝으로 묶어서 리턴
   const result = {
     accessToken,

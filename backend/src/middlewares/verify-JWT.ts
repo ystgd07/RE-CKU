@@ -13,7 +13,7 @@ export const tokenValidator: RequestHandler = (req, res, next) => {
   try {
     const secretKey = process.env.JWT_SECRET_KEY || "secret";
     const jwtDecoded = jwt.verify(userToken, secretKey);
-    req.body = jwtDecoded;
+    req.body = { ...req.body, jwtDecoded };
     next();
   } catch (error) {
     // jwt.verify 함수가 에러를 발생시키는 경우는 토큰이 정상적으로 decode 안되었을 경우임.

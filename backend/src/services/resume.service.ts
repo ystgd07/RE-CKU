@@ -1,11 +1,12 @@
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
+//import bcrypt from "bcrypt";
+//import jwt from "jsonwebtoken";
 
-import { CreateUserDto } from "../routes/dto/index.dto";
-import { dataSource, updateUser } from "../db/index.schema";
-import { createIndiUser, findOneAuthData, findOneUser, createAuthData, updateAuthData } from "../db/index.schema";
+//import { CreateUserDto } from "../routes/dto/index.dto";
+// import { dataSource, updateUser } from "../db/index.schema";
+// import { createIndiUser, findOneAuthData, findOneUser, createAuthData, updateAuthData } from "../db/index.schema";
 // import { send } from "../config/sendMail";
 // import { EmailAuth } from "../db/schemas/index.schema";
+import { createResumeQ } from "../db/index.schema";
 
 // 1. 내 이력서 목록 조회
 export const findResumeList = async (data: any): Promise<Object> => {
@@ -22,6 +23,23 @@ export const findResumeList = async (data: any): Promise<Object> => {
     // 검증끝났으면 만들어!
     const myResumeList = await findResumeList(data);
     return myResumeList;
+};
+
+// 2. 이력서 생성
+export const createResume = async (id: number): Promise<Object> => {
+    // 우선 인증을 완료했는지 검증,
+    // const statusVerify = await findOneAuthData(data.email);
+    // if (!statusVerify) throw Error(`404, [${data.email}] 해당 이메일로 진행된 인증절차가 없습니다.`);
+    // if (statusVerify.verify === false && !statusVerify)
+    //     throw Error(`404, [${data.email}] 해당 이메일에 대한 인증 내역을 확인할 수 없습니다.`);
+
+    // 이미 가입한 회원이지 확인,
+    // const overlapUser = await findOneUser(data.email);
+    // if (overlapUser) throw Error("400, 이미 가입한 회원입니다.");
+
+    // 검증끝났으면 만들어!
+    const newResume = await createResumeQ(id);
+    return newResume;
 };
 
 /*

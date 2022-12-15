@@ -1,9 +1,10 @@
 import bcrypt from "bcrypt";
 import express, { Request, Response, NextFunction } from "express";
 import { validateBody } from "../middlewares/dto-validator";
+import {tokenValidator} from "../middlewares/verify-JWT"
 import { CreateUserDto, CreateAuthDataDto, AuthEmailDto, LoginUserDto } from "./dto/index.dto";
-import { authEmail, join, login, sendEmail } from "../services/index.service";
-import { findResumeList } from "../db/resume.repo";
+import { findResumeList, createResume } from "../services/index.service";
+//import { findResumeList } from "../db/resume.repo";
 //import { random } from "../config/sendMail";
 
 const resumeRoute = express();
@@ -22,7 +23,7 @@ resumeRoute.get("/myportfolio/list", async (req: Request, res: Response, next: N
     // };
 
     try {
-        const success = await join(id);
+        const success = await findResumeList(id);
         return res.status(200).json({
             status: 200,
             msg: "내 이력서 목록 조회 성공",
@@ -32,6 +33,17 @@ resumeRoute.get("/myportfolio/list", async (req: Request, res: Response, next: N
         next(err);
     }
 });
+
+// 2. 이력서 생성
+resumeRoute.post("/resume", tokenValidator, async (req, res, next) => {
+    const data = req.body.jwtDecoded.id;
+
+    const newResume = await createResume(data);
+    console.log(newResume);
+    return res.json({
+        data: newResume,
+    });
+})
 
 /*
 // 로그인 서비스

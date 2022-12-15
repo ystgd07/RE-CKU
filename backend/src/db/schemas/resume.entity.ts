@@ -15,13 +15,13 @@ export class Resume {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ nullable: true })
   name: string;
 
-  @Column({ length: 200 })
+  @Column({ nullable: true, length: 200 })
   infomation: string;
 
-  @Column()
+  @Column({ nullable: true })
   position: positonEnum;
 
   @OneToMany((type) => Project, (project) => project.usedResume)
