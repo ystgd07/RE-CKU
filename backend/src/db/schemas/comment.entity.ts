@@ -1,7 +1,7 @@
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, OneToMany } from "typeorm";
 import { User } from "./user.entity";
 import { Board } from "./board.entity";
-import { CommentLikeMaping } from "./resumeLikeMaping.entity";
+import { CommentLikeMaping } from "./commentLikeMaping.entity";
 import { PointFromComment } from "./point-comment.schema";
 
 @Entity()
@@ -25,10 +25,10 @@ export class Comment {
   alreadyLikes: number;
 
   @OneToMany((type) => CommentLikeMaping, (table) => table.comment)
-  ownLikes: CommentLikeMaping[];
+  ownLikes: CommentLikeMaping;
 
   @OneToMany((type) => PointFromComment, (point) => point.commentId)
-  getPoint: PointFromComment[];
+  getPoint: PointFromComment;
 
   @ManyToOne((type) => User, (user) => user.writeComments)
   user: User[];

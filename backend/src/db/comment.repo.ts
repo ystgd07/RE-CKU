@@ -1,5 +1,42 @@
 import { db } from "./index.repo";
+import * as userRepository from "../db/user.repo";
 import * as utils from "./utils/index.utils";
+const likesPintValue = 40;
+export const savePointByComment = async (data: Record<number, number>) => {
+  const [keys, values, valval] = utils.insertData(data);
+  await db.query(
+    `
+      INSERT INTO point_from_comment (${keys.join(", ")})
+      VALUES (${values.join(", ")})
+    `,
+    [...valval]
+  );
+
+  const userId = valval[0];
+  console.log(userId);
+  await db.query(
+    `
+      UPDATE user 
+      SET 
+      point = point+?
+      WHERE id= ?
+    `,
+    [likesPintValue, userId]
+  );
+};
+
+export const findSavedPointByComment = async (userId: number, commentId: number) => {
+  const result = await db.query(
+    `
+      SELECT userId
+      FROM point_from_comment
+      WHERE (userId=? AND commentId=?)
+    `,
+    [userId, commentId]
+  )[0][0];
+  const returnValue = utils.jsonParse(result);
+  return returnValue;
+};
 
 // 좋아요 테이블에 board 값 추가
 // 댓글의 좋아요 추가
@@ -10,7 +47,7 @@ export const likeCommentFromUser = async (data: Record<number, number>) => {
       INSERT 
       INTO 
       comment_like_maping (${keys.join(", ")})
-      VALUES (${values})
+      VALUES (${values.join(", ")})
     `,
     [...valval]
   );

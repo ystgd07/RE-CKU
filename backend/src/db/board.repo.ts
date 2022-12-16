@@ -44,6 +44,21 @@ export const findLikesToBoard = async (boardId: number) => {
   return likes[0];
 };
 
+// 게시물 있는지 찾는 것
+export const boardStatus = async (data: number, userId?: null | number) => {
+  console.log(" 이결 못해 ?");
+  const notice = await db.query(
+    `
+      SELECT *
+      FROM board
+      WHERE id=?
+    `,
+    [data]
+  );
+  const returnValue = utils.jsonParse(notice)[0][0];
+  return returnValue;
+};
+
 // 상세 게시글 보기
 export const findOneBoard = async (data: number, userId?: null | number) => {
   // 이력서와 댓글의 기본값
@@ -53,6 +68,7 @@ export const findOneBoard = async (data: number, userId?: null | number) => {
   }
   let resumeInfo = null;
   let comments = null;
+  let alreadyLikesThisBoard = false;
   console.log("findOneBoard repo ");
   let boardInfo = await db.query(
     `SELECT 
@@ -68,13 +84,15 @@ export const findOneBoard = async (data: number, userId?: null | number) => {
     WHERE id=?`,
     [data]
   );
+
   boardInfo[0][0].email = (await findOneUser(boardInfo[0][0].ownUserId, "이메일")).email;
   boardInfo[0][0].avatarUrl = (await findOneUser(boardInfo[0][0].ownUserId, "이메일")).avatarUrl;
   // 이미 게시물에 좋아요 눌렀는지 확인
   const checkLikes = await alreadyLikesBoard(boardInfo[0][0].id);
   // 확인해서 쿼리값이 존재하면 좋아요 한것이기 때문에 true
-  if (checkLikes.userId) {
-    boardInfo[0][0].alreadyLikes = true;
+  // 확실히 있는지 없는지 해줘야 에러가 안뜸. 존재하는지 여부랑 요소랑 같이 물어보는게 좋을듯
+  if (checkLikes) {
+    alreadyLikesThisBoard = true;
   }
   // 만약 이력서 게시물이 이력서 id를 존재한다면 이력서정보를 resumInfo 에 담아줌
   if (boardInfo[0][0].hasResumeId > 0 || boardInfo[0][0].hasResumeId !== null) {
@@ -146,7 +164,8 @@ export const findOneBoard = async (data: number, userId?: null | number) => {
   if (comments.length === 0) {
     reduceCmt = null;
   }
-  const result = { boardInfo: boardInfo[0][0], resumeInfo, comments: reduceCmt };
+  console.log(boardInfo[0][0]);
+  const result = { alreadyLikesThisBoard, boardInfo: boardInfo[0][0], resumeInfo, comments: reduceCmt };
   // 게시물보여줄때
   // 게시물id, 타이틀, 내용, 게시일, 작성자, 이력서:{}, 댓글들:[{댓글id ,내용, 유저이름, 유저아바타, 생성일자 }{}{}]
   // return user[0][0];
@@ -156,7 +175,7 @@ export const findOneBoard = async (data: number, userId?: null | number) => {
 // 조인X 게시물 정보 보기
 export const findBoardData = async (boardId: number) => {
   const board = await db.query(`SELECT * FROM board WHERE (id=?)`, [boardId]);
-  return utils.jsonParse(board);
+  return utils.jsonParse(board)[0][0];
 };
 
 // 게시글 만들기

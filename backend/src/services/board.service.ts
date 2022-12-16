@@ -20,22 +20,30 @@ export const getNoticeAll = async (): Promise<Board[]> => {
 
 // 하나의 게시물 정보를 가져옴
 export const getOneNotice = async (id: number, userId: null | number) => {
-  let alreadyLikes = false;
   let ownThisNotice = false;
+  console.log(userId);
   try {
+    // 게시글이 존재하는지 확인후 없다면 에러
+    const isNotice = await boardRepo.boardStatus(id, userId);
+
+    // new Error 하니깐
+    if (!isNotice) throw Error("404, 게시글을 찾을 수 없습니다.");
+
+    // 게시글에 대한 정보 가공하는 로직 실행
+    console.log(userId);
     let notice = await boardRepo.findOneBoard(id, userId);
-    console.log(notice.boardInfo.ownUserId);
+    console.log("에러잡기힘드네", notice);
     // 자신이 게시글의 주인인 경우
     if (notice.boardInfo.ownUserId === userId && userId !== null) {
       ownThisNotice = true;
     }
 
-    const result = { ownThisNotice, alreadyLikes, ...notice };
+    const result = { ownThisNotice, ...notice };
     return result;
   } catch (err) {
-    if (err.message === "Cannot read properties of undefined (reading 'hasResumeId')")
-      throw new Error(`404, 게시글을 찾을 수 없습니다.`);
-    throw new Error(`500, ${err.message}`);
+    if (err.message === "404, 게시글을 찾을 수 없습니다.") throw new Error(`404, 게시글을 찾을 수 없습니다.`);
+    console.log(err.message);
+    throw new Error(`500, 서버 오류`);
   }
 };
 
@@ -74,10 +82,12 @@ export const updateNotice = async (boardId: number, userId: number, data: Record
   }
 };
 
+// 게시글 삭제 서비스
 export const deleteNotice = async (userId: number, boardId: number): Promise<boolean> => {
   try {
     // 게시물이 요청한 본인이 작성한 것인지 검증
     const boardData = await boardRepo.findBoardData(boardId);
+    console.log(boardData);
     if (boardData.fromUserId !== userId) throw new Error(`400, 이 게시물에 대한 권한이 없습니다.`);
 
     // 게시글 삭제
@@ -88,6 +98,7 @@ export const deleteNotice = async (userId: number, boardId: number): Promise<boo
   }
 };
 
+// 게시글에 좋아요 누르기
 export const addLikes = async (userId: number, boardId: number, likesStatus: boolean): Promise<boolean> => {
   const data = {
     userId,
