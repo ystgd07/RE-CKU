@@ -1,6 +1,13 @@
 import { CreateBoardDto } from "./dto/create-board.dto";
 import express from "express";
-import { addLikes, getNoticeAll, getOneNotice, postNotice, updateNotice } from "../services/board.service";
+import {
+  addLikes,
+  deleteNotice,
+  getNoticeAll,
+  getOneNotice,
+  postNotice,
+  updateNotice,
+} from "../services/board.service";
 import { validateBody, tokenValidator } from "../middlewares/index.middleware";
 
 const boardRoute = express();
@@ -112,8 +119,13 @@ boardRoute.patch("/like/:boardId", tokenValidator, async (req, res, next) => {
 // 게시글 삭제 API
 boardRoute.delete("/:boardId", tokenValidator, async (req, res, next) => {
   const { id } = req.body.jwtDecoded;
-  const { boardId } = req.params;
+  const boardId = Number(req.params.boardId);
   try {
+    await deleteNotice(id, boardId);
+    return res.status(200).json({
+      status: 200,
+      msg: "삭제 완료",
+    });
   } catch (err) {
     next(err);
   }
