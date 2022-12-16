@@ -1,14 +1,8 @@
-import { dataSource } from "./db/index.schema";
 import express, { Request, Response, NextFunction } from "express";
-// import { Company } from "./db/schemas/company.entity";
-import { Skill } from "./db/schemas/skill.entity";
-import { Stack } from "./db/schemas/stacks.entity";
 import { errorHandler } from "./middlewares/error-handdler";
-import userRoute from "./routes/user.routes";
-import resumeRoute from "./routes/resume.routes";
-import boardRoute from "./routes/board.routes";
+import { userRoute, boardRoute, rootRoute, commentRoute } from "./routes/index.routes";
 import cors from "cors";
-import rootRoute from "./routes/root.routes";
+import resumeRoute from "./routes/resume.routes";
 const app = express();
 app.use("/uploads", express.static("uploads"));
 // CORS 에러 방지
@@ -24,7 +18,7 @@ app.use("/", rootRoute);
 app.use("/users", userRoute);
 app.use("/myportfolio", resumeRoute);
 app.use("/board", boardRoute);
-app.use("/comments", boardRoute);
+app.use("/comments", commentRoute);
 
 // 에러 미들웨어
 app.use(errorHandler);
