@@ -18,6 +18,15 @@ export class Board {
   @Column({ default: null, nullable: true })
   hashTags: string;
 
+  @Column({ default: false })
+  fixed: boolean;
+
+  @Column({ default: 0 })
+  likeCnt: number;
+
+  @Column({ default: 0 })
+  commentCnt: number;
+
   @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP" })
   created: Date;
 

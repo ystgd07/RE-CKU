@@ -34,14 +34,6 @@ export const createIndiUser = async (data: CreateUserDto) => {
 };
 
 export const updateUser = async (id: number, data: Record<string, string | boolean | number>): Promise<boolean> => {
-  // const { phoneNumber, password, role, RT, active } = data;
-  // const toUpdate = {
-  //   ...(phoneNumber && { phoneNumber }),
-  //   ...(password && { password }),
-  //   ...(role && { role }),
-  //   ...(RT && { RT }),
-  //   ...(active && { active }),
-  // };
   const [keys, values] = updateData(data);
   await db.query(`UPDATE user SET ${keys.join(", ")} WHERE id = ?`, [...values, id]);
   // typeORM 코드
