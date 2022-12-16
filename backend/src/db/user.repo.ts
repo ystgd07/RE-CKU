@@ -1,5 +1,5 @@
 import { CreateUserDto } from "src/routes/dto/create-individual.dto";
-import { dataSource, db } from "./index.schema";
+import { dataSource, db } from "./index.repo";
 import { roleEnum, User } from "./schemas/index.schema";
 import { updateData } from "./utils/transData";
 
