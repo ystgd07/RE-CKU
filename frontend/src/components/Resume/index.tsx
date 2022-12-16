@@ -12,7 +12,7 @@ const Resume = () => {
     const [formToggle, setFormToggle] = useState<boolean>(false);
     const [formToggle2, setFormToggle2] = useState<boolean>(false);
     const [formc, setFormc] = useState<ReactElement[]>([]);
-    const [userInfo, setUserInfo] = useState<user>([]);
+    const [userInfo, setUserInfo] = useState([]);
 
     // interface user = {
 
