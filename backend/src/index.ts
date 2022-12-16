@@ -1,10 +1,11 @@
 import server from "./server";
 require("dotenv").config();
-import { dataSource } from "./db/index";
+
+import { dataSource } from "./db/index.schema";
 dataSource
   .initialize()
   .then(() => {
-    console.log("✅ DB Synchronized Complete");
+    console.log("✅ DB 테이블 생성 완료! (by TypeORM)");
   })
   .catch((err) => {
     console.log("Error :", err);

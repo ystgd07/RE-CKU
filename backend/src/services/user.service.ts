@@ -1,16 +1,17 @@
 import bcrypt from "bcrypt";
-import { dataSource, updateUser } from "../db";
-import { createIndiUser, findOneAuthData, findOneUser, createAuthData, updateAuthData } from "../db";
-import { CreateUserDto } from "../routes/dto/";
+import { dataSource, updateUser } from "../db/index.schema";
+import { createIndiUser, findOneAuthData, findOneUser, createAuthData, updateAuthData } from "../db/index.schema";
+import { CreateUserDto } from "../routes/dto/index.dto";
 import jwt from "jsonwebtoken";
 import { send } from "../config/sendMail";
-import { EmailAuth } from "../db/schemas";
+import { EmailAuth } from "../db/schemas/index.schema";
 
 // 회원가입 서비스
 export const join = async (data: CreateUserDto): Promise<Object> => {
   // 우선 인증을 완료했는지 검증,
   const statusVerify = await findOneAuthData(data.email);
-  if (statusVerify.verify === false)
+  if (!statusVerify) throw Error(`404, [${data.email}] 해당 이메일로 진행된 인증절차가 없습니다.`);
+  if (statusVerify.verify === false && !statusVerify)
     throw Error(`404, [${data.email}] 해당 이메일에 대한 인증 내역을 확인할 수 없습니다.`);
 
   // 이미 가입한 회원이지 확인,
@@ -41,20 +42,17 @@ export const login = async (email: string, password: string) => {
       role: user.role,
       type: "AT",
     },
-    process.env.JWT_SECRET_KEY,
+    process.env.JWT_SECRET_KEY || "secret",
     { expiresIn: 60 * 10 }
   );
   const refreshToken = jwt.sign(
     {
-      id: user.id,
-      role: user.role,
       type: "RT",
     },
-    process.env.JWT_SECRET_KEY,
+    process.env.JWT_SECRET_KEY || "secret",
     { expiresIn: 60 * 60 * 24 }
   );
-  const ToChange = { RT: refreshToken };
-  await updateUser(user.id, ToChange);
+
   // 옵젝으로 묶어서 리턴
   const result = {
     accessToken,
@@ -97,9 +95,9 @@ export const authEmail = async (email: string, code: number) => {
   // 우선 해당하는 이메일 찾아서
   const statusVerify = await findOneAuthData(email);
   if (!statusVerify) throw Error(`404, [${email}] 해당 이메일로 인증번호가 보내지지 않았습니다.`);
-  if (statusVerify.code === code) throw Error(`400, 입력된 코드가 올바르지 않습니다.`);
+  if (statusVerify.code !== code) throw Error(`400, 입력된 코드가 올바르지 않습니다.`);
   // 4분안에 인증했을 경우
-  if (statusVerify.time.getTime() + 30000 - Date.now() <= 0)
+  if (statusVerify.time.getTime() + 300000 - Date.now() <= 0)
     throw Error(`400, 인증시간이 지났습니다. 인증번호를 재발급 해주세요.`);
   statusVerify.verify = true;
   await dataSource.getRepository(EmailAuth).save(statusVerify);
