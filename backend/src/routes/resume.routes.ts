@@ -9,7 +9,8 @@ import {
     findResumeList,
     createDetail,
     findDetail,
-    updateResume
+    updateResume,
+    deleteResume
 } from "../services/index.service";
 import {isNumber} from "class-validator";
 import {updateNotice} from "../services/board.service";
@@ -51,6 +52,8 @@ resumeRoute.post("/resume", tokenValidator, async (req, res, next) => {
         next(err);
     }
 })
+
+// 2-1. 이력서 목록 조회
 
 // 2-2. 내 이력서 목록 조회
 resumeRoute.get("/list", tokenValidator, async (req: Request, res: Response, next: NextFunction) => { // validateBody(CreateUserDto),
@@ -103,6 +106,27 @@ resumeRoute.patch("/resume/:resumeId", async (req, res, next) => {
             status: 203,
             msg: "이력서 수정 성공",
             data: updatedResume
+        });
+    } catch (err) {
+        next(err);
+    }
+});
+
+// 4. 이력서 전체 삭제
+resumeRoute.delete("/resume/:resumeId", async (req, res, next) => {
+    const resumeId = Number(req.params.resumeId);
+
+    try {
+        const deletedCareer = await deleteResume(resumeId, "career", "all");
+        const deletedProject = await deleteResume(resumeId, "project", "all");
+        const deletedResume = await deleteResume(resumeId, "resume", "one");
+
+        return res.json({
+            status: 203,
+            msg: "이력서 삭제 성공",
+            dataCareer: deletedCareer,
+            dataProject: deletedProject,
+            dataResume: deletedResume
         });
     } catch (err) {
         next(err);
@@ -163,6 +187,23 @@ resumeRoute.patch("/resume/career/:careerId", async (req, res, next) => {
     }
 });
 
+// 4. 업무경험 삭제
+resumeRoute.delete("/resume/career/:careerId", async (req, res, next) => {
+    const careerId = Number(req.params.careerId);
+
+    try {
+        const deletedResume = await deleteResume(careerId, "career", "one");
+
+        return res.json({
+            status: 203,
+            msg: "이력서 업무경험 삭제 성공",
+            data: deletedResume
+        });
+    } catch (err) {
+        next(err);
+    }
+});
+
 // 프로젝트
 // 1. 프로젝트 생성
 resumeRoute.post("/resume/project/:resumeId", async (req, res, next) => {
@@ -217,62 +258,21 @@ resumeRoute.patch("/resume/project/:projectId", async (req, res, next) => {
     }
 });
 
-/*
-// 로그인 서비스
-// 비밀
-userRoute.post("/", validateBody(LoginUserDto), async (req, res, next) => {
-    const { email, password } = req.body;
-    try {
-        const success = await login(email, password);
-        return res.status(200).json({
-            status: 200,
-            msg: "로그인 성공",
-            accessToken: success.accessToken,
-            refreshToken: success.refreshToken,
-        });
-    } catch (err) {
-        next(err);
-    }
-});
-
-// 회원가입시 인증번호 보내는 라우트
-userRoute.post("/email", validateBody(CreateAuthDataDto), async (req, res, next) => {
-    const toEmail = req.body.email;
-    // 내용에 들어갈 랜덤 수
-    const number = random(111111, 999999);
+// 4. 프로젝트 삭제
+resumeRoute.delete("/resume/project/:projectId", async (req, res, next) => {
+    const projectId = Number(req.params.projectId);
 
     try {
-        await sendEmail(toEmail, number);
-        // 실제로 보내는 함수
-        return res.status(200).json({
-            status: 200,
-            msg: "전송완료 4분이내 인증을 완료해주세요.",
-            data: number,
+        const deletedResume = await deleteResume(projectId, "project", "one");
+
+        return res.json({
+            status: 203,
+            msg: "이력서 프로젝트 삭제 성공",
+            data: deletedResume
         });
     } catch (err) {
         next(err);
     }
 });
-// 회원가입시 이메일 인증하는 라우트
-userRoute.post("/email/auth", validateBody(AuthEmailDto), async (req, res, next) => {
-    try {
-        const { email, code } = req.body;
-        await authEmail(email, code);
-        return res.status(200).json({
-            status: 200,
-            msg: `인증 완료`,
-        });
-    } catch (err) {
-        next(err);
-    }
-});
-userRoute.post("/zz", async (req, res, next) => {
-    const data = req.body;
-    const zz = await createIndiUser(data);
-    console.log(zz);
-    return res.json({
-        data: zz,
-    });
-}); */
 
 export default resumeRoute;
