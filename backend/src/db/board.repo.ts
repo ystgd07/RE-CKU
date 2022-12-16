@@ -58,6 +58,8 @@ export const findOneBoard = async (data: number) => {
     [data]
   );
 
+  // 이미 게시물에 좋아요 눌렀는지 확인
+
   // 만약 이력서 게시물이 이력서 id를 존재한다면 이력서정보를 resumInfo 에 담아줌
   if (boardInfo[0][0].hasResumeId > 0 || boardInfo[0][0].hasResumeId !== null) {
     resumeInfo = (
@@ -96,6 +98,45 @@ export const findOneBoard = async (data: number) => {
   return result;
 };
 
+// 조인X 게시물 정보 보기
+export const findBoardData = async (boardId: number) => {
+  const board = await db.query(`SELECT * FROM board WHERE (id=?)`, [boardId]);
+  return jsonParse(board);
+};
+
+// 게시글 만들기
+export const create = async (data: Record<string, string | number | boolean>): Promise<any> => {
+  console.log("서비스가 받아온 data : ", data);
+  const [keys, values, arrValues] = insertData(data);
+  const newBoard = await db.query(`INSERT INTO board (${keys.join(", ")}) VALUES (${values.join(",")})`, [
+    ...arrValues,
+  ]);
+  console.log(typeof newBoard);
+  return newBoard[0];
+};
+
+// 게시글 수정
+export const updateBoard = async (boardId: number, data: Record<string, string | number>) => {
+  console.log("게시글 업데이트 내역 : ", data);
+  const [keys, values] = updateData(data);
+  await db.query(`UPDATE board SET ${keys.join(", ")}fixed=true ,created=now() WHERE id = ?`, [...values, boardId]);
+  return true;
+};
+
+// 게시글 삭제
+export const deleteBoard = async (boardId: number) => {
+  await db.query(
+    `
+      DELETE 
+      FROM board 
+      WHERE (id = ?)
+    `,
+    [boardId]
+  );
+  return true;
+};
+
+// 게시물ID 로 댓글 찾기
 export const findComments = async (boardId: number) => {
   console.log("댓글찾다가?");
   const comments = await db.query(
@@ -117,19 +158,31 @@ export const findComments = async (boardId: number) => {
   return comments[0];
 };
 
-export const create = async (data: Record<string, string | number | boolean>): Promise<any> => {
-  console.log("서비스가 받아온 data : ", data);
-  const [keys, values, arrValues] = insertData(data);
-  const newBoard = await db.query(`INSERT INTO board (${keys.join(", ")}) VALUES (${values.join(",")})`, [
-    ...arrValues,
-  ]);
-  console.log(typeof newBoard);
-  return newBoard[0];
+// 해당 게시글에 좋아요 눌렀는지 확인
+export const likesFrom = async (userId: number) => {
+  const table = await db.query(
+    `
+      SELECT boardId 
+      FROM board_like_maping 
+      WHERE(userId=?)
+    `,
+    [userId]
+  );
+  const overlap = jsonParse(table);
+  return overlap;
 };
 
-export const updateBoard = async (boardId: number, data: Record<string, string | number>) => {
-  console.log("게시글 업데이트 내역 : ", data);
-  const [keys, values] = updateData(data);
-  await db.query(`UPDATE board SET ${keys.join(", ")}fixed=true ,created=now() WHERE id = ?`, [...values, boardId]);
+// 좋아요 테이블에 board 값 추가
+export const likeBoardFromUser = async (data: Record<number, number>) => {
+  const [keys, values, valval] = insertData(data);
+  await db.query(
+    `
+      INSERT 
+      INTO board_like_maping 
+      SET ${keys.join(", ")} 
+      VALUES (${values})
+    `,
+    [...valval]
+  );
   return true;
 };

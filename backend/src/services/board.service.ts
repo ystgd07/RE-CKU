@@ -1,5 +1,14 @@
 import { CreateCommentDto } from "../routes/dto/index.dto";
-import { create, findAllBoard, findOneBoard, updateBoard } from "../db/board.repo";
+import {
+  create,
+  deleteBoard,
+  findAllBoard,
+  findBoardData,
+  findOneBoard,
+  likeBoardFromUser,
+  likesFrom,
+  updateBoard,
+} from "../db/board.repo";
 import { Board } from "../db/schemas/index.schema";
 import { jsonParse } from "../db/utils/parseToJSON";
 
@@ -18,10 +27,16 @@ export const getNoticeAll = async (): Promise<Board[]> => {
   return result;
 };
 
-export const getOneNotice = async (id: number) => {
+export const getOneNotice = async (id: number, userId?: null | number) => {
+  let alreadyLikes = false;
   try {
-    const Notice = await findOneBoard(id);
-    return Notice;
+    let Notice = await findOneBoard(id);
+    // const overlapLikes = jsonParse(await likesFrom(Notice.boardInfo.ownUserId))[0][0];
+    if (Notice.boardInfo.ownUserId === userId && userId !== null) {
+      alreadyLikes = true;
+    }
+    const result = { alreadyLikes, ...Notice };
+    return result;
   } catch (err) {
     if (err.message === "Cannot read properties of undefined (reading 'hasResumeId')")
       throw Error(`404, 게시글을 찾을 수 없습니다.`);
@@ -57,6 +72,38 @@ export const updateNotice = async (boardId: number, userId: number, data: Record
     console.log(err.message);
     if (err.message === "Cannot read properties of undefined (reading 'hasResumeId')")
       throw Error(`404, 게시글을 찾을 수 없습니다.`);
+    throw Error(err);
+  }
+};
+
+export const deleteNotice = async (userId: number, boardId: number): Promise<boolean> => {
+  try {
+    // 게시물이 요청한 본인이 작성한 것인지 검증
+    const boardData = await findBoardData(boardId);
+    if (boardData.fromUserId !== userId) throw Error(`400, 이 게시물에 대한 권한이 없습니다.`);
+
+    // 게시글 삭제
+    await deleteBoard(boardId);
+    return true;
+  } catch (err) {
+    throw Error(err);
+  }
+};
+
+export const addLikes = async (userId: number, boardId: number, likesStatus: boolean): Promise<boolean> => {
+  const data = {
+    userId,
+    boardId,
+    likesStatus,
+  };
+  try {
+    // 이미 좋아요 한 게시글이라면 에러
+    const overlap = likesFrom(userId);
+    if (overlap) throw Error(`400, 이`);
+    // 좋아요 찍기
+    await likeBoardFromUser(data);
+    return true;
+  } catch (err) {
     throw Error(err);
   }
 };
