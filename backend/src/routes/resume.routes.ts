@@ -1,19 +1,19 @@
 import bcrypt from "bcrypt";
 import express, { Request, Response, NextFunction } from "express";
 import { validateBody } from "../middlewares/dto-validator";
-import {tokenValidator} from "../middlewares/verify-JWT"
+import { tokenValidator } from "../middlewares/verify-JWT";
 import { CreateUserDto, CreateAuthDataDto, AuthEmailDto, LoginUserDto } from "./dto/index.dto";
 import {
-    indiInfo,
-    createResume,
-    findResumeList,
-    createDetail,
-    findDetail,
-    updateResume,
-    deleteResume
+  indiInfo,
+  createResume,
+  findResumeList,
+  createDetail,
+  findDetail,
+  updateResume,
+  deleteResume,
 } from "../services/index.service";
-import {isNumber} from "class-validator";
-import {updateNotice} from "../services/board.service";
+import { isNumber } from "class-validator";
+import { updateNotice } from "../services/board.service";
 import boardRoute from "./board.routes";
 //import { findResumeList } from "../db/resume.repo";
 //import { random } from "../config/sendMail";
@@ -114,20 +114,20 @@ resumeRoute.get("/resume/:resumeId", tokenValidator, async (req: Request, res: R
 
 // 3. 이력서 (기본 정보) 수정
 resumeRoute.patch("/resume/:resumeId", async (req, res, next) => {
-    const resumeId = Number(req.params.resumeId);
-    const updateInfo = req.body
+  const resumeId = Number(req.params.resumeId);
+  const updateInfo = req.body;
 
     try {
         const updatedResume = await updateResume(resumeId, updateInfo, "resume");
 
-        return res.json({
-            status: 203,
-            msg: "이력서 수정 성공",
-            data: updatedResume
-        });
-    } catch (err) {
-        next(err);
-    }
+    return res.json({
+      status: 203,
+      msg: "이력서 수정 성공",
+      data: updatedResume,
+    });
+  } catch (err) {
+    next(err);
+  }
 });
 
 // 4. 이력서 전체 삭제

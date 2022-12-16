@@ -1,7 +1,7 @@
 import server from "./server";
 require("dotenv").config();
 
-import { dataSource } from "./db/index.schema";
+import { dataSource } from "./db/index.repo";
 dataSource
   .initialize()
   .then(() => {
