@@ -178,11 +178,24 @@ export const likeBoardFromUser = async (data: Record<number, number>) => {
   await db.query(
     `
       INSERT 
-      INTO board_like_maping 
-      SET ${keys.join(", ")} 
+      INTO 
+      board_like_maping (${keys.join(", ")})
       VALUES (${values})
     `,
     [...valval]
+  );
+  return true;
+};
+
+export const unlikeBoardFromUser = async (userId: number, boardId: number) => {
+  // 삭제에 필요한것들 userId, boardId WHERE (coulmn = ? ADN coulmn2 = ?)
+  await db.query(
+    `
+      DELETE
+      board_like_maping
+      WHERE (userId = ? AND boardId = ?)
+    `,
+    [userId, boardId]
   );
   return true;
 };

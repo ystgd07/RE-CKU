@@ -23,9 +23,8 @@ boardRoute.get("/:id", async (req, res, next) => {
   const id = Number(req.params.id);
   let userId = null;
   // 혹시라도 토큰을 넣어서 보냈더라면 검증해주고 userId에 id값 넣기
-  if (req.headers.authorization) {
-    tokenValidator(req, res, next);
-    () => (userId = Number(req.body.jwtDecoded.id));
+  if (req.query.lifeIsGood) {
+    userId = Number(req.query.lifeIsGood);
   }
   try {
     const Notice = await getOneNotice(id, userId);
@@ -101,6 +100,10 @@ boardRoute.patch("/like/:boardId", tokenValidator, async (req, res, next) => {
   const { likesStatus } = req.body;
   try {
     const likes = await addLikes(id, boardId, likesStatus);
+    return res.status(200).json({
+      status: 200,
+      msg: `좋아요 상태 : ${likes} `,
+    });
   } catch (err) {
     next(err);
   }

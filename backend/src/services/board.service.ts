@@ -7,6 +7,7 @@ import {
   findOneBoard,
   likeBoardFromUser,
   likesFrom,
+  unlikeBoardFromUser,
   updateBoard,
 } from "../db/board.repo";
 import { Board } from "../db/schemas/index.schema";
@@ -94,15 +95,16 @@ export const addLikes = async (userId: number, boardId: number, likesStatus: boo
   const data = {
     userId,
     boardId,
-    likesStatus,
   };
   try {
     // 이미 좋아요 한 게시글이라면 에러
-    const overlap = likesFrom(userId);
-    if (overlap) throw Error(`400, 이`);
-    // 좋아요 찍기
-    await likeBoardFromUser(data);
-    return true;
+    if (!likesStatus) {
+      await likeBoardFromUser(data);
+      return true; // 좋아요
+    } else {
+      await unlikeBoardFromUser(userId, boardId);
+      return false; // 취소
+    }
   } catch (err) {
     throw Error(err);
   }
