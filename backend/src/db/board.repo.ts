@@ -75,15 +75,29 @@ export const findOneBoard = async (data: number) => {
 
     // 이력서가 있다면 이력서에 종속된 프로젝트와 커리어를 찾아서 각 필드에 넣어줌
     resumeInfo.projects = (
-      await db.query(`select * from project a join resume r On a.usedResumeId=r.id   where a.usedResumeId=?`, [
-        resumeInfo.id,
-      ])
-    )[0][0];
+      await db.query(
+        `
+          SELECT * 
+          FROM project a 
+          JOIN resume r
+          On a.usedResumeId=r.id  
+          WHERE a.usedResumeId=?
+        `,
+        [resumeInfo.id]
+      )
+    )[0];
     resumeInfo.career = (
-      await db.query(` select * from career a join resume r On a.usedResumeId=r.id   where a.usedResumeId=?`, [
-        resumeInfo.id,
-      ])
-    )[0][0];
+      await db.query(
+        `
+          SELECT * 
+          FROM career a 
+          JOIN resume r 
+          On a.usedResumeId = r.id   
+          WHERE a.usedResumeId=?
+        `,
+        [resumeInfo.id]
+      )
+    )[0];
   }
 
   // 귀속된 커맨트를 찾고 없다면 null 로 반환
