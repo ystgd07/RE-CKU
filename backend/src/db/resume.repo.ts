@@ -57,7 +57,7 @@ export const updateResumeQ = async (detailId: number, updateInfo: Record<string,
     return updatedResume;
 };
 
-// 4-1. 삭제
+// 4. 삭제
 export const deleteResumeQ = async (detailId: number, dbname: string, type: string) => {
     if (type == "all") {
         const deletedResume = await db.query(`DELETE FROM ${dbname} WHERE usedResumeId = ?`, detailId);

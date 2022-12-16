@@ -26,6 +26,7 @@ resumeRoute.post("/resume", tokenValidator, async (req, res, next) => {
     const userInfo = await indiInfo(userId);
 
     let resumeNameNum = [];
+    let newName = "";
 
     try {
         const myResumeList = await findResumeList(userId);
@@ -39,7 +40,11 @@ resumeRoute.post("/resume", tokenValidator, async (req, res, next) => {
 
         }
 
-        const newName = `${userInfo.username} ${Math.max(...resumeNameNum) + 1}`
+        if (resumeNameNum.length == 0) {
+            newName = `${userInfo.username} 0`;
+        } else {
+            newName = `${userInfo.username} ${Math.max(...resumeNameNum) + 1}`;
+        }
 
         const newResume = await createResume(userId, newName);
 
