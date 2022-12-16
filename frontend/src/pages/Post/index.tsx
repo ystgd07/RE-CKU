@@ -8,6 +8,12 @@ interface RouteState {
     };
 }
 
+const data = {
+    title: '이력서 좀 봐주세요',
+    content: '# hi\n   hello\n   ',
+    hashTags: '',
+    resumeId: 0,
+};
 const Post = () => {
     const { postId } = useParams<{ postId: string }>();
     const { state } = useLocation() as RouteState;
