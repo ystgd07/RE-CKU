@@ -33,7 +33,7 @@ const boardImageUrl = multer.diskStorage({
 });
 const avatarImageUrl = multer.diskStorage({
   destination: (req: Request, file: any, cb: any) => {
-    cb(null, "uploads/boards/images/");
+    cb(null, "uploads/users/images/");
   },
   filename: (req, file, cb) => {
     // 확장자 찾아서 mimeType 변경해주는 조건문

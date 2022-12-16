@@ -23,7 +23,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use("/", rootRoute);
 app.use("/users", userRoute);
 app.use("/myportfolio", resumeRoute);
-app.use("/boards", boardRoute);
+app.use("/board", boardRoute);
 
 // 에러 미들웨어
 app.use(errorHandler);
