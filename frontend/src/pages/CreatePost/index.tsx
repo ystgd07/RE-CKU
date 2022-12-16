@@ -1,5 +1,4 @@
 import styled from '@emotion/styled';
-//import MarkdownEditor from 'components/MarkdownEditor';
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Editor } from '@toast-ui/react-editor';
@@ -9,6 +8,8 @@ import '@toast-ui/editor-plugin-color-syntax/dist/toastui-editor-plugin-color-sy
 import '@toast-ui/editor/dist/i18n/ko-kr';
 import colorSyntax from '@toast-ui/editor-plugin-color-syntax';
 import axios from 'axios';
+import { Button, Input, Switch, Typography } from 'antd';
+const { Title, Text } = Typography;
 
 const Container = styled.div`
     display: flex;
@@ -31,21 +32,21 @@ const Wrapper = styled.div`
     width: 100%;
 `;
 
-const WrapperHeader = styled.h2``;
+const WrapperHeader = styled.div`
+    display: flex;
+    align-items: center;
+`;
 
-const TitleInput = styled.input``;
+const ToggleDiv = styled.div`
+    width: 120px;
+    margin-left: 20px;
+    height: 34px;
+`;
 
-const ButtonWrapper = styled.div`
+const ButtonDiv = styled.div`
     display: flex;
     width: 100%;
 `;
-
-const TagInput = styled.input`
-    display: flex;
-    width: 100%;
-`;
-
-const Button = styled.button``;
 
 const ErrorMsg = styled.p`
     font-size: 16px;
@@ -178,19 +179,29 @@ function CreatePost() {
     return (
         <Container>
             <Wrapper>
-                <WrapperHeader>이력서 첨부</WrapperHeader>
-                <button onClick={onToggleButton}>이력서</button>
+                <WrapperHeader>
+                    <Title level={4}>이력서 첨부</Title>
+                    <ToggleDiv>
+                        <Switch onClick={onToggleButton} />
+                    </ToggleDiv>
+                </WrapperHeader>
+
                 {isResume && <ResumeSelectUI />}
             </Wrapper>
+
             <Wrapper>
-                <WrapperHeader>제목</WrapperHeader>
-                <TitleInput type="text" name="title" value={title} onChange={onChange} />
+                <Title level={4}>제목</Title>
+                <Input
+                    size="large"
+                    placeholder="제목을 입력해주세요."
+                    name="title"
+                    value={title}
+                    onChange={onChange}
+                />
             </Wrapper>
             <Wrapper>
-                <WrapperHeader>내용</WrapperHeader>
+                <Title level={4}>내용</Title>
                 <Editor
-                    // initialValue="hello react editor world!" // 게시물 수정 시 사용
-                    initialValue={initValues}
                     placeholder="이 입력폼은 마크다운 문법을 지원합니다."
                     previewStyle="vertical"
                     height="600px"
@@ -202,13 +213,17 @@ function CreatePost() {
                 />
             </Wrapper>
             <Wrapper>
-                <WrapperHeader>태그</WrapperHeader>
-                <TagInput type="text" name="hashTags" value={hashTags} onChange={onChange} />
+                <Title level={4}>태그</Title>
+                <Input size="large" name="hashTags" value={hashTags} onChange={onChange} />
             </Wrapper>
-            <ButtonWrapper>
-                <Button>취소</Button>
-                <Button onClick={handleSubmit}>등록</Button>
-            </ButtonWrapper>
+            <ButtonDiv>
+                <Button type="default" size="large">
+                    취소
+                </Button>
+                <Button type="primary" size="large" onClick={handleSubmit}>
+                    등록
+                </Button>
+            </ButtonDiv>
         </Container>
     );
 }

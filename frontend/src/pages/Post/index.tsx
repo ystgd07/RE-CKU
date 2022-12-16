@@ -1,5 +1,5 @@
-import { useParams, useLocation, Outlet, useMatch, Link } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useParams, useLocation } from 'react-router-dom';
+import { useEffect, useState, useRef } from 'react';
 import styled from '@emotion/styled';
 import { Viewer } from '@toast-ui/react-editor';
 import '@toast-ui/editor/dist/toastui-editor-viewer.css';
@@ -31,6 +31,7 @@ const Title = styled.h1`
     font-size: 24px;
 `;
 const Profile = styled.div``;
+
 const Contents = styled.div`
     border: 1px solid black;
     padding: 20px;
@@ -76,32 +77,75 @@ interface RouteState {
         title: string;
     };
 }
+
+interface IProjectData {
+    id: number;
+    projectName: string;
+    link1: string;
+    link2: string;
+    usedResumeId: number;
+    year: string; // ?
+    information: null; // ?
+    name: string;
+    usedUserId: number;
+    updatedAt: Date;
+}
+
+interface ICareer {
+    id: number;
+    company: string;
+    reward: string;
+    position: string;
+    usedResumeId: number;
+    notDevelop: number;
+    workNow: number;
+    startDate: number;
+    endDate: number;
+    name: string;
+    usedUserId: number;
+    information: null;
+    updatedAt: Date;
+}
+
+interface IResumeData {
+    id: number;
+    name: string;
+    position: string;
+    usedUserId: number;
+    information: null; // ???
+    updatedAt: Date;
+    projects: Array<IProjectData>;
+    career: Array<ICareer>;
+}
+
 interface IPostData {
     alreadyLikes: boolean;
     boardInfo: {
-        content: string;
-        fixed: number;
-        hasResumeId: string | null;
-        hashTags: string;
-        ownUserId: number;
         title: string;
+        content: string;
+        hashTags: string;
+        boardCreated: Date;
+        hasResumeId: string | null;
+        fixed: number;
+        ownUserId: number;
     };
-    comments: string | null;
-    resumeInfo: string | null;
+    comments: {
+        commentId: number;
+        username: string;
+        text: string;
+        commentCreated: Date;
+        userId: number;
+        fixed: number;
+    } | null;
+    resumeInfo: IResumeData | null;
 }
 const Post = () => {
     const [postData, setPostData] = useState<IPostData | null>(null);
     const { postId } = useParams<{ postId: string }>();
     const { state } = useLocation() as RouteState;
     console.log(state);
-    console.log('postId = ', postId);
-    // 더미 데이터
-    const data = {
-        title: '이력서 좀 봐주세요',
-        content: '# hi\n   hello\n   > 마크다운 문법을 지원합니다.',
-        hashTags: '',
-        resumeId: 0,
-    };
+    const viewerRef = useRef<Viewer>(null);
+
     const commentData = [
         {
             userProfile: '하하',
@@ -124,28 +168,26 @@ const Post = () => {
         const fetchPostData = async () => {
             try {
                 const post = await axios.get(`http://localhost:3001/board/${postId}`);
-                console.log(post.data.data);
-                setPostData(post.data.data);
-
+                const data = post.data.data;
+                setPostData(data);
+                const content = data.boardInfo.content;
+                viewerRef.current?.getInstance().setMarkdown(content);
                 return post.data.data;
             } catch (err) {
                 console.log(err);
                 return;
             }
         };
-        const data = fetchPostData();
-        console.log(data);
+        fetchPostData();
     }, [postId]);
-    console.log('POST = ', postData);
     return (
         <Container>
             <Wrapper>
-                <Title>{data.title}</Title>
+                <Title>{postData?.boardInfo.title}</Title>
                 <Profile>유저 프로필 이미지 + email + 1일 전</Profile>
                 <Contents>
-                    <Viewer initialValue={data.content} />
+                    <Viewer initialValue={postData?.boardInfo.title} ref={viewerRef} />
                 </Contents>
-
                 <PostStates>좋아요: 10개, 댓글 수: 3개</PostStates>
             </Wrapper>
             <Wrapper>
