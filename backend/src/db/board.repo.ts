@@ -1,4 +1,4 @@
-import { db } from "./index.schema";
+import { db, findOneUser } from "./index.schema";
 import { Board } from "./schemas/board.entity";
 import { updateData, insertData, jsonParse } from "./utils/index.utils";
 
@@ -44,7 +44,7 @@ export const findOneBoard = async (data: number) => {
   let resumeInfo = null;
   let comments = null;
   console.log("findOneBoard repo ");
-  const boardInfo = await db.query(
+  let boardInfo = await db.query(
     `SELECT 
     title,
     content, 
@@ -57,7 +57,7 @@ export const findOneBoard = async (data: number) => {
     WHERE id=?`,
     [data]
   );
-
+  boardInfo[0][0].email = (await findOneUser(boardInfo[0][0].ownUserId, "이메일")).email;
   // 이미 게시물에 좋아요 눌렀는지 확인
 
   // 만약 이력서 게시물이 이력서 id를 존재한다면 이력서정보를 resumInfo 에 담아줌
