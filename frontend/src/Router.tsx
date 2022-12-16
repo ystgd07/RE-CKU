@@ -7,6 +7,7 @@ import Join from 'pages/Join';
 import FindPw from 'pages/FindPw';
 import MyPortfolio from 'pages/MyPortfolio';
 import Profile from 'pages/Profile';
+import Post from 'pages/Post';
 
 const Router = () => {
     return (
@@ -16,6 +17,7 @@ const Router = () => {
                 <Route path="/login" element={<Login />} />
                 <Route path="/resume" element={<Resume />} />
                 <Route path="/create-post" element={<CreatePost />} />
+                <Route path="/post/:postId" element={<Post />} />
                 <Route path="/Join" element={<Join />} />
                 <Route path="/FindPw" element={<FindPw />} />
                 <Route path="/myportfolio" element={<MyPortfolio />} />
