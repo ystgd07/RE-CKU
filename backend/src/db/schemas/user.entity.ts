@@ -5,7 +5,7 @@ import { Resume } from "./resume.entity";
 import { Stack } from "./stacks.entity";
 import { Board } from "./board.entity";
 import { Comment } from "./comment.entity";
-import { ResumeLikeMaping } from "./resumeLikeMaping.entity";
+import { CommentLikeMaping } from "./resumeLikeMaping.entity";
 import { BoardLikeMaping } from "./boardLikeMaping.entity";
 
 export enum roleEnum {
@@ -62,8 +62,8 @@ export class User {
   @OneToMany((type) => BoardLikeMaping, (board) => board.user, { nullable: true })
   likesBoard: BoardLikeMaping[]; // 좋아하는 게시글 맵핑
 
-  @OneToMany((type) => ResumeLikeMaping, (resume) => resume.user)
-  likesResume: ResumeLikeMaping[]; //  좋아하는 이력서 맵핑
+  @OneToMany((type) => CommentLikeMaping, (comment) => comment.user)
+  likesResume: CommentLikeMaping[]; //  좋아하는 이력서 맵핑
 
   @OneToMany((type) => Comment, (comment) => comment.user, { nullable: true })
   writeComments: Comment[];

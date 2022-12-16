@@ -2,7 +2,6 @@ import { Entity, Column, PrimaryGeneratedColumn, OneToMany, ManyToMany, JoinTabl
 import { Board } from "./board.entity";
 import { Career } from "./career.entity";
 import { Project } from "./project.entity";
-import { ResumeLikeMaping } from "./resumeLikeMaping.entity";
 import { User } from "./user.entity";
 
 export enum positonEnum {
@@ -36,9 +35,6 @@ export class Resume {
 
   @OneToMany((type) => Career, (career) => career.usedResume)
   career: Career[];
-
-  @OneToMany((type) => ResumeLikeMaping, (resume) => resume.resume)
-  likesResume: ResumeLikeMaping[];
 
   @ManyToOne((type) => User, (user) => user.resumes)
   usedUser: User;
