@@ -7,9 +7,6 @@ import Join from 'pages/Join';
 import FindPw from 'pages/FindPw';
 import MyPortfolio from 'pages/MyPortfolio';
 import Profile from 'pages/Profile';
-import Admin from 'pages/Admin';
-import App from 'pages/Admin';
-
 const Router = () => {
     return (
         <BrowserRouter basename={process.env.PUBLIC_URL}>
@@ -20,8 +17,6 @@ const Router = () => {
                 {/* <Route path="/create-post" element={<CreatePost />} /> */}
                 <Route path="/Join" element={<Join />} />
                 <Route path="/FindPw" element={<FindPw />} />
-                <Route path="/Admin" element={<Admin />} />
-                <Route path="/App" element={<App />} />
                 <Route path="/myportfolio" element={<MyPortfolio />} />
                 <Route path="/profile" element={<Profile />} />
             </Routes>
