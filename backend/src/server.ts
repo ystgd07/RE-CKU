@@ -7,11 +7,12 @@ import { errorHandler } from "./middlewares/error-handdler";
 import userRoute from "./routes/user.routes";
 import resumeRoute from "./routes/resume.routes";
 import boardRoute from "./routes/board.routes";
-
+import cors from "cors";
+import rootRoute from "./routes/root.routes";
 const app = express();
-
+app.use("/uploads", express.static("uploads"));
 // CORS 에러 방지
-
+app.use(cors());
 // Content-Type: application/json 형태의 데이터를 인식하고 핸들링할 수 있게 함.
 app.use(express.json());
 
@@ -19,10 +20,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 // routes
+app.use("/", rootRoute);
 app.use("/users", userRoute);
-app.use("/board", userRoute);
-app.use("/myportpolio", resumeRoute);
-app.use("/boards", boardRoute);
+app.use("/myportfolio", resumeRoute);
+app.use("/board", boardRoute);
 
 // 에러 미들웨어
 app.use(errorHandler);

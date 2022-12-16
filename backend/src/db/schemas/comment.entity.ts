@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from "typeorm";
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, OneToMany } from "typeorm";
 import { User } from "./user.entity";
 import { Board } from "./board.entity";
 
@@ -8,10 +8,15 @@ export class Comment {
   id: number;
 
   @Column()
-  content: string;
+  text: string;
+
+  @Column({ default: false })
+  fixed: boolean;
 
   @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP" })
   created: Date;
+
+  // @OneToMany((type)=> )
 
   @ManyToOne((type) => User, (user) => user.writeComments)
   user: User[];

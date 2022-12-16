@@ -4,7 +4,13 @@ import { createIndiUser, findOneAuthData, findOneUser, createAuthData, updateAut
 import { CreateUserDto } from "../routes/dto/index.dto";
 import jwt from "jsonwebtoken";
 import { send } from "../config/sendMail";
-import { EmailAuth } from "../db/schemas/index.schema";
+import { EmailAuth, User } from "../db/schemas/index.schema";
+
+// 유저한명정보 불러오기 섭스
+export const indiInfo = async (id: number): Promise<User> => {
+  const user = await findOneUser(id, "비번빼고");
+  return user;
+};
 
 // 회원가입 서비스
 export const join = async (data: CreateUserDto): Promise<Object> => {
@@ -43,7 +49,7 @@ export const login = async (email: string, password: string) => {
       type: "AT",
     },
     process.env.JWT_SECRET_KEY || "secret",
-    { expiresIn: 60 * 10 }
+    { expiresIn: 60 * 60 * 24 } // 수정해야함
   );
   const refreshToken = jwt.sign(
     {
@@ -57,8 +63,65 @@ export const login = async (email: string, password: string) => {
   const result = {
     accessToken,
     refreshToken,
+    userId: user.id,
   };
   return result;
+};
+
+// 정보수정 서비스
+export const updateInfo = async (id: number, currentPw: string, data: Record<string, string>): Promise<boolean> => {
+  // 비밀번호 일치 여부
+  const user = await findOneUser(id);
+  if (!user) throw Error("404, 유저정보를 찾을 수 없습니다. 관리자에게 문의하세요.");
+  const existence = user.password;
+  const comparePw = await bcrypt.compare(currentPw, existence);
+  if (!comparePw) throw Error(`400, 비밀번호를 확인해 주세요.`);
+  if (data.password) {
+    data.password = await bcrypt.hash(data.password, 10);
+  }
+  try {
+    await updateUser(id, data);
+  } catch (err) {
+    throw Error("500, 서버 오류");
+  }
+
+  return true;
+};
+
+// 임시 비밀번호 보내기 서비스
+export const findPassword = async (email: string): Promise<boolean | string> => {
+  const user = await findOneUser(email);
+
+  if (!user) throw Error(`404, ${email}로 가입한 유저는 없습니다.`);
+  const randomStr = Math.random().toString(36).substring(2, 12);
+  const hashedPassword = await bcrypt.hash(randomStr, 10);
+  const data = { password: hashedPassword };
+  try {
+    await updateUser(user.id, data);
+  } catch (err) {
+    throw Error("500, 서버에 오류가 생겼습니다.");
+  }
+
+  const mailInfo = {
+    from: "jinytree1403@naver.com",
+    to: email,
+    subject: "[헤드헌터] 비밀번호 발송 ",
+    text: `      
+    헤드헌터 ${email} 
+    
+    임시 비밀번호 :  ${randomStr}
+    
+    빠른 시일 내로 비밀번호를 변경하시길 바랍니다.
+    `,
+  };
+  //발송
+  // 아래 try/catch 문은 배포시 삭제해야함. 네이버로그인이 안되는것에 대한 오류를 잡은것.
+  try {
+    send(mailInfo);
+    return randomStr;
+  } catch (err) {
+    return true;
+  }
 };
 
 // 회원가입시 이메일 인증 부분
