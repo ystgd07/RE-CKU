@@ -18,15 +18,8 @@ export const findResumeListQ = async (userId: number) => {
     return myResumeList;
 };
 
-// 2-3. 이력서 상세 조회
-export const findResumeQ = async (resumeId: number) => {
-    const myResume = await db.query(`SELECT * FROM resume A JOIN user B ON A.usedUserId = B.id JOIN project C ON A.id = C.usedResumeId WHERE A.id = ?`, resumeId);
-
-    return myResume;
-};
-
-// 업무경험
-// 1. 업무경험 / 프로젝트 생성
+// 통합
+// 1. (업무경험 / 프로젝트) 생성
 export const createDetailQ = async (resumeId: number, createInfo: Record<string, string | number | boolean>, dbname: string) => {
     const [keys, values, arrValues] = insertData(createInfo);
 
@@ -35,7 +28,7 @@ export const createDetailQ = async (resumeId: number, createInfo: Record<string,
     return newCareer;
 };
 
-// 2. 업무경험 / 프로젝트 조회
+// 2. (이력서 / 업무경험 / 프로젝트) 조회
 export const findDetailQ = async (detailId: number, dbname: string, type: string) => {
     if (type == "all") {
         if (dbname == "resume") {
@@ -46,15 +39,22 @@ export const findDetailQ = async (detailId: number, dbname: string, type: string
         const details = await db.query(`SELECT * FROM ${dbname} WHERE usedResumeId = ?`, detailId);
 
         return details;
-    } else {
+    } else { // 업무경험 / 프로젝트 한개 조회
         const details = await db.query(`SELECT *
                                         FROM ${dbname}
                                         WHERE id = ?`, detailId);
 
         return details;
     }
+};
 
-    // return details;
+// 3. (기본 정보, 업무경험, 프로젝트) 이력서 수정
+export const updateResumeQ = async (resumeId: number, updateInfo: Record<string, string | number>, dbname: string) => {
+    const [key, value] = updateData(updateInfo);
+
+    const updatedResume = await db.query(`UPDATE ${dbname} SET ${key.join(", ")} WHERE id = ?`, [...value, resumeId]);
+
+    return updatedResume;
 };
 
 /*

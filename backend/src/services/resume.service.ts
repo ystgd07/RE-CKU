@@ -6,7 +6,7 @@
 // import { createIndiUser, findOneAuthData, findOneUser, createAuthData, updateAuthData } from "../db/index.schema";
 // import { send } from "../config/sendMail";
 // import { EmailAuth } from "../db/schemas/index.schema";
-import { createResumeQ, findResumeListQ, findResumeQ, createDetailQ, findDetailQ } from "../db/index.schema";
+import { createResumeQ, findResumeListQ, createDetailQ, findDetailQ, updateResumeQ } from "../db/index.schema";
 
 // 1. 이력서 생성
 export const createResume = async (id: number, newName: string): Promise<Object> => {
@@ -22,15 +22,8 @@ export const findResumeList = async (data: any): Promise<Object> => {
   return myResumeList;
 };
 
-// 2-3. 이력서 상세 조회
-export const findResume = async (resumeId: number): Promise<Object> => {
-  const findResume = await findResumeQ(resumeId);
-
-  return findResume;
-};
-
-// 업무경험 / 프로젝트
-// 1. 생성
+// 통합
+// 1. (업무경험 / 프로젝트) 생성
 export const createDetail = async (resumeId: number, createInfo: Record<string, string | number | boolean>, dbname: string): Promise<Object> => {
   const newDetail = await createDetailQ(resumeId, createInfo, dbname);
 
@@ -42,6 +35,13 @@ export const findDetail = async (detailId: number, dbname: string, type: string)
   const details = await findDetailQ(detailId, dbname, type);
 
   return details;
+};
+
+// 3. 수정
+export const updateResume = async (resumeId: number, updateInfo: Record<string, string | number>, dbname: string) => {
+  const updatedResume = await updateResumeQ(resumeId, updateInfo, dbname);
+
+  return updatedResume;
 };
 
 /*

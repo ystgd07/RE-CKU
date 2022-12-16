@@ -20,7 +20,7 @@ export class Resume {
   name: string;
 
   @Column({ nullable: true, length: 200 })
-  infomation: string;
+  information: string;
 
   @Column({ nullable: true })
   position: positonEnum;
