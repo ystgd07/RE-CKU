@@ -1,7 +1,9 @@
 import { useParams, useLocation, Outlet, useMatch, Link } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import styled from '@emotion/styled';
 import { Viewer } from '@toast-ui/react-editor';
 import '@toast-ui/editor/dist/toastui-editor-viewer.css';
+import axios from 'axios';
 
 const Container = styled.div`
     display: flex;
@@ -74,8 +76,21 @@ interface RouteState {
         title: string;
     };
 }
-
+interface IPostData {
+    alreadyLikes: boolean;
+    boardInfo: {
+        content: string;
+        fixed: number;
+        hasResumeId: string | null;
+        hashTags: string;
+        ownUserId: number;
+        title: string;
+    };
+    comments: string | null;
+    resumeInfo: string | null;
+}
 const Post = () => {
+    const [postData, setPostData] = useState<IPostData | null>(null);
     const { postId } = useParams<{ postId: string }>();
     const { state } = useLocation() as RouteState;
     console.log(state);
@@ -104,6 +119,24 @@ const Post = () => {
             comment: '오타가 있군요?',
         },
     ];
+
+    useEffect(() => {
+        const fetchPostData = async () => {
+            try {
+                const post = await axios.get(`http://localhost:3001/board/${postId}`);
+                console.log(post.data.data);
+                setPostData(post.data.data);
+
+                return post.data.data;
+            } catch (err) {
+                console.log(err);
+                return;
+            }
+        };
+        const data = fetchPostData();
+        console.log(data);
+    }, [postId]);
+    console.log('POST = ', postData);
     return (
         <Container>
             <Wrapper>

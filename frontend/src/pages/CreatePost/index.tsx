@@ -1,6 +1,7 @@
 import styled from '@emotion/styled';
 //import MarkdownEditor from 'components/MarkdownEditor';
 import { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Editor } from '@toast-ui/react-editor';
 import 'tui-color-picker/dist/tui-color-picker.css';
 import '@toast-ui/editor/dist/toastui-editor.css';
@@ -75,6 +76,7 @@ function CreatePost() {
         hashTags: '',
     });
     const { title, hashTags } = form;
+    const navigate = useNavigate();
 
     const onToggleButton = () => {
         setIsResume(prev => !prev);
@@ -136,12 +138,13 @@ function CreatePost() {
 
         try {
             console.log('API 요청');
-            const res = await axios.post('http://localhost:3001/boards', data, {
+            const res = await axios.post('http://localhost:3001/board', data, {
                 headers: {
                     Authorization: `bearer ${localStorage.getItem('accessToken')}`,
                 },
             });
-            console.log(res);
+            console.log('생성된 게시물 아이디', res.data.data);
+            navigate(`/post/${res.data.data}`);
         } catch (err) {
             console.log(err);
         }
