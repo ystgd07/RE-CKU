@@ -1,4 +1,4 @@
-import React, { FunctionComponent, ReactElement, useEffect, useState } from 'react';
+import React, { FunctionComponent, useEffect, useState } from 'react';
 import { ResumeContainer, ResumeFrame, UserInfo, FormTitle, InputForm, Title } from './style';
 import { BiPlus } from '@react-icons/all-files/bi/BiPlus';
 import { BiEdit } from '@react-icons/all-files/bi/BiEdit';
@@ -11,7 +11,7 @@ const Resume = () => {
     const [swtich, setSwtich] = useState<boolean>(true);
     const [formToggle, setFormToggle] = useState<boolean>(false);
     const [formToggle2, setFormToggle2] = useState<boolean>(false);
-    const [formc, setFormc] = useState<ReactElement[]>([]);
+    // const [formc, setFormc] = useState<ReactElement[]>([]);
     const [userInfo, setUserInfo] = useState([]);
 
     // interface user = {
@@ -53,8 +53,23 @@ const Resume = () => {
     }
 
     useEffect(() => {
+        async function fetchResume() {
+            try {
+                const res = await axios.get(`/myportfolio/resume/${ids}`, {
+                    headers: { authorization: `Bearer ${token}` },
+                });
+                const data = res.data;
+                setUserInfo(data);
+                console.log(userInfo, 'infoinfoinfoinfoinfoinfo', data);
+
+                // const { username, phoneNumber, email } = data;
+                // console.log(res, data, '123123123123', username, phoneNumber, email);
+            } catch (err) {
+                console.log(err);
+            }
+        }
         fetchResume();
-    }, []);
+    }, [ids, token, userInfo]);
 
     const JobEx: FunctionComponent = () => {
         return (

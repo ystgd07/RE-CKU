@@ -40,16 +40,16 @@ const Profile = () => {
     const arr = [20, 40, 100];
     let upperLimit = arr[0];
     let lowerLimit = 0;
-    arr.map((e, idx) => {
-        if (e <= mock[0].point) {
-            upperLimit = arr[idx + 1];
-            if (upperLimit === arr[0]) {
-                lowerLimit = 0;
-            } else {
-                lowerLimit = upperLimit - arr[idx];
-            }
-        }
-    });
+    // arr.map((e, idx) => {
+    //     if (e <= mock[0].point) {
+    //         upperLimit = arr[idx + 1];
+    //         if (upperLimit === arr[0]) {
+    //             lowerLimit = 0;
+    //         } else {
+    //             lowerLimit = upperLimit - arr[idx];
+    //         }
+    //     }
+    // });
 
     console.log(upperLimit, lowerLimit);
     const testWidth = `${((mock[0].point - lowerLimit) / (upperLimit - lowerLimit)) * 100}`;

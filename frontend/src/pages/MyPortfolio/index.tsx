@@ -2,44 +2,7 @@ import { Layout } from './style';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-// let mocksPortfolio: {
-//   name: string;
-//   address: string;
-//   date: string;
-//   id: any;
-// }[];
-// mocksPortfolio = [
-//   {
-//     name: "sungsoo`s 포폴",
-//     address: "충청북도 청주시",
-//     date: "2022-03-07",
-//     id: Math.random(),
-//   },
-//   {
-//     name: "s`s 포폴",
-//     address: "충청북도 청주시",
-//     date: "010-1234-5678",
-//     id: Math.random(),
-//   },
-//   {
-//     name: "y`s 포폴",
-//     address: "충청북도 청주시",
-//     date: "010-1234-5678",
-//     id: Math.random(),
-//   },
-//   {
-//     name: "y`s 포폴",
-//     address: "충청북도 청주시",
-//     date: "010-1234-5678",
-//     id: Math.random(),
-//   },
-//   {
-//     name: "y`s 포폴",
-//     address: "충청북도 청주시",
-//     date: "010-1234-5678",
-//     id: Math.random(),
-//   },
-// ];
+
 type Mock = { name: string; address: string; date: string; id: any };
 
 const ResumeMain = () => {

@@ -1,19 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
 import axios from 'axios';
 import * as S from './style';
 import Logo from 'assets/images/iogo.png';
 import { useForm } from 'react-hook-form';
 
 const Join = () => {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [passwordCheck, setPasswordCheck] = useState('');
-    const [name, setName] = useState('');
-    const [phone, setPhone] = useState('');
-    const [code, setCode] = useState('');
-
     const navigate = useNavigate();
     const {
         register,
@@ -37,7 +29,7 @@ const Join = () => {
         if (localStorage.getItem('accessToken')) {
             navigate('/');
         }
-    }, []);
+    }, [navigate]);
 
     const onValid = async (data: FormData) => {
         if (data.password !== data.passwordCheck) {
@@ -101,12 +93,6 @@ const Join = () => {
             alert('인증 완료');
         } catch (err: any) {
             console.error(err.stack);
-        }
-    };
-
-    const errStyle = () => {
-        if (password !== passwordCheck) {
-            return { border: '3px solid red' };
         }
     };
 
@@ -174,7 +160,6 @@ const Join = () => {
                         <p>비밀번호 확인</p>
                         <input
                             type="password"
-                            //   style={errStyle()}
                             placeholder="비밀번호 확인"
                             {...register('passwordCheck', {
                                 required: '비밀번호를 입력해주세요 ',
