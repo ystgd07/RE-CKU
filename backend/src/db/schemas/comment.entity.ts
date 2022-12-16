@@ -8,7 +8,10 @@ export class Comment {
   id: number;
 
   @Column()
-  content: string;
+  text: string;
+
+  @Column({ default: false })
+  fixed: boolean;
 
   @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP" })
   created: Date;

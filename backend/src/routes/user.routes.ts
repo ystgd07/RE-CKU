@@ -1,11 +1,26 @@
 import bcrypt from "bcrypt";
 import express, { Request, Response, NextFunction } from "express";
-import { authEmail, findPassword, join, login, sendEmail, updateInfo } from "../services/index.service";
+import { authEmail, findPassword, indiInfo, join, login, sendEmail, updateInfo } from "../services/index.service";
 import { CreateUserDto, CreateAuthDataDto, AuthEmailDto, LoginUserDto } from "./dto/index.dto";
 import { random } from "../config/sendMail";
-import { createIndiUser } from "../db/user.repo";
+import { createIndiUser, findOneUser } from "../db/user.repo";
 import { avatarImg, tokenValidator, validateBody } from "../middlewares/index.middleware";
 const userRoute = express();
+
+userRoute.get("/individual", tokenValidator, async (req, res, next) => {
+  const { id } = req.body.jwtDecoded;
+  console.log(id);
+  try {
+    const user = await indiInfo(id);
+    return res.status(200).json({
+      status: 200,
+      msg: "회원정보",
+      data: user,
+    });
+  } catch (err) {
+    next(err);
+  }
+});
 
 // 개인 회원가입 라우트
 userRoute.post("/individual", validateBody(CreateUserDto), async (req: Request, res: Response, next: NextFunction) => {
