@@ -8,10 +8,17 @@ export const commentLikes = async (userId: number, commentId: number, likesStatu
   try {
     const alreadyLikes = await commentRepo.alreadyLikesComment(commentId);
     console.log("alreadyLikeszzz : ", alreadyLikes);
-
-    // 아직 좋아요하지 않았고, DB에서도 그렇다면 좋아요 로직
+    // 좋아요 하지 않은 게시물이라면 좋아요
     if (!likesStatus && !alreadyLikes) {
       await commentRepo.likeCommentFromUser(data);
+
+      // 아래 변수명에 포인트 적립여부가 담겨있음
+      const alreadySavePoint = await commentRepo.findSavedPointByComment(userId, commentId);
+
+      // 첫번째 좋아요라 포인트적립이 되지 않았을 경우 적립
+      if (!alreadySavePoint && alreadySavePoint.userId !== userId) {
+        await commentRepo.savePointByComment(data);
+      }
       return true; // 좋아요
     } else {
       await commentRepo.unlikeCommentFromUser(userId, commentId);

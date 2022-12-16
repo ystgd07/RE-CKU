@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToMany } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, ManyToOne } from "typeorm";
 import { Board } from "./board.entity";
 import { User } from "./user.entity";
 
@@ -7,9 +7,9 @@ export class PointFromBoard {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToMany((type) => User, (user) => user.getPointFromBoard)
+  @ManyToOne((type) => User, (user) => user.getPointFromBoard)
   userId: User;
 
-  @ManyToMany((type) => Board, (board) => board.getPoint)
+  @ManyToOne((type) => Board, (board) => board.getPoint)
   boardId: Board;
 }
