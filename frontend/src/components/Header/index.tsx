@@ -1,11 +1,19 @@
 import React from 'react';
-import { HeaderContainer } from './style';
+import { useNavigate } from 'react-router-dom';
+import { HContainer, HDiv, HLogo } from './style';
 
 const Header = () => {
+    const navigate = useNavigate();
     return (
-        <HeaderContainer>
-            <h1>Hello World</h1>
-        </HeaderContainer>
+        <HContainer>
+            <HDiv>
+                <div>
+                    <div onClick={() => navigate('/')}>
+                        <HLogo>RECHU</HLogo>
+                    </div>
+                </div>
+            </HDiv>
+        </HContainer>
     );
 };
 

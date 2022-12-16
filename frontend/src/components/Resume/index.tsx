@@ -12,7 +12,7 @@ const Resume = () => {
     const [formToggle, setFormToggle] = useState<boolean>(false);
     const [formToggle2, setFormToggle2] = useState<boolean>(false);
     // const [formc, setFormc] = useState<ReactElement[]>([]);
-    const [userInfo, setUserInfo] = useState([]);
+    // const [userInfo, setUserInfo] = useState([]);
 
     // interface user = {
 
@@ -36,22 +36,6 @@ const Resume = () => {
     console.log(params.id, 'ididididididid');
     const token = localStorage.getItem('accessToken');
 
-    async function fetchResume() {
-        try {
-            const res = await axios.get(`/myportfolio/resume/${ids}`, {
-                headers: { authorization: `Bearer ${token}` },
-            });
-            const data = res.data;
-            setUserInfo(data);
-            console.log(userInfo, 'infoinfoinfoinfoinfoinfo', data);
-
-            // const { username, phoneNumber, email } = data;
-            // console.log(res, data, '123123123123', username, phoneNumber, email);
-        } catch (err) {
-            console.log(err);
-        }
-    }
-
     useEffect(() => {
         async function fetchResume() {
             try {
@@ -59,8 +43,8 @@ const Resume = () => {
                     headers: { authorization: `Bearer ${token}` },
                 });
                 const data = res.data;
-                setUserInfo(data);
-                console.log(userInfo, 'infoinfoinfoinfoinfoinfo', data);
+                // setUserInfo(data);
+                console.log('data-- - - - - -- - - - - -- - ', data);
 
                 // const { username, phoneNumber, email } = data;
                 // console.log(res, data, '123123123123', username, phoneNumber, email);
@@ -69,7 +53,7 @@ const Resume = () => {
             }
         }
         fetchResume();
-    }, [ids, token, userInfo]);
+    }, []);
 
     const JobEx: FunctionComponent = () => {
         return (

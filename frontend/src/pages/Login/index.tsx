@@ -21,10 +21,9 @@ const Login = () => {
 
     useEffect(() => {
         console.log('이동?');
-        if (localStorage.getItem('accessToken')) {
-            navigate('/');
-        }
+        if (localStorage.getItem('accessToken')) navigate('/');
     }, [navigate]);
+
     const onSubmitHandler = async (data: FormData) => {
         const jsondata = {
             email: data.email,

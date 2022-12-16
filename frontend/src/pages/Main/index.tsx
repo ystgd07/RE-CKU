@@ -19,6 +19,12 @@ function Main() {
                     게시물 상세 페이지
                 </Link>
             </div>
+            <div>
+                <Link to="/login">로그인</Link>
+            </div>
+            <div>
+                <Link to="/myportfolio">포폴</Link>
+            </div>
         </>
     );
 }

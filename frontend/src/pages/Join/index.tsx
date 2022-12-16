@@ -99,14 +99,14 @@ const Join = () => {
     return (
         <S.Div>
             <S.MobileDiv>
-                <p>
-                    <div>
+                <div>
+                    <article>
                         <Link to="/">
                             {' '}
                             <S.Image src={Logo} alt="로고" />
                         </Link>
-                    </div>
-                </p>
+                    </article>
+                </div>
                 <form onSubmit={handleSubmit(onValid)} autoComplete="off">
                     <div
                         style={{
