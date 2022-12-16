@@ -26,13 +26,14 @@ boardRoute.get("/all", async (req, res, next) => {
 });
 
 // 게시물 상세조회
-boardRoute.get("/:id", async (req, res, next) => {
+boardRoute.get("/:id/", async (req, res, next) => {
   const id = Number(req.params.id);
   let userId = null;
   // 혹시라도 토큰을 넣어서 보냈더라면 검증해주고 userId에 id값 넣기
   if (req.query.lifeIsGood) {
     userId = Number(req.query.lifeIsGood);
   }
+  console.log(userId, "유저아이디 ");
   try {
     const Notice = await getOneNotice(id, userId);
     return res.status(200).json({
@@ -133,6 +134,7 @@ boardRoute.delete("/:boardId", tokenValidator, async (req, res, next) => {
 
 // 내 게시물 보기
 
+// 댓글달기
 boardRoute.post("/comment/:boardId", tokenValidator, async (req, res, next) => {
   const userId = req.body.jwtDecoded.id;
   const boardId = req.params.boardId;

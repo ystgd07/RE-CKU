@@ -28,11 +28,11 @@ export const getNoticeAll = async (): Promise<Board[]> => {
   return result;
 };
 
-export const getOneNotice = async (id: number, userId?: null | number) => {
+export const getOneNotice = async (id: number, userId: null | number) => {
   let alreadyLikes = false;
   try {
-    let Notice = await findOneBoard(id);
-    // const overlapLikes = jsonParse(await likesFrom(Notice.boardInfo.ownUserId))[0][0];
+    let Notice = await findOneBoard(id, userId);
+    // 댓글의 오너
     if (Notice.boardInfo.ownUserId === userId && userId !== null) {
       alreadyLikes = true;
     }
