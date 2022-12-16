@@ -1,6 +1,13 @@
 import { CreateBoardDto } from "./dto/create-board.dto";
 import express from "express";
-import { addLikes, getNoticeAll, getOneNotice, postNotice, updateNotice } from "../services/board.service";
+import {
+  addLikes,
+  deleteNotice,
+  getNoticeAll,
+  getOneNotice,
+  postNotice,
+  updateNotice,
+} from "../services/board.service";
 import { validateBody, tokenValidator } from "../middlewares/index.middleware";
 
 const boardRoute = express();
@@ -23,9 +30,8 @@ boardRoute.get("/:id", async (req, res, next) => {
   const id = Number(req.params.id);
   let userId = null;
   // 혹시라도 토큰을 넣어서 보냈더라면 검증해주고 userId에 id값 넣기
-  if (req.headers.authorization) {
-    tokenValidator(req, res, next);
-    () => (userId = Number(req.body.jwtDecoded.id));
+  if (req.query.lifeIsGood) {
+    userId = Number(req.query.lifeIsGood);
   }
   try {
     const Notice = await getOneNotice(id, userId);
@@ -101,6 +107,10 @@ boardRoute.patch("/like/:boardId", tokenValidator, async (req, res, next) => {
   const { likesStatus } = req.body;
   try {
     const likes = await addLikes(id, boardId, likesStatus);
+    return res.status(200).json({
+      status: 200,
+      msg: `좋아요 상태 : ${likes} `,
+    });
   } catch (err) {
     next(err);
   }
@@ -109,8 +119,13 @@ boardRoute.patch("/like/:boardId", tokenValidator, async (req, res, next) => {
 // 게시글 삭제 API
 boardRoute.delete("/:boardId", tokenValidator, async (req, res, next) => {
   const { id } = req.body.jwtDecoded;
-  const { boardId } = req.params;
+  const boardId = Number(req.params.boardId);
   try {
+    await deleteNotice(id, boardId);
+    return res.status(200).json({
+      status: 200,
+      msg: "삭제 완료",
+    });
   } catch (err) {
     next(err);
   }
