@@ -52,10 +52,11 @@ const ResumeMain = () => {
             //   "https://reactproject-test-78fcd-default-rtdb.firebaseio.com/mock.json",
             //   { mocksPortfolio }
             // );
-            const mocks = await axios.get('/myportfolio/myportfolio/list', {
+            const mocks = await axios.get('/myportfolio/list', {
                 headers: { authorization: `Bearer ${token}` },
             });
-            console.log(mocks);
+            console.log(mocks, 'SUCCCCCCCCCess');
+
             // console.log(mocks.data["-NJJR5a9003Z0Qw6WOzB"]);
             // const mock = mocks.data["-NJJR5a9003Z0Qw6WOzB"].mocksPortfolio;
             // setRes(mock);
@@ -71,12 +72,15 @@ const ResumeMain = () => {
             //   { mocksPortfolio }
             // );
             const mocks = await axios.post(
-                '/myportfolio/resume/',
+                '/myportfolio/resume',
                 {},
                 { headers: { authorization: `Bearer ${token}` } },
             );
+
+            const id = mocks.data.createdResumeId;
+
             if (mocks.status === 200) {
-                navigate('/');
+                navigate(`/resume/${id}`);
             }
             console.log(mocks);
         } catch (e) {

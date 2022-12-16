@@ -1,20 +1,60 @@
-import React, { FunctionComponent, ReactElement, useState } from 'react';
+import React, { FunctionComponent, ReactElement, useEffect, useState } from 'react';
 import { ResumeContainer, ResumeFrame, UserInfo, FormTitle, InputForm, Title } from './style';
 import { BiPlus } from '@react-icons/all-files/bi/BiPlus';
 import { BiEdit } from '@react-icons/all-files/bi/BiEdit';
 import { DatePicker } from 'antd';
+import axios from 'axios';
 import Header from 'components/Header';
+import { useParams } from 'react-router-dom';
 
 const Resume = () => {
     const [swtich, setSwtich] = useState<boolean>(true);
     const [formToggle, setFormToggle] = useState<boolean>(false);
     const [formToggle2, setFormToggle2] = useState<boolean>(false);
     const [formc, setFormc] = useState<ReactElement[]>([]);
-    // const [state, dispatch] = useReducer(reducer);
+    const [userInfo, setUserInfo] = useState<user>([]);
+
+    // interface user = {
+
+    //         username: string;
+    //         avatarUrl: string;
+    //         created: string;
+    //         email: string;
+    //         id: number;
+    //         phoneNumber?: number;
+    //         username: string;
+    // };
+
+    // Record<string, string | number | boolean>
 
     const choiceJob = (e: React.ChangeEvent<HTMLSelectElement>) => {
         console.log(e.target.value, '123');
     };
+
+    const params = useParams();
+    const ids = params.id;
+    console.log(params.id, 'ididididididid');
+    const token = localStorage.getItem('accessToken');
+
+    async function fetchResume() {
+        try {
+            const res = await axios.get(`/myportfolio/resume/${ids}`, {
+                headers: { authorization: `Bearer ${token}` },
+            });
+            const data = res.data;
+            setUserInfo(data);
+            console.log(userInfo, 'infoinfoinfoinfoinfoinfo', data);
+
+            // const { username, phoneNumber, email } = data;
+            // console.log(res, data, '123123123123', username, phoneNumber, email);
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+    useEffect(() => {
+        fetchResume();
+    }, []);
 
     const JobEx: FunctionComponent = () => {
         return (
@@ -122,14 +162,18 @@ const Resume = () => {
                         <div className="userFlex">
                             <ul>
                                 <li>
-                                    <input type="text" placeholder="name" value={`이다노`} />
+                                    <input
+                                        type="text"
+                                        placeholder="name"
+                                        // value={`${userInfo.userData.username}`}
+                                    />
                                 </li>
                                 <li>
                                     <small>Email</small>{' '}
                                     <input
                                         type="email"
                                         placeholder="이메일"
-                                        value={`eksh7080@naver.com`}
+                                        // value={`${users.email}`}
                                     />
                                 </li>
                                 <li>
@@ -137,7 +181,7 @@ const Resume = () => {
                                     <input
                                         type="tel"
                                         placeholder="연락처"
-                                        value={`010-3993-3263`}
+                                        // value={`${users.phoneNumber}`}
                                     />
                                 </li>
                                 <li>
