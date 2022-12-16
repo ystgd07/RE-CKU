@@ -24,7 +24,7 @@ export const dataSource = new DataSource({
   password: "11111",
   database: "company",
   port: 3306,
-  entities: ["src/db/schemas/*.entity.ts"],
+  entities: ["src/db/schemas/*.entity.ts", "src/db/schemas/*.schema.ts"],
   logging: false,
   synchronize: true,
 });

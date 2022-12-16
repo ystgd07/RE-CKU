@@ -6,7 +6,14 @@
 // import { createIndiUser, findOneAuthData, findOneUser, createAuthData, updateAuthData } from "../db/index.schema";
 // import { send } from "../config/sendMail";
 // import { EmailAuth } from "../db/schemas/index.schema";
-import { createResumeQ, findResumeListQ, createDetailQ, findDetailQ, updateResumeQ, deleteResumeQ } from "../db/index.schema";
+import {
+  createResumeQ,
+  findResumeListQ,
+  createDetailQ,
+  findDetailQ,
+  updateResumeQ,
+  deleteResumeQ,
+} from "../db/index.repo";
 
 // 1. 이력서 생성
 export const createResume = async (id: number, newName: string): Promise<Object> => {
@@ -24,7 +31,11 @@ export const findResumeList = async (data: any): Promise<Object> => {
 
 // 통합
 // 1. (업무경험 / 프로젝트) 생성
-export const createDetail = async (resumeId: number, createInfo: Record<string, string | number | boolean>, dbname: string): Promise<Object> => {
+export const createDetail = async (
+  resumeId: number,
+  createInfo: Record<string, string | number | boolean>,
+  dbname: string
+): Promise<Object> => {
   const newDetail = await createDetailQ(resumeId, createInfo, dbname);
 
   return newDetail;

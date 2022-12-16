@@ -1,12 +1,12 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany, OneToOne } from "typeorm";
-// import { Company } from "./company.entity";
 import { Connect } from "./connect.entity";
 import { Resume } from "./resume.entity";
-import { Stack } from "./stacks.entity";
 import { Board } from "./board.entity";
 import { Comment } from "./comment.entity";
-import { CommentLikeMaping } from "./resumeLikeMaping.entity";
+import { CommentLikeMaping } from "./commentLikeMaping.entity";
 import { BoardLikeMaping } from "./boardLikeMaping.entity";
+import { PointFromComment } from "./point-comment.schema";
+import { PointFromBoard } from "./point-board.schema";
 
 export enum roleEnum {
   bronze = "브론즈",
@@ -55,6 +55,12 @@ export class User {
 
   @OneToMany((type) => Resume, (resume) => resume.usedUser, { nullable: true })
   resumes: Resume[];
+
+  @OneToMany((type) => PointFromBoard, (point) => point.userId)
+  getPointFromBoard: PointFromBoard[];
+
+  @OneToMany((type) => PointFromComment, (point) => point.userId)
+  getPointFromComment: PointFromComment[];
 
   @OneToMany((type) => Board, (board) => board.fromUser, { nullable: true })
   notices: Board[]; // 작성한 게시글

@@ -1,22 +1,14 @@
 import { CreateBoardDto } from "./dto/create-board.dto";
 import express from "express";
-import {
-  addLikes,
-  deleteNotice,
-  getNoticeAll,
-  getOneNotice,
-  postNotice,
-  updateNotice,
-} from "../services/board.service";
+import * as boardService from "../services/board.service";
 import { validateBody, tokenValidator } from "../middlewares/index.middleware";
 
-const boardRoute = express();
+export const boardRoute = express();
 // 전체 게시물 목록 조회
 boardRoute.get("/all", async (req, res, next) => {
   try {
-    const notices = await getNoticeAll();
+    const notices = await boardService.getNoticeAll();
     return res.status(200).json({
-      status: 200,
       msg: "게시글 전체 목록 조회",
       data: notices,
     });
@@ -35,11 +27,10 @@ boardRoute.get("/:id/", async (req, res, next) => {
   }
   console.log(userId, "유저아이디 ");
   try {
-    const Notice = await getOneNotice(id, userId);
+    const notice = await boardService.getOneNotice(id, userId);
     return res.status(200).json({
-      status: 200,
       msg: "찾아냈습니다.",
-      data: Notice,
+      data: notice,
     });
   } catch (err) {
     next(err);
@@ -62,9 +53,8 @@ boardRoute.post("/", validateBody(CreateBoardDto), tokenValidator, async (req, r
   };
   console.log("바디의 데이터 : ", data);
   try {
-    const result = await postNotice(data);
+    const result = await boardService.postNotice(data);
     return res.status(201).json({
-      status: 200,
       msg: "게시글 생성 완료",
       data: result.insertId,
     });
@@ -89,7 +79,7 @@ boardRoute.patch("/:boardId", tokenValidator, async (req, res, next) => {
   };
 
   try {
-    const udated = await updateNotice(boardId, fromUserId, toUpdate);
+    const udated = await boardService.updateNotice(boardId, fromUserId, toUpdate);
     return res.status(200).json({
       status: 200,
       msg: "게시글이 수정되었습니다",
@@ -103,13 +93,13 @@ boardRoute.patch("/:boardId", tokenValidator, async (req, res, next) => {
 
 // 게시글 좋아요 API
 boardRoute.patch("/like/:boardId", tokenValidator, async (req, res, next) => {
-  const { id } = req.body.jwtDecoded;
+  const id = Number(req.body.jwtDecoded.id);
   const boardId = Number(req.params.boardId);
   const { likesStatus } = req.body;
+  console.log(id, boardId, likesStatus);
   try {
-    const likes = await addLikes(id, boardId, likesStatus);
+    const likes = await boardService.addLikes(id, boardId, likesStatus);
     return res.status(200).json({
-      status: 200,
       msg: `좋아요 상태 : ${likes} `,
     });
   } catch (err) {
@@ -122,9 +112,8 @@ boardRoute.delete("/:boardId", tokenValidator, async (req, res, next) => {
   const { id } = req.body.jwtDecoded;
   const boardId = Number(req.params.boardId);
   try {
-    await deleteNotice(id, boardId);
+    await boardService.deleteNotice(id, boardId);
     return res.status(200).json({
-      status: 200,
       msg: "삭제 완료",
     });
   } catch (err) {
@@ -134,24 +123,4 @@ boardRoute.delete("/:boardId", tokenValidator, async (req, res, next) => {
 
 // 내 게시물 보기
 
-// 댓글달기
-boardRoute.post("/comment/:boardId", tokenValidator, async (req, res, next) => {
-  const userId = req.body.jwtDecoded.id;
-  const boardId = req.params.boardId;
-  const { content } = req.body;
-  const data = {
-    userId,
-    boardId,
-    content,
-  };
-  try {
-  } catch (err) {
-    next(err);
-  }
-});
-
-boardRoute.post("/jwttest", tokenValidator, (req, res) => {
-  console.log("req.body ", req.body);
-  return res.json({ data: req.headers });
-});
 export default boardRoute;
