@@ -7,7 +7,6 @@ import Join from 'pages/Join';
 import FindPw from 'pages/FindPw';
 import MyPortfolio from 'pages/MyPortfolio';
 import Profile from 'pages/Profile';
-
 const Router = () => {
     return (
         <BrowserRouter basename={process.env.PUBLIC_URL}>
