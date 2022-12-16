@@ -62,6 +62,7 @@ export const findOneBoard = async (data: number, userId?: null | number) => {
     [data]
   );
   boardInfo[0][0].email = (await findOneUser(boardInfo[0][0].ownUserId, "이메일")).email;
+  boardInfo[0][0].avatarUrl = (await findOneUser(boardInfo[0][0].ownUserId, "이메일")).avatarUrl;
   // 이미 게시물에 좋아요 눌렀는지 확인
 
   // 만약 이력서 게시물이 이력서 id를 존재한다면 이력서정보를 resumInfo 에 담아줌
