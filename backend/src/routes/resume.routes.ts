@@ -43,10 +43,19 @@ resumeRoute.post("/resume", tokenValidator, async (req, res, next) => {
 
         const newResume = await createResume(userId, newName);
 
+        // return에서 생성된 resumeId를 못 받아서 로직 작성
+        const createdmyResumeList = await findResumeList(userId);
+        let resumeId = [];
+
+        for (let i=0; i<createdmyResumeList[0].length; i++) {
+            resumeId.push(createdmyResumeList[0][i].id);
+        }
+
         return res.json({
             status: 201,
             msg: "이력서 생성 성공",
             data: newResume,
+            createdResumeId: Math.max(...resumeId)
         });
     } catch (err) {
         next(err);
