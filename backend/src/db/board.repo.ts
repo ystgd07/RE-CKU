@@ -1,4 +1,4 @@
-import { db } from "./index.schema";
+import { db, findOneUser } from "./index.schema";
 import { Board } from "./schemas/board.entity";
 import { updateData, insertData, jsonParse } from "./utils/index.utils";
 
@@ -39,12 +39,16 @@ export const findLikesToBoard = async (boardId: number) => {
 };
 
 // 상세 게시글 보기
-export const findOneBoard = async (data: number) => {
+export const findOneBoard = async (data: number, userId?: null | number) => {
   // 이력서와 댓글의 기본값
+  let id = null;
+  if (userId) {
+    id = userId;
+  }
   let resumeInfo = null;
   let comments = null;
   console.log("findOneBoard repo ");
-  const boardInfo = await db.query(
+  let boardInfo = await db.query(
     `SELECT 
     title,
     content, 
@@ -57,7 +61,7 @@ export const findOneBoard = async (data: number) => {
     WHERE id=?`,
     [data]
   );
-
+  boardInfo[0][0].email = (await findOneUser(boardInfo[0][0].ownUserId, "이메일")).email;
   // 이미 게시물에 좋아요 눌렀는지 확인
 
   // 만약 이력서 게시물이 이력서 id를 존재한다면 이력서정보를 resumInfo 에 담아줌
@@ -75,23 +79,62 @@ export const findOneBoard = async (data: number) => {
 
     // 이력서가 있다면 이력서에 종속된 프로젝트와 커리어를 찾아서 각 필드에 넣어줌
     resumeInfo.projects = (
-      await db.query(`select * from project a join resume r On a.usedResumeId=r.id   where a.usedResumeId=?`, [
-        resumeInfo.id,
-      ])
-    )[0][0];
+      await db.query(
+        `
+          SELECT * 
+          FROM project a 
+          JOIN resume r
+          On a.usedResumeId=r.id  
+          WHERE a.usedResumeId=?
+        `,
+        [resumeInfo.id]
+      )
+    )[0];
     resumeInfo.career = (
-      await db.query(` select * from career a join resume r On a.usedResumeId=r.id   where a.usedResumeId=?`, [
-        resumeInfo.id,
-      ])
-    )[0][0];
+      await db.query(
+        `
+          SELECT * 
+          FROM career a 
+          JOIN resume r 
+          On a.usedResumeId = r.id   
+          WHERE a.usedResumeId=?
+        `,
+        [resumeInfo.id]
+      )
+    )[0];
   }
 
   // 귀속된 커맨트를 찾고 없다면 null 로 반환
   comments = await findComments(data);
+  const parsing = jsonParse(comments);
+  // console.log("파싱값 ", parsing);
+  let reduceCmt = await parsing.reduce(async (a, c) => {
+    let result = await a;
+    // 현재 커멘트의 id와 유저값을 쿼리날려서
+    // 매핑 테이블에서 값을 찾아서 있다면
+    // 이 댓글에 대한 좋아요를 눌렀던 것임.
+    let mapingTable = await jsonParse(
+      await db.query(
+        `
+      SELECT id
+      From comment_like_maping 
+      Where (userId =? AND commentId =?)
+      `,
+        [id, c.commentId]
+      )
+    )[0][0];
+    if (mapingTable) {
+      console.log("좋아요 누른 댓글임");
+      c.alreadyLikes = true;
+    }
+    result.push(c);
+    return result;
+  }, []);
+
   if (comments.length === 0) {
-    comments = null;
+    reduceCmt = null;
   }
-  const result = { boardInfo: boardInfo[0][0], resumeInfo, comments };
+  const result = { boardInfo: boardInfo[0][0], resumeInfo, comments: reduceCmt };
   // 게시물보여줄때
   // 게시물id, 타이틀, 내용, 게시일, 작성자, 이력서:{}, 댓글들:[{댓글id ,내용, 유저이름, 유저아바타, 생성일자 }{}{}]
   // return user[0][0];
@@ -138,14 +181,16 @@ export const deleteBoard = async (boardId: number) => {
 
 // 게시물ID 로 댓글 찾기
 export const findComments = async (boardId: number) => {
-  console.log("댓글찾다가?");
-  const comments = await db.query(
+  let comments = await db.query(
     `SELECT 
+    s.alreadyLikes,
     s.id as commentId, 
     u.username, 
+    u.avatarUrl,
     s.text,
     s.created as commentCreated,
-    s.userId,
+    s.likes,
+    s.userId as fromUserId,
     s.fixed
     From board a 
     JOIN comment s 
@@ -155,6 +200,24 @@ export const findComments = async (boardId: number) => {
     WHERE a.id=? `,
     [boardId]
   );
+  // 사람이 댓글에 좋아요 하면
+  // 사람1    댓글 1
+  // 코맨트id로 찾을 경우 이 댓글을 좋아하는 사람들의 목록이 나옴
+  // const parsing = jsonParse(comments)[0];
+  // console.log("파싱값 ", parsing);
+  // const reduceCmt = parsing.reduce(async (a, c) => {
+  //   let result = await a;
+  //   const curCommentId = c.commentId
+  //   const mapingTable = await db.query(
+  //     `
+  //     SELECT userId
+  //     From comment_like_maping
+  //     Where commentId =
+  //     `,
+  //     []
+  //   );
+  // }, []);
+
   return comments[0];
 };
 
@@ -196,6 +259,34 @@ export const unlikeBoardFromUser = async (userId: number, boardId: number) => {
       WHERE (userId = ? AND boardId = ?)
     `,
     [userId, boardId]
+  );
+  return true;
+};
+
+// 댓글의 좋아요 추가
+export const likeCommentFromUser = async (data: Record<number, number>) => {
+  const [keys, values, valval] = insertData(data);
+  await db.query(
+    `
+      INSERT 
+      INTO 
+      comment_like_maping (${keys.join(", ")})
+      VALUES (${values})
+    `,
+    [...valval]
+  );
+  return true;
+};
+
+export const unlikeCommentFromUser = async (userId: number, commentId: number) => {
+  // 삭제에 필요한것들 userId, boardId WHERE (coulmn = ? ADN coulmn2 = ?)
+  await db.query(
+    `
+      DELETE
+      comment_like_maping
+      WHERE (userId = ? AND commentId = ?)
+    `,
+    [userId, commentId]
   );
   return true;
 };

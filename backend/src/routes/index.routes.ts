@@ -1,4 +1,4 @@
-export * from "./company.routes";
+export * from "./comment.routes";
 export * from "./user.routes";
 export * from "./board.routes";
 export * from "./resume.routes";

@@ -57,6 +57,7 @@ userRoute.post("/", validateBody(LoginUserDto), async (req, res, next) => {
       msg: "로그인 성공",
       accessToken: success.accessToken,
       refreshToken: success.refreshToken,
+      userId: success.userId,
     });
   } catch (err) {
     next(err);
@@ -150,3 +151,4 @@ userRoute.post("/zz", async (req, res, next) => {
   });
 });
 export default userRoute;
+//
