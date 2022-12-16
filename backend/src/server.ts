@@ -24,6 +24,7 @@ app.use("/", rootRoute);
 app.use("/users", userRoute);
 app.use("/myportfolio", resumeRoute);
 app.use("/board", boardRoute);
+app.use("/comments", boardRoute);
 
 // 에러 미들웨어
 app.use(errorHandler);

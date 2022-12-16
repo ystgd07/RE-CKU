@@ -1,6 +1,7 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from "typeorm";
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, OneToMany } from "typeorm";
 import { User } from "./user.entity";
 import { Board } from "./board.entity";
+import { CommentLikeMaping } from "./resumeLikeMaping.entity";
 
 @Entity()
 export class Comment {
@@ -15,6 +16,15 @@ export class Comment {
 
   @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP" })
   created: Date;
+
+  @Column({ default: 0 })
+  likes: number;
+
+  @Column({ default: 0 })
+  alreadyLikes: number;
+
+  @OneToMany((type) => CommentLikeMaping, (table) => table.comment)
+  ownLikes: CommentLikeMaping;
 
   @ManyToOne((type) => User, (user) => user.writeComments)
   user: User[];

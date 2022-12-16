@@ -1,9 +1,17 @@
 import { CreateBoardDto } from "./dto/create-board.dto";
 import express from "express";
-import { getNoticeAll, getOneNotice, postNotice, updateNotice } from "../services/board.service";
+import {
+  addLikes,
+  deleteNotice,
+  getNoticeAll,
+  getOneNotice,
+  postNotice,
+  updateNotice,
+} from "../services/board.service";
 import { validateBody, tokenValidator } from "../middlewares/index.middleware";
 
 const boardRoute = express();
+// 전체 게시물 목록 조회
 boardRoute.get("/all", async (req, res, next) => {
   try {
     const notices = await getNoticeAll();
@@ -17,10 +25,17 @@ boardRoute.get("/all", async (req, res, next) => {
   }
 });
 
-boardRoute.get("/:id", async (req, res, next) => {
+// 게시물 상세조회
+boardRoute.get("/:id/", async (req, res, next) => {
   const id = Number(req.params.id);
+  let userId = null;
+  // 혹시라도 토큰을 넣어서 보냈더라면 검증해주고 userId에 id값 넣기
+  if (req.query.lifeIsGood) {
+    userId = Number(req.query.lifeIsGood);
+  }
+  console.log(userId, "유저아이디 ");
   try {
-    const Notice = await getOneNotice(id);
+    const Notice = await getOneNotice(id, userId);
     return res.status(200).json({
       status: 200,
       msg: "찾아냈습니다.",
@@ -29,11 +44,6 @@ boardRoute.get("/:id", async (req, res, next) => {
   } catch (err) {
     next(err);
   }
-});
-
-boardRoute.post("/jwttest", tokenValidator, (req, res) => {
-  console.log("req.body ", req.body);
-  return res.json({ data: req.headers });
 });
 
 // 게시글 작성 API
@@ -91,6 +101,40 @@ boardRoute.patch("/:boardId", tokenValidator, async (req, res, next) => {
   }
 });
 
+// 게시글 좋아요 API
+boardRoute.patch("/like/:boardId", tokenValidator, async (req, res, next) => {
+  const { id } = req.body.jwtDecoded;
+  const boardId = Number(req.params.boardId);
+  const { likesStatus } = req.body;
+  try {
+    const likes = await addLikes(id, boardId, likesStatus);
+    return res.status(200).json({
+      status: 200,
+      msg: `좋아요 상태 : ${likes} `,
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// 게시글 삭제 API
+boardRoute.delete("/:boardId", tokenValidator, async (req, res, next) => {
+  const { id } = req.body.jwtDecoded;
+  const boardId = Number(req.params.boardId);
+  try {
+    await deleteNotice(id, boardId);
+    return res.status(200).json({
+      status: 200,
+      msg: "삭제 완료",
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// 내 게시물 보기
+
+// 댓글달기
 boardRoute.post("/comment/:boardId", tokenValidator, async (req, res, next) => {
   const userId = req.body.jwtDecoded.id;
   const boardId = req.params.boardId;
@@ -104,5 +148,10 @@ boardRoute.post("/comment/:boardId", tokenValidator, async (req, res, next) => {
   } catch (err) {
     next(err);
   }
+});
+
+boardRoute.post("/jwttest", tokenValidator, (req, res) => {
+  console.log("req.body ", req.body);
+  return res.json({ data: req.headers });
 });
 export default boardRoute;
