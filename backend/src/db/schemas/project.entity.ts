@@ -8,18 +8,19 @@ export class Project {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ nullable: false })
   projectName: string;
 
-  @Column()
-  year: string; // YYMM
+  @Column({ nullable: false })
+  year: string;
 
-  @Column()
-  infomation: string;
+  @Column({ nullable: true })
+  information: string;
 
-  @Column()
+  @Column({ nullable: true })
   link1: string;
-  @Column()
+
+  @Column({ nullable: true })
   link2: string;
 
   @OneToMany((type) => Stack, (stack) => stack.project)
