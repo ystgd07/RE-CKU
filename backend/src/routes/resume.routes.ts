@@ -43,10 +43,19 @@ resumeRoute.post("/resume", tokenValidator, async (req, res, next) => {
 
         const newResume = await createResume(userId, newName);
 
+        // return에서 생성된 resumeId를 못 받아서 로직 작성
+        const createdmyResumeList = await findResumeList(userId);
+        let resumeId = [];
+
+        for (let i=0; i<createdmyResumeList[0].length; i++) {
+            resumeId.push(createdmyResumeList[0][i].id);
+        }
+
         return res.json({
             status: 201,
             msg: "이력서 생성 성공",
             data: newResume,
+            createdResumeId: Math.max(...resumeId)
         });
     } catch (err) {
         next(err);
@@ -75,9 +84,12 @@ resumeRoute.get("/list", tokenValidator, async (req: Request, res: Response, nex
 // 2-3. 이력서 상세 조회
 resumeRoute.get("/resume/:resumeId", tokenValidator, async (req: Request, res: Response, next: NextFunction) => { // validateBody(CreateUserDto),
     const resumeId = Number(req.params.resumeId);
+    const userId = req.body.jwtDecoded.id;
 
     try {
         // const resumes = await findResume(resumeId);
+        const users = await indiInfo(userId);
+
         const resumes = await findDetail(resumeId, "resume", "all");
         const careers = await findDetail(resumeId, "career", "all");
         const projects = await findDetail(resumeId, "project", "all");
@@ -85,6 +97,7 @@ resumeRoute.get("/resume/:resumeId", tokenValidator, async (req: Request, res: R
         return res.json({
             status: 200,
             msg: "이력서 상세 정보 조회",
+            userData: users,
             resumeData: resumes[0],
             careerData: careers[0],
             projectData: projects[0]
