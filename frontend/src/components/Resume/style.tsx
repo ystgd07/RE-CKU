@@ -4,6 +4,7 @@ export const ResumeContainer = styled.section`
     background-color: #f9fafb;
     display: flex;
     justify-content: center;
+    max-height: 100vh;
 
     .rotate {
         transform: rotate(45deg);
@@ -20,9 +21,32 @@ export const ResumeFrame = styled.section`
     justify-content: space-between;
     border-radius: 10px;
     margin: 1.25rem;
+    height: 100%;
 
     @media all and (max-width: 1280px) {
         display: unset;
+    }
+`;
+
+export const Title = styled.div`
+    display: flex;
+    flex-direction: row;
+    padding: 1rem;
+    align-items: center;
+
+    & input {
+        font-size: 3em;
+    }
+
+    & span {
+        & button[type='button'] {
+            border: 0;
+            outline: 0;
+            background-color: #e2e2e2;
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            font-size: 1.4rem;
+        }
     }
 `;
 
@@ -90,9 +114,8 @@ export const UserInfo = styled.div`
 
 export const InputForm = styled.div`
     padding: 2rem;
+    width: calc(100vw - 10rem);
 
-    @media all and (max-width: 1280px) {
-    }
     & .inputFlex {
         border: 1px solid #d3d3d3;
         border-radius: 10px;
@@ -127,7 +150,8 @@ export const InputForm = styled.div`
             }
         }
 
-        & section:nth-of-type(2) {
+        & section:nth-of-type(2),
+        section:last-of-type {
             & form {
                 margin-top: 1.6em;
                 & .formWrap {
@@ -136,8 +160,27 @@ export const InputForm = styled.div`
                         padding-bottom: 2rem;
                         & li {
                             display: flex;
+
+                            & input {
+                                padding: 1rem;
+                                border: 1px solid #b0e0e6;
+                                width: 100%;
+                            }
+
                             & dl {
                                 width: 50%;
+
+                                & select {
+                                    border: 1px solid #b0e0e6;
+                                    height: inherit;
+                                    font-size: 0.8rem;
+                                    border-radius: 0.25rem;
+                                    box-sizing: border-box;
+                                    padding-left: 0.9rem;
+                                    padding-right: 1rem;
+                                    width: 100%;
+                                }
+
                                 & dt {
                                     font-size: 1.1rem;
                                     font-weight: 400;
