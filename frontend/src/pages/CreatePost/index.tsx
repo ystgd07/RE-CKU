@@ -1,3 +1,5 @@
+export {};
+
 // import styled from '@emotion/styled';
 // //import MarkdownEditor from 'components/MarkdownEditor';
 // import { useState, useRef, useEffect } from 'react';
@@ -8,7 +10,6 @@
 // import '@toast-ui/editor/dist/i18n/ko-kr';
 // import colorSyntax from '@toast-ui/editor-plugin-color-syntax';
 // import axios from 'axios';
-export {};
 
 // const Container = styled.div`
 //     display: flex;
