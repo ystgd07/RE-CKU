@@ -1,14 +1,14 @@
 import bcrypt from "bcrypt";
-import { dataSource, updateUser } from "../db/index.repo";
-import * as repository from "../db/index.repo";
-import { CreateUserDto } from "../routes/dto/index.dto";
+import { dataSource, updateUser } from "../db";
+import * as repository from "../db";
+import { CreateUserDto } from "../routes/dto";
 import jwt from "jsonwebtoken";
 import { send } from "../config/sendMail";
-import { EmailAuth, User } from "../db/schemas/index.schema";
+import { EmailAuth, UserProfile } from "../db/schemas";
 
 // 유저한명정보 불러오기 섭스
-export const indiInfo = async (id: number): Promise<User> => {
-  const user = await repository.findOneUser(id, "비번빼고");
+export const individualInfo = async (id: number): Promise<UserProfile> => {
+  const user = await repository.findOneUser(id);
   return user;
 };
 

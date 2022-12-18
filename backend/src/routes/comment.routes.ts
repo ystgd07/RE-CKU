@@ -1,10 +1,10 @@
 import express from "express";
-import * as commentService from "../services/index.service";
+import * as commentService from "../services";
 import { tokenValidator } from "../middlewares/verify-JWT";
 
 export const commentRoute = express();
 // 댓글달기 미완
-commentRoute.post("/comment/:boardId", tokenValidator, async (req, res, next) => {
+commentRoute.post("/:boardId/comments", tokenValidator, async (req, res, next) => {
   const userId = req.body.jwtDecoded.id;
   const boardId = req.params.boardId;
   const { content } = req.body;
@@ -19,7 +19,7 @@ commentRoute.post("/comment/:boardId", tokenValidator, async (req, res, next) =>
   }
 });
 // 댓글 좋아요
-commentRoute.patch("/like/:commentId", tokenValidator, async (req, res, next) => {
+commentRoute.patch("/:commentId/like", tokenValidator, async (req, res, next) => {
   const { id } = req.body.jwtDecoded;
   const commentId = Number(req.params.commentId);
   const { likesStatus } = req.body;

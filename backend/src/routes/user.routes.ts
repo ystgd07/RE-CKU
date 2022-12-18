@@ -1,17 +1,17 @@
 import bcrypt from "bcrypt";
 import express, { Request, Response, NextFunction } from "express";
 import * as userService from "../services/user.service";
-import { CreateUserDto, CreateAuthDataDto, AuthEmailDto, LoginUserDto } from "./dto/index.dto";
+import { CreateUserDto, CreateAuthDataDto, AuthEmailDto, LoginUserDto } from "./dto";
 import { random } from "../config/sendMail";
 import { createIndiUser, findOneUser } from "../db/user.repo";
-import { avatarImg, tokenValidator, validateBody } from "../middlewares/index.middleware";
+import { avatarImg, tokenValidator, validateBody } from "../middlewares";
 export const userRoute = express();
 
-userRoute.get("/individual", tokenValidator, async (req, res, next) => {
+userRoute.get("/individuals", tokenValidator, async (req, res, next) => {
   const { id } = req.body.jwtDecoded;
   console.log(id);
   try {
-    const user = await userService.indiInfo(id);
+    const user = await userService.individualInfo(id);
     return res.status(200).json({
       msg: "회원정보",
       data: user,
@@ -22,7 +22,7 @@ userRoute.get("/individual", tokenValidator, async (req, res, next) => {
 });
 
 // 개인 회원가입 라우트
-userRoute.post("/individual", validateBody(CreateUserDto), async (req: Request, res: Response, next: NextFunction) => {
+userRoute.post("/individuals", validateBody(CreateUserDto), async (req: Request, res: Response, next: NextFunction) => {
   const { username, email, phoneNumber, password } = req.body;
   console.log(req.body);
   console.log("들어옴?");
@@ -62,7 +62,7 @@ userRoute.post("/", validateBody(LoginUserDto), async (req, res, next) => {
 });
 
 // 개인정보 수정 라우트
-userRoute.patch("/", tokenValidator, avatarImg.single("image"), async (req, res, next) => {
+userRoute.patch("/individuals", tokenValidator, avatarImg.single("image"), async (req, res, next) => {
   const id = Number(req.body.jwtDecoded.id);
   const currentPw = req.body.currentPw;
   if (!currentPw) next(new Error("400, 기존 비밀번호를 입력하세요."));
@@ -122,7 +122,7 @@ userRoute.post("/email/auth", validateBody(AuthEmailDto), async (req, res, next)
 });
 
 // 임시 비번 보내기 라우트
-userRoute.post("/password", validateBody(CreateAuthDataDto), async (req, res, next) => {
+userRoute.post("/eamil/password", validateBody(CreateAuthDataDto), async (req, res, next) => {
   const { email } = req.body;
   try {
     const newPassword = await userService.findPassword(email);

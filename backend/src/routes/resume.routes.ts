@@ -2,16 +2,16 @@ import bcrypt from "bcrypt";
 import express, { Request, Response, NextFunction } from "express";
 import { validateBody } from "../middlewares/dto-validator";
 import { tokenValidator } from "../middlewares/verify-JWT";
-import { CreateUserDto, CreateAuthDataDto, AuthEmailDto, LoginUserDto } from "./dto/index.dto";
+import { CreateUserDto, CreateAuthDataDto, AuthEmailDto, LoginUserDto } from "./dto";
 import {
-  indiInfo,
+  individualInfo,
   createResume,
   findResumeList,
   createDetail,
   findDetail,
   updateResume,
   deleteResume,
-} from "../services/index.service";
+} from "../services";
 import { isNumber } from "class-validator";
 import { updateNotice } from "../services/board.service";
 import boardRoute from "./board.routes";
@@ -23,7 +23,7 @@ const resumeRoute = express();
 // 1. 이력서 (틀) 생성
 resumeRoute.post("/resume", tokenValidator, async (req, res, next) => {
   const userId = req.body.jwtDecoded.id;
-  const userInfo = await indiInfo(userId);
+  const userInfo = await individualInfo(userId);
 
   let resumeNameNum = [];
 
@@ -89,7 +89,7 @@ resumeRoute.get("/resume/:resumeId", tokenValidator, async (req: Request, res: R
 
   try {
     // const resumes = await findResume(resumeId);
-    const users = await indiInfo(userId);
+    const users = await individualInfo(userId);
 
     const resumes = await findDetail(resumeId, "resume", "all");
     const careers = await findDetail(resumeId, "career", "all");

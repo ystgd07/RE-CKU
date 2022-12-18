@@ -1,6 +1,6 @@
 //import { CreateUserDto } from "src/routes/dto/create-individual.dto";
-import { dataSource, db } from "./index.repo";
-import { positonEnum, Resume } from "./schemas/index.schema";
+import { dataSource, db } from ".";
+import { positonEnum, Resume } from "./schemas";
 import { updateData, insertData } from "./utils/transData";
 
 // 이력서

@@ -1,6 +1,6 @@
 import express, { Request, Response, NextFunction } from "express";
 import { errorHandler } from "./middlewares/error-handdler";
-import { userRoute, boardRoute, rootRoute, commentRoute } from "./routes/index.routes";
+import { userRoute, boardRoute, rootRoute, commentRoute } from "./routes";
 import cors from "cors";
 import resumeRoute from "./routes/resume.routes";
 const app = express();
