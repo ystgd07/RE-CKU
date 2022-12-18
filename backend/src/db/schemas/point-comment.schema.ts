@@ -8,8 +8,8 @@ export class PointFromComment {
   id: number;
 
   @ManyToOne((type) => User, (user) => user.getPointFromComment)
-  userId: User;
+  user: User;
 
   @ManyToOne((type) => Comment, (comment) => comment.getPoint)
-  commentId: Comment;
+  comment: Comment;
 }

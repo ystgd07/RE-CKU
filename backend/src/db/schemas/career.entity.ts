@@ -31,3 +31,15 @@ export class Career {
   @ManyToOne((type) => Resume, (resume) => resume.career, { nullable: false })
   usedResume: Resume;
 }
+
+export type TypeCareer = {
+  id: number;
+  company: string;
+  position: string;
+  notDevlop: boolean;
+  workNow: boolean;
+  startDate: string;
+  endDate: string;
+  reward: string;
+  usedResumeId: number;
+};

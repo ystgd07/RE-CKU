@@ -2,9 +2,9 @@ import bcrypt from "bcrypt";
 import express, { Request, Response, NextFunction } from "express";
 import { validateBody } from "../middlewares/dto-validator";
 import { tokenValidator } from "../middlewares/verify-JWT";
-import { CreateUserDto, CreateAuthDataDto, AuthEmailDto, LoginUserDto } from "./dto/index.dto";
+import { CreateUserDto, CreateAuthDataDto, AuthEmailDto, LoginUserDto } from "./dto";
 import {
-    indiInfo,
+    individualInfo,
     createResume,
     findMyResumes,
     createDetail,

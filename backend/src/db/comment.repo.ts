@@ -1,6 +1,6 @@
 import { db } from "./index.repo";
 import * as userRepository from "../db/user.repo";
-import * as utils from "./utils/index.utils";
+import * as utils from "./utils/";
 const likesPintValue = 40;
 export const savePointByComment = async (data: Record<number, number>) => {
   const [keys, values, valval] = utils.insertData(data);
@@ -26,15 +26,15 @@ export const savePointByComment = async (data: Record<number, number>) => {
 };
 
 export const findSavedPointByComment = async (userId: number, commentId: number) => {
-  const result = await db.query(
+  const [result] = await db.query(
     `
       SELECT userId
       FROM point_from_comment
       WHERE (userId=? AND commentId=?)
     `,
     [userId, commentId]
-  )[0][0];
-  const returnValue = utils.jsonParse(result);
+  );
+  const returnValue = utils.jsonParse(result)[0];
   return returnValue;
 };
 
