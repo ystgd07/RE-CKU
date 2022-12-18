@@ -21,46 +21,16 @@ import boardRoute from "./board.routes";
 const resumeRoute = express();
 
 // 1. 이력서 (틀) 생성
-resumeRoute.post("/resume", tokenValidator, async (req, res, next) => {
+resumeRoute.post("/new-resume", tokenValidator, async (req, res, next) => {
     const userId = req.body.jwtDecoded.id;
-    const userInfo = await indiInfo(userId);
-
-    let resumeNameNum = [];
-    let newName = "";
 
     try {
-        const myResumeList = await findResumeList(userId);
-
-        for (let i=0; i<myResumeList[0].length; i++) {
-            const spl = myResumeList[0][i].name.split(" ");
-
-            if (spl.length == 2 && spl[0] == userInfo.username && isNumber(Number(spl[1]))) {
-                resumeNameNum.push(Number(spl[1]));
-            }
-
-        }
-
-        if (resumeNameNum.length == 0) {
-            newName = `${userInfo.username} 0`;
-        } else {
-            newName = `${userInfo.username} ${Math.max(...resumeNameNum) + 1}`;
-        }
-
-        const newResume = await createResume(userId, newName);
-
-        // return에서 생성된 resumeId를 못 받아서 로직 작성
-        const createdmyResumeList = await findResumeList(userId);
-        let resumeId = [];
-
-        for (let i=0; i<createdmyResumeList[0].length; i++) {
-            resumeId.push(createdmyResumeList[0][i].id);
-        }
+        const newResume = await createResume(userId);
 
         return res.json({
             status: 201,
             msg: "이력서 생성 성공",
-            data: newResume,
-            createdResumeId: Math.max(...resumeId)
+            data: newResume
         });
     } catch (err) {
         next(err);
