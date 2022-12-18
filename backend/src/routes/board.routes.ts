@@ -1,11 +1,7 @@
 import { CreateBoardDto } from "./dto/create-board.dto";
 import express from "express";
 import * as boardService from "../services/board.service";
-<<<<<<< HEAD
 import { validateBody, tokenValidator } from "../middlewares";
-=======
-import { validateBody, tokenValidator } from "../middlewares/index.middleware";
->>>>>>> 942e880d7c1ee1ca1a10e1cac56fa4191f54f969
 
 export const boardRoute = express();
 // 전체 게시물 목록 조회
@@ -31,11 +27,7 @@ boardRoute.get("/:id/", async (req, res, next) => {
   }
   console.log(userId, "유저아이디 ");
   try {
-<<<<<<< HEAD
     const notice = await boardService.findOneBoard(id, userId);
-=======
-    const notice = await boardService.getOneNotice(id, userId);
->>>>>>> 942e880d7c1ee1ca1a10e1cac56fa4191f54f969
     return res.status(200).json({
       msg: "찾아냈습니다.",
       data: notice,
