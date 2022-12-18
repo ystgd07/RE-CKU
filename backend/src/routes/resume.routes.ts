@@ -49,7 +49,7 @@ resumeRoute.get("/resumes", tokenValidator, async (req: Request, res: Response, 
         return res.status(200).json({
             status: 200,
             msg: "내 이력서 목록 조회 성공",
-            data: myResumes[0],
+            data: myResumes,
         });
     } catch (err) {
         next(err);
@@ -66,11 +66,12 @@ resumeRoute.get("/resumes/:resumeId", tokenValidator, async (req: Request, res: 
 
         return res.json({
             status: 200,
-            msg: "이력서 상세 정보 조회",
+            msg: "이력서 상세 정보 조회",/*
             userData: users,
             resumeData: resumes[0],
             careerData: careers[0],
-            projectData: projects[0]
+            projectData: projects[0] */
+            userData: myResume
         });
     } catch (err) {
         next(err);

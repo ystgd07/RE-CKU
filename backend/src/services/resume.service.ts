@@ -27,8 +27,8 @@ export const createResume = async (userId: number): Promise<Object> => {
   const userInfo = await findOneUser(userId, "비번빼고");
   const myResumeList = await findMyResumesQ(userId);
 
-  for (let i=0; i<myResumeList[0].length; i++) {
-    const resumeNames = myResumeList[0][i].name.split(" ");
+  for (let i=0; i<Object.keys(myResumeList).length; i++) {
+    const resumeNames = myResumeList[i].name.split(" ");
 
     if (resumeNames.length == 2 && resumeNames[0] == userInfo.username && isNumber(Number(resumeNames[1]))) {
       defaultResumeNameNums.push(Number(resumeNames[1]));
@@ -48,7 +48,7 @@ export const createResume = async (userId: number): Promise<Object> => {
 };
 
 // 2-2. 내 이력서 목록 조회
-export const findMyResumes = async (userId: number): Promise<Object> => {
+export const findMyResumes = async (userId: number): Promise<any> => {
   const myResumes = await findMyResumesQ(userId);
 
   return myResumes;
@@ -69,7 +69,7 @@ export const getMyResume = async (userId: number, resumeId: number): Promise<Obj
       console.log(error.message);
     })
 
-  return myResumes;
+  return;//return myResumes;
 };
 
 // 통합

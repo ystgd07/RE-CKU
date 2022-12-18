@@ -13,7 +13,7 @@ export const createResumeQ = async (userId: number, newName: string) => {
 
 // 2-2. 내 이력서 목록 조회
 export const findMyResumesQ = async (userId: number) => {
-  const myResumes = await db.query(`SELECT * FROM resume WHERE usedUserId=?`, userId);
+  const [myResumes, ] = await db.query(`SELECT * FROM resume WHERE usedUserId=?`, userId);
 
   return myResumes;
 };

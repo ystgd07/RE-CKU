@@ -16,7 +16,7 @@ app.use(express.urlencoded({ extended: false }));
 // routes
 app.use("/", rootRoute);
 app.use("/users", userRoute);
-app.use("/myportfolio", resumeRoute);
+app.use("/my-portfolio", resumeRoute);
 app.use("/board", boardRoute);
 app.use("/comments", commentRoute);
 
