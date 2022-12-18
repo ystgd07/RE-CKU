@@ -4,13 +4,13 @@ import { validateBody } from "../middlewares/dto-validator";
 import { tokenValidator } from "../middlewares/verify-JWT";
 import { CreateUserDto, CreateAuthDataDto, AuthEmailDto, LoginUserDto } from "./dto/index.dto";
 import {
-  indiInfo,
-  createResume,
-  findResumeList,
-  createDetail,
-  findDetail,
-  updateResume,
-  deleteResume,
+    indiInfo,
+    createResume,
+    findMyResumes,
+    createDetail,
+    findDetail,
+    updateResume,
+    deleteResume, getMyResume,
 } from "../services/index.service";
 import { isNumber } from "class-validator";
 import { updateNotice } from "../services/board.service";
@@ -40,16 +40,16 @@ resumeRoute.post("/new-resume", tokenValidator, async (req, res, next) => {
 // 2-1. 이력서 목록 조회
 
 // 2-2. 내 이력서 목록 조회
-resumeRoute.get("/list", tokenValidator, async (req: Request, res: Response, next: NextFunction) => { // validateBody(CreateUserDto),
+resumeRoute.get("/resumes", tokenValidator, async (req: Request, res: Response, next: NextFunction) => {
     const userId = req.body.jwtDecoded.id;
 
     try {
-        const success = await findResumeList(userId);
+        const myResumes = await findMyResumes(userId);
 
         return res.status(200).json({
             status: 200,
             msg: "내 이력서 목록 조회 성공",
-            data: success[0],
+            data: myResumes[0],
         });
     } catch (err) {
         next(err);
@@ -57,17 +57,12 @@ resumeRoute.get("/list", tokenValidator, async (req: Request, res: Response, nex
 });
 
 // 2-3. 이력서 상세 조회
-resumeRoute.get("/resume/:resumeId", tokenValidator, async (req: Request, res: Response, next: NextFunction) => { // validateBody(CreateUserDto),
-    const resumeId = Number(req.params.resumeId);
+resumeRoute.get("/resumes/:resumeId", tokenValidator, async (req: Request, res: Response, next: NextFunction) => {
     const userId = req.body.jwtDecoded.id;
+    const resumeId = Number(req.params.resumeId);
 
     try {
-        // const resumes = await findResume(resumeId);
-        const users = await indiInfo(userId);
-
-        const resumes = await findDetail(resumeId, "resume", "all");
-        const careers = await findDetail(resumeId, "career", "all");
-        const projects = await findDetail(resumeId, "project", "all");
+        const myResume = await getMyResume(userId, resumeId);
 
         return res.json({
             status: 200,

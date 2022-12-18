@@ -9,11 +9,11 @@
 import {
   findOneUser,
   createResumeQ,
-  findResumeListQ,
+  findMyResumesQ,
   createDetailQ,
   findDetailQ,
   updateResumeQ,
-  deleteResumeQ,
+  deleteResumeQ, getResumeQ, getCareerQ, getCareersQ, getProjectsQ,
 } from "../db/index.repo";
 import {indiInfo} from "./user.service";
 import * as repository from "../db/index.repo";
@@ -25,7 +25,7 @@ export const createResume = async (userId: number): Promise<Object> => {
   let newResumeName = "";
 
   const userInfo = await findOneUser(userId, "비번빼고");
-  const myResumeList = await findResumeList(userId);
+  const myResumeList = await findMyResumesQ(userId);
 
   for (let i=0; i<myResumeList[0].length; i++) {
     const resumeNames = myResumeList[0][i].name.split(" ");
@@ -48,10 +48,28 @@ export const createResume = async (userId: number): Promise<Object> => {
 };
 
 // 2-2. 내 이력서 목록 조회
-export const findResumeList = async (data: any): Promise<Object> => {
-  const myResumeList = await findResumeListQ(data);
+export const findMyResumes = async (userId: number): Promise<Object> => {
+  const myResumes = await findMyResumesQ(userId);
 
-  return myResumeList;
+  return myResumes;
+};
+
+// 2-3. 이력서 상세 조회
+export const getMyResume = async (userId: number, resumeId: number): Promise<Object> => {
+  const userInfo = await findOneUser(userId, "비번빼고");
+  const resumeInfo = await getResumeQ(resumeId);
+  const careers = await getCareersQ(resumeId);
+  const projects = await getProjectsQ(resumeId);
+
+  Promise.all([userInfo, resumeInfo, careers, projects])
+    .then((values) => {
+      console.log(values)
+    })
+    .catch(error => {
+      console.log(error.message);
+    })
+
+  return myResumes;
 };
 
 // 통합

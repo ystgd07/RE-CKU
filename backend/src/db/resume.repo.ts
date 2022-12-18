@@ -5,20 +5,27 @@ import { updateData, insertData } from "./utils/transData";
 
 // 이력서
 // 1. 이력서 (틀) 생성
-export const createResumeQ = async (id: number, newName: string) => {
-  const newResume = await db.query(`INSERT INTO resume(usedUserId, name) VALUES (?,?)`, [id, newName]);
+export const createResumeQ = async (userId: number, newName: string) => {
+  const newResume = await db.query(`INSERT INTO resume(usedUserId, name) VALUES (?,?)`, [userId, newName]);
 
   return newResume;
 };
 
 // 2-2. 내 이력서 목록 조회
-export const findResumeListQ = async (userId: number) => {
-  const myResumeList = await db.query(`SELECT * FROM resume WHERE usedUserId=?`, userId);
+export const findMyResumesQ = async (userId: number) => {
+  const myResumes = await db.query(`SELECT * FROM resume WHERE usedUserId=?`, userId);
 
-  return myResumeList;
+  return myResumes;
 };
 
-// 통합
+// 2-3. 이력서 상세 조회
+export const getResumeQ = async (resumeId: number) => {
+      const resumeInfo = await db.query(`SELECT * FROM resume WHERE id = ?`, resumeId);
+
+      return resumeInfo;
+};
+
+
 // 1. (업무경험 / 프로젝트) 생성
 export const createDetailQ = async (
   resumeId: number,
@@ -35,7 +42,36 @@ export const createDetailQ = async (
   return newCareer;
 };
 
-// 2. (이력서 / 업무경험 / 프로젝트) 조회
+// 2-1. 업무경험들 조회
+export const getCareersQ = async (resumeId: number) => {
+    const careers = await db.query(`SELECT * FROM career WHERE usedResumeId = ?`, resumeId);
+
+    return careers;
+};
+
+// 2-2. 프로젝트들 조회
+export const getProjectsQ = async (resumeId: number) => {
+  const projects = await db.query(`SELECT * FROM project WHERE usedResumeId = ?`, resumeId);
+
+  return projects;
+};
+
+// 2-3. 업무경험 조회
+export const getCareerQ = async (careerId: number) => {
+  const career = await db.query(`SELECT * FROM career WHERE id = ?`, careerId);
+
+  return career;
+};
+
+// 2-4. 프로젝트 조회
+export const getProjectQ = async (projectId: number) => {
+  const project = await db.query(`SELECT * FROM project WHERE id = ?`, projectId);
+
+  return project;
+};
+
+
+// 2-1. 프로젝트 조회
 export const findDetailQ = async (detailId: number, dbname: string, type: string) => {
   if (type == "all") {
     if (dbname == "resume") {
@@ -80,3 +116,6 @@ export const deleteResumeQ = async (detailId: number, dbname: string, type: stri
     return deletedResume;
   }
 };
+
+
+
