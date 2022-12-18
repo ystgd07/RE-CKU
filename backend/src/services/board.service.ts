@@ -25,7 +25,7 @@ export const findOneBoard = async (id: number, userId: null | number) => {
   try {
     // 게시글이 존재하는지 확인후 없다면 에러
     const isNotice = await boardRepo.boardStatus(id, userId);
-
+    console.log("이즈노티스", isNotice);
     // new Error 하니깐
     if (!isNotice) throw Error("404, 게시글을 찾을 수 없습니다.");
 
@@ -62,22 +62,25 @@ export const postNotice = async (data: Record<string, string | boolean | number>
     return newNotice;
   } catch (err) {
     console.log(err);
-    throw Error(`500, ${err.message}`);
+    throw Error(`500, 서버 오류`);
   }
 };
 
 // 게시글 수정 서비스
 export const updateNotice = async (boardId: number, userId: number, data: Record<string, string | number>) => {
   try {
+    const isNotice = await boardRepo.boardStatus(boardId, userId);
+    console.log("이즈노티스", isNotice);
+    // new Error 하니깐
+    if (!isNotice) throw new Error("404, 게시글을 찾을 수 없습니다.");
     const ownCheck = await boardRepo.findOneBoardQ(boardId);
     if (ownCheck.boardInfo.ownUserId !== userId) throw new Error(`400, 이건 당신의 게시물이 아니잖아!`);
+    console.log("어디서");
     const update = await boardRepo.updateBoard(boardId, data);
     console.log("업데이트 내역 ", update);
     return;
   } catch (err) {
     console.log(err.message);
-    if (err.message === "Cannot read properties of undefined (reading 'hasResumeId')")
-      throw new Error(`404, 게시글을 찾을 수 없습니다.`);
     throw new Error(err);
   }
 };
@@ -113,6 +116,13 @@ export const addLikes = async (userId: number, boardId: number, likesStatus: boo
     if (!likesStatus && !alreadyLikes) {
       console.log("좋아요상태 : false , 좋아요 로직");
       await boardRepo.likeBoardFromUser(data);
+
+      const alreadySavePoint = await boardRepo.findSavedPointByBoard(userId, boardId);
+      // 첫번째 좋아요라 포인트적립이 되지 않았을 경우 적립
+      if (!alreadySavePoint) {
+        console.log("첫번째 좋아요! 포인트 적립!");
+        await boardRepo.savePointByBoard(data);
+      }
       return true; // 좋아요
     } else {
       console.log("좋아요상태 : ture , 좋아요 취소 로직");

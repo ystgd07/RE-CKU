@@ -47,23 +47,23 @@ export const findLikesToBoard = async (boardId: number) => {
 };
 
 // 게시물 있는지 찾는 것
-export const boardStatus = async (data: number, userId?: null | number) => {
-  const notice = await db.query(
+export const boardStatus = async (boardId: number, userId?: null | number) => {
+  const [notice] = await db.query(
     `
       SELECT *
       FROM board
       WHERE id=?
     `,
-    [data]
+    [boardId]
   );
-  const returnValue = utils.jsonParse(notice)[0][0];
+  const returnValue = utils.jsonParse(notice)[0];
   return returnValue;
 };
 
 type OneBoardInfo = {
   alreadyLikesThisBoard: boolean;
   boardInfo: BoardInfo;
-  resumeInfo: {
+  resumeInfo: null | {
     id: number;
     usedUserId: number;
     name: string;
@@ -81,7 +81,7 @@ export const findOneBoardQ = async (boardId: number, userId?: null | number): Pr
   const result: OneBoardInfo = {
     alreadyLikesThisBoard: false,
     boardInfo: {
-      id: "",
+      id: 0,
       title: "",
       content: "",
       hashTags: "",
@@ -89,14 +89,10 @@ export const findOneBoardQ = async (boardId: number, userId?: null | number): Pr
       hasResumeId: 0,
       fixed: false,
       ownUserId: 0,
+      email: "",
+      avatarUrl: "",
     },
-    resumeInfo: {
-      id: 0,
-      usedUserId: 0,
-      name: "",
-      career: [],
-      projects: [],
-    },
+    resumeInfo: null,
     comments: [],
   };
 
@@ -121,7 +117,8 @@ export const findOneBoardQ = async (boardId: number, userId?: null | number): Pr
   );
   // 쿼리로 받아온 배열의 length 를 사용하기 위해서 jsonParse 유틸함수를 사용함.
   const boardInfo = utils.jsonParse(boardInfoRows)[0];
-  if (boardInfo.length === 0) return null;
+  console.log(boardInfo);
+  if (!boardInfo || boardInfo === undefined) return null;
 
   // 게시물의 오너ID로 유저검색후, 이메일과 프사정보를 넣어줌
   // 현재 보고있는 게시물에 좋아요를 눌렀는지 확인함. 받아온 userId 가 있다면
@@ -129,8 +126,9 @@ export const findOneBoardQ = async (boardId: number, userId?: null | number): Pr
     userRepo.findOneUser(boardInfo.ownUserId),
     alreadyLikesBoard(boardInfo.id),
   ]);
-  boardInfo.email = userInfo.email;
-  boardInfo.avatarUrl = userInfo.avatarUrl;
+  result.boardInfo = boardInfo;
+  result.boardInfo.email = userInfo.email;
+  result.boardInfo.avatarUrl = userInfo.avatarUrl;
 
   // 이미 게시물에 좋아요 눌렀는지 확인
   if (checkLikes) {
@@ -241,7 +239,15 @@ export const create = async (data: Record<string, string | number | boolean>): P
 export const updateBoard = async (boardId: number, data: Record<string, string | number>) => {
   console.log("게시글 업데이트 내역 : ", data);
   const [keys, values] = utils.updateData(data);
-  await db.query(`UPDATE board SET ${keys.join(", ")}fixed=true ,created=now() WHERE id = ?`, [...values, boardId]);
+  await db.query(
+    `
+    UPDATE board 
+    SET ${keys.join(", ")}, 
+      fixed=true,
+      created=now()
+    WHERE id = ?`,
+    [...values, boardId]
+  );
   return true;
 };
 
@@ -295,7 +301,7 @@ export const alreadyLikesBoard = async (boardId: number) => {
     [boardId]
   );
   // 리턴값이 복수이기 떄문에 배열로 반환
-  const result = utils.jsonParse(resultRows);
+  const result = utils.jsonParse(resultRows)[0];
   return result;
 };
 
@@ -325,4 +331,54 @@ export const unlikeBoardFromUser = async (userId: number, boardId: number) => {
     [userId, boardId]
   );
   return true;
+};
+
+// 이미 게시글에 좋아요 했는지 확인
+export const findSavedPointByBoard = async (userId: number, boardId: number) => {
+  const [result] = await db.query(
+    `
+      SELECT userId
+      FROM point_from_board
+      WHERE (userId=? AND boardId=?)
+    `,
+    [userId, boardId]
+  );
+  const returnValue = utils.jsonParse(result)[0];
+  return returnValue;
+};
+
+// 게시물 좋아요로 게시물 오너의 포인트가 증가됨
+export const savePointByBoard = async (data: { userId: number; boardId: number }) => {
+  const [keys, values, valval] = utils.insertData(data);
+  await db.query(
+    `
+      INSERT INTO point_from_board (${keys.join(", ")})
+      VALUES (${values.join(", ")})
+    `,
+    [...valval]
+  );
+
+  // 보드정보에서 userId 를 가져옴
+  const [boardRows] = await db.query(
+    `
+    SELECT 
+      boardId
+    FROM board
+    WHERE id = ?
+  `,
+    [data.boardId]
+  );
+  const userId = boardRows[0].userId;
+  console.log(userId);
+
+  // 해당 댓글 주인의 포인트 상승
+  await db.query(
+    `
+      UPDATE user 
+      SET 
+      point = point+?
+      WHERE id= ?
+    `,
+    [50, userId]
+  );
 };

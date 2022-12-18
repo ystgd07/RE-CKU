@@ -1,23 +1,10 @@
 import express from "express";
 import * as commentService from "../services";
 import { tokenValidator } from "../middlewares/verify-JWT";
+import { db } from "../db";
 
 export const commentRoute = express();
-// 댓글달기 미완
-commentRoute.post("/:boardId/comments", tokenValidator, async (req, res, next) => {
-  const userId = req.body.jwtDecoded.id;
-  const boardId = req.params.boardId;
-  const { content } = req.body;
-  const data = {
-    userId,
-    boardId,
-    content,
-  };
-  try {
-  } catch (err) {
-    next(err);
-  }
-});
+
 // 댓글 좋아요
 commentRoute.patch("/:commentId/like", tokenValidator, async (req, res, next) => {
   const { id } = req.body.jwtDecoded;
@@ -33,5 +20,16 @@ commentRoute.patch("/:commentId/like", tokenValidator, async (req, res, next) =>
   }
 });
 
+// 댓글 수정
+
+//
+
+// 개발용 댓글 목록불러오기
+commentRoute.get("/", async (req, res, next) => {
+  const [comments] = await db.query(`SELECT * FROM comment`);
+  return res.json({
+    comments,
+  });
+});
 //현재  게시글 상세 가면 커맨트들이 나옴
 //

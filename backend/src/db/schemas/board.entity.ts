@@ -6,7 +6,7 @@ import { Resume } from "./resume.entity";
 import { User } from "./user.entity";
 
 export type BoardInfo = {
-  id: string;
+  id: number;
   title: string;
   content: string;
   hashTags: string;
@@ -14,6 +14,8 @@ export type BoardInfo = {
   hasResumeId: number;
   fixed: boolean;
   ownUserId: number;
+  email: string;
+  avatarUrl: string;
 };
 
 @Entity()

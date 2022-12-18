@@ -28,3 +28,23 @@ export const commentLikes = async (userId: number, commentId: number, likesStatu
     throw Error(err);
   }
 };
+
+export const addComment = async (data: { userId: number; boardId: number; text: string }) => {
+  try {
+    const result = await commentRepo.addCommentQ(data);
+    console.log(result);
+    return result;
+  } catch (err) {
+    console.log(err);
+    throw new Error(`500, 서버오류`);
+  }
+};
+
+export const deleteComment = async (userId: number, boardId: number, commentId: number) => {
+  try {
+    const result = await commentRepo.deleteCommentQ(userId, boardId, commentId);
+    return result;
+  } catch (err) {
+    throw new Error(`500, 서버 오류`);
+  }
+};

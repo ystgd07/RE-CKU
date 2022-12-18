@@ -1,7 +1,9 @@
 import { CreateBoardDto } from "./dto/create-board.dto";
 import express from "express";
 import * as boardService from "../services/board.service";
+import * as commentService from "../services/comment.service";
 import { validateBody, tokenValidator } from "../middlewares";
+import { CreateCommentDto } from "./dto";
 
 export const boardRoute = express();
 // 전체 게시물 목록 조회
@@ -121,6 +123,42 @@ boardRoute.delete("/:boardId", tokenValidator, async (req, res, next) => {
   }
 });
 
-// 내 게시물 보기
+// 댓글달기
+boardRoute.post("/:boardId/comments", validateBody(CreateCommentDto), tokenValidator, async (req, res, next) => {
+  const userId = Number(req.body.jwtDecoded.id);
+  const boardId = Number(req.params.boardId);
+  const { text } = req.body;
+  const data = {
+    userId,
+    boardId,
+    text,
+  };
+  try {
+    const result = await commentService.addComment(data);
+    return res.status(201).json({
+      msg: "댓글이 달렸습니다.",
+      data: result,
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// 댓글 삭제
+boardRoute.delete("/:boardId/comments/:commentId", tokenValidator, async (req, res, next) => {
+  const userId = Number(req.body.jwtDecoded.id);
+  const boardId = Number(req.params.boardId);
+  const commentId = Number(req.params.commentId);
+
+  try {
+    const result = await commentService.deleteComment(userId, boardId, commentId);
+    return res.status(200).json({
+      msg: "댓글 삭제 완료",
+      data: result,
+    });
+  } catch (err) {
+    next(err);
+  }
+});
 
 export default boardRoute;

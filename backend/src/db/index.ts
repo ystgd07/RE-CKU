@@ -5,9 +5,9 @@ require("dotenv").config();
 
 // mysql2 Connect
 export const db = mysql.createPool({
-  host: "13.124.107.224",
-  user: "team6",
-  password: "11111",
+  host: process.env.MYSQL_HOST || "13.124.107.224",
+  user: process.env.MYSQL_USER || "team6",
+  password: process.env.MYSQL_PW || "11111",
   database: "company",
   port: 3306,
 });
@@ -19,9 +19,9 @@ db.getConnection()
 // type ORM Connect
 export const dataSource = new DataSource({
   type: "mysql",
-  host: "13.124.107.224",
-  username: "team6",
-  password: "11111",
+  host: process.env.MYSQL_HOST || "13.124.107.224",
+  username: process.env.MYSQL_USER || "team6",
+  password: process.env.MYSQL_PW || "11111",
   database: "company",
   port: 3306,
   entities: ["src/db/schemas/*.entity.ts", "src/db/schemas/*.schema.ts"],
