@@ -1,10 +1,20 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Logo from 'assets/images/logo.png';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { HContainer, HHeader } from './style';
 
 const Header = () => {
     const navigate = useNavigate();
+    const token = localStorage.getItem('accessToken');
+    const [userInfo, setUserInfo] = useState<boolean>(false);
+
+    const deleteLogout = () => {
+        // if (token) {
+        //     localStorage.clear();
+        // }
+        localStorage.clear();
+    };
+
     return (
         <HContainer>
             <HHeader>
@@ -12,7 +22,30 @@ const Header = () => {
                     <img src={Logo} alt="logo" />
                 </h1>
 
-                <nav></nav>
+                <div>
+                    <nav>
+                        <ul>
+                            <li>상점</li>
+                            <li>이력서</li>
+                            <li>커뮤니티</li>
+                        </ul>
+                    </nav>
+
+                    <ul className="util">
+                        {token ? (
+                            <>
+                                <li onClick={deleteLogout}>로그아웃</li>
+                                <li>
+                                    <Link to="profile">마이페이지</Link>
+                                </li>
+                            </>
+                        ) : (
+                            <li>
+                                <Link to="/login">로그인</Link>
+                            </li>
+                        )}
+                    </ul>
+                </div>
             </HHeader>
         </HContainer>
     );
