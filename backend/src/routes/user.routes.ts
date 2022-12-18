@@ -1,17 +1,28 @@
 import bcrypt from "bcrypt";
 import express, { Request, Response, NextFunction } from "express";
 import * as userService from "../services/user.service";
+<<<<<<< HEAD
 import { CreateUserDto, CreateAuthDataDto, AuthEmailDto, LoginUserDto } from "./dto";
 import { random } from "../config/sendMail";
 import { createIndiUser, findOneUser } from "../db/user.repo";
 import { avatarImg, tokenValidator, validateBody } from "../middlewares";
+=======
+import { CreateUserDto, CreateAuthDataDto, AuthEmailDto, LoginUserDto } from "./dto/index.dto";
+import { random } from "../config/sendMail";
+import { createIndiUser, findOneUser } from "../db/user.repo";
+import { avatarImg, tokenValidator, validateBody } from "../middlewares/index.middleware";
+>>>>>>> 942e880d7c1ee1ca1a10e1cac56fa4191f54f969
 export const userRoute = express();
 
 userRoute.get("/individuals", tokenValidator, async (req, res, next) => {
   const { id } = req.body.jwtDecoded;
   console.log(id);
   try {
+<<<<<<< HEAD
     const user = await userService.individualInfo(id);
+=======
+    const user = await userService.indiInfo(id);
+>>>>>>> 942e880d7c1ee1ca1a10e1cac56fa4191f54f969
     return res.status(200).json({
       msg: "회원정보",
       data: user,

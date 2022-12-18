@@ -2,16 +2,26 @@ import bcrypt from "bcrypt";
 import express, { Request, Response, NextFunction } from "express";
 import { validateBody } from "../middlewares/dto-validator";
 import { tokenValidator } from "../middlewares/verify-JWT";
+<<<<<<< HEAD
 import { CreateUserDto, CreateAuthDataDto, AuthEmailDto, LoginUserDto } from "./dto";
 import {
   individualInfo,
+=======
+import { CreateUserDto, CreateAuthDataDto, AuthEmailDto, LoginUserDto } from "./dto/index.dto";
+import {
+  indiInfo,
+>>>>>>> 942e880d7c1ee1ca1a10e1cac56fa4191f54f969
   createResume,
   findResumeList,
   createDetail,
   findDetail,
   updateResume,
   deleteResume,
+<<<<<<< HEAD
 } from "../services";
+=======
+} from "../services/index.service";
+>>>>>>> 942e880d7c1ee1ca1a10e1cac56fa4191f54f969
 import { isNumber } from "class-validator";
 import { updateNotice } from "../services/board.service";
 import boardRoute from "./board.routes";
@@ -21,6 +31,7 @@ import boardRoute from "./board.routes";
 const resumeRoute = express();
 
 // 1. 이력서 (틀) 생성
+<<<<<<< HEAD
 resumeRoute.post("/resume", tokenValidator, async (req, res, next) => {
   const userId = req.body.jwtDecoded.id;
   const userInfo = await individualInfo(userId);
@@ -36,6 +47,21 @@ resumeRoute.post("/resume", tokenValidator, async (req, res, next) => {
       if (spl.length == 2 && spl[0] == userInfo.username && isNumber(Number(spl[1]))) {
         resumeNameNum.push(Number(spl[1]));
       }
+=======
+resumeRoute.post("/new-resume", tokenValidator, async (req, res, next) => {
+    const userId = req.body.jwtDecoded.id;
+
+    try {
+        const newResume = await createResume(userId);
+
+        return res.json({
+            status: 201,
+            msg: "이력서 생성 성공",
+            data: newResume
+        });
+    } catch (err) {
+        next(err);
+>>>>>>> 942e880d7c1ee1ca1a10e1cac56fa4191f54f969
     }
 
     const newName = `${userInfo.username} ${Math.max(...resumeNameNum) + 1}`;

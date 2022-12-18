@@ -6,11 +6,47 @@
 // import { createIndiUser, findOneAuthData, findOneUser, createAuthData, updateAuthData } from "../db/index.schema";
 // import { send } from "../config/sendMail";
 // import { EmailAuth } from "../db/schemas/index.schema";
+<<<<<<< HEAD
 import { createResumeQ, findResumeListQ, createDetailQ, findDetailQ, updateResumeQ, deleteResumeQ } from "../db";
+=======
+import {
+  findOneUser,
+  createResumeQ,
+  findResumeListQ,
+  createDetailQ,
+  findDetailQ,
+  updateResumeQ,
+  deleteResumeQ,
+} from "../db/index.repo";
+import {indiInfo} from "./user.service";
+import * as repository from "../db/index.repo";
+>>>>>>> 942e880d7c1ee1ca1a10e1cac56fa4191f54f969
 
 // 1. 이력서 생성
-export const createResume = async (id: number, newName: string): Promise<Object> => {
-  const newResume = await createResumeQ(id, newName);
+export const createResume = async (userId: number): Promise<Object> => {
+  // create default resume name
+  let defaultResumeNameNums = [];
+  let newResumeName = "";
+
+  const userInfo = await findOneUser(userId, "비번빼고");
+  const myResumeList = await findResumeList(userId);
+
+  for (let i=0; i<myResumeList[0].length; i++) {
+    const resumeNames = myResumeList[0][i].name.split(" ");
+
+    if (resumeNames.length == 2 && resumeNames[0] == userInfo.username && isNumber(Number(resumeNames[1]))) {
+      defaultResumeNameNums.push(Number(resumeNames[1]));
+    }
+  }
+
+  if (defaultResumeNameNums.length == 0) {
+    newResumeName = `${userInfo.username} 1`;
+  } else {
+    newResumeName = `${userInfo.username} ${Math.max(...defaultResumeNameNums) + 1}`;
+  }
+
+  // create newResume
+  const newResume = await createResumeQ(userId, newResumeName);
 
   return newResume;
 };

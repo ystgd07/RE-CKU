@@ -1,7 +1,12 @@
 import * as utils from "./utils/parseToJSON";
 import { CreateUserDto } from "src/routes/dto/create-individual.dto";
+<<<<<<< HEAD
 import { dataSource, db } from ".";
 import { roleEnum, User, UserProfile } from "./schemas";
+=======
+import { dataSource, db } from "./index.repo";
+import { roleEnum, User } from "./schemas/index.schema";
+>>>>>>> 942e880d7c1ee1ca1a10e1cac56fa4191f54f969
 import { updateData } from "./utils/transData";
 
 /** 인자로 userId 또는 email을 넣어주시면, 비밀번호를 제외한 사용자 정보를 드립니다. */

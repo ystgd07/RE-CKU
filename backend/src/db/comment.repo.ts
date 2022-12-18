@@ -1,10 +1,9 @@
-import { db } from ".";
+import { db } from "./index.repo";
 import * as userRepository from "../db/user.repo";
-import * as utils from "./utils";
+import * as utils from "./utils/";
 const likesPintValue = 40;
 export const savePointByComment = async (data: Record<number, number>) => {
   const [keys, values, valval] = utils.insertData(data);
-  console.log("아예 안들어온ㄴ데ㅐ?");
   await db.query(
     `
       INSERT INTO point_from_comment (${keys.join(", ")})
@@ -14,7 +13,7 @@ export const savePointByComment = async (data: Record<number, number>) => {
   );
 
   const userId = valval[0];
-  console.log("포인트적립 왜 안해줌?");
+  console.log(userId);
   await db.query(
     `
       UPDATE user 

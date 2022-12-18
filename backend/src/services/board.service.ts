@@ -1,6 +1,12 @@
+<<<<<<< HEAD
 import { CreateCommentDto } from "../routes/dto";
 import * as boardRepo from "../db/board.repo";
 import { Board } from "../db/schemas";
+=======
+import { CreateCommentDto } from "../routes/dto/index.dto";
+import * as boardRepo from "../db/board.repo";
+import { Board } from "../db/schemas/index.schema";
+>>>>>>> 942e880d7c1ee1ca1a10e1cac56fa4191f54f969
 import { jsonParse } from "../db/utils/parseToJSON";
 
 interface BoardInFo {
@@ -19,7 +25,11 @@ export const getNoticeAll = async (): Promise<Board[]> => {
 };
 
 // 하나의 게시물 정보를 가져옴
+<<<<<<< HEAD
 export const findOneBoard = async (id: number, userId: null | number) => {
+=======
+export const getOneNotice = async (id: number, userId: null | number) => {
+>>>>>>> 942e880d7c1ee1ca1a10e1cac56fa4191f54f969
   let ownThisNotice = false;
   console.log(userId);
   try {
@@ -31,7 +41,11 @@ export const findOneBoard = async (id: number, userId: null | number) => {
 
     // 게시글에 대한 정보 가공하는 로직 실행
     console.log(userId);
+<<<<<<< HEAD
     let notice = await boardRepo.findOneBoardQ(id, userId);
+=======
+    let notice = await boardRepo.findOneBoard(id, userId);
+>>>>>>> 942e880d7c1ee1ca1a10e1cac56fa4191f54f969
     console.log("에러잡기힘드네", notice);
     // 자신이 게시글의 주인인 경우
     if (notice.boardInfo.ownUserId === userId && userId !== null) {
@@ -69,7 +83,11 @@ export const postNotice = async (data: Record<string, string | boolean | number>
 // 게시글 수정 서비스
 export const updateNotice = async (boardId: number, userId: number, data: Record<string, string | number>) => {
   try {
+<<<<<<< HEAD
     const ownCheck = await boardRepo.findOneBoardQ(boardId);
+=======
+    const ownCheck = await boardRepo.findOneBoard(boardId);
+>>>>>>> 942e880d7c1ee1ca1a10e1cac56fa4191f54f969
     if (ownCheck.boardInfo.ownUserId !== userId) throw new Error(`400, 이건 당신의 게시물이 아니잖아!`);
     const update = await boardRepo.updateBoard(boardId, data);
     console.log("업데이트 내역 ", update);
