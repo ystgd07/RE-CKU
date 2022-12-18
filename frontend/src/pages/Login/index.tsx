@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import * as S from './style';
-import Logo from 'assets/images/iogo.png';
+import Logo from 'assets/images/logo.png';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useForm } from 'react-hook-form';

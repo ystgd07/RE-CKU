@@ -25,8 +25,6 @@ const Resume = () => {
     //         username: string;
     // };
 
-    // Record<string, string | number | boolean>
-
     const choiceJob = (e: React.ChangeEvent<HTMLSelectElement>) => {
         console.log(e.target.value, '123');
     };

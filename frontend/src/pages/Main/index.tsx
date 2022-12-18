@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 
-function Main() {
+const Main = () => {
     const post = {
         id: 2,
         title: '게시글 제목',
@@ -27,6 +27,6 @@ function Main() {
             </div>
         </>
     );
-}
+};
 
 export default Main;

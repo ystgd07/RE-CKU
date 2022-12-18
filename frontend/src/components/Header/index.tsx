@@ -1,18 +1,19 @@
 import React from 'react';
+import Logo from 'assets/images/logo.png';
 import { useNavigate } from 'react-router-dom';
-import { HContainer, HDiv, HLogo } from './style';
+import { HContainer, HHeader } from './style';
 
 const Header = () => {
     const navigate = useNavigate();
     return (
         <HContainer>
-            <HDiv>
-                <div>
-                    <div onClick={() => navigate('/')}>
-                        <HLogo>RECHU</HLogo>
-                    </div>
-                </div>
-            </HDiv>
+            <HHeader>
+                <h1 onClick={() => navigate('/')}>
+                    <img src={Logo} alt="logo" />
+                </h1>
+
+                <nav></nav>
+            </HHeader>
         </HContainer>
     );
 };
