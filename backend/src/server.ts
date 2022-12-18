@@ -1,10 +1,8 @@
 import express, { Request, Response, NextFunction } from "express";
 import { errorHandler } from "./middlewares/error-handdler";
-<<<<<<< HEAD
+
 import { userRoute, boardRoute, rootRoute, commentRoute } from "./routes";
-=======
-import { userRoute, boardRoute, rootRoute, commentRoute } from "./routes/index.routes";
->>>>>>> 942e880d7c1ee1ca1a10e1cac56fa4191f54f969
+
 import cors from "cors";
 import resumeRoute from "./routes/resume.routes";
 const app = express();
