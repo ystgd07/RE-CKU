@@ -1,9 +1,9 @@
-import { Layout } from './style';
+import { Layout, Alert } from './style';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-type Mock = { name: string; address: string; date: string; id: any };
+type Mock = { name: string; address: string; updatedAt: string; id: any };
 
 const ResumeMain = () => {
     const [res, setRes] = useState<Mock[]>([]);
@@ -15,10 +15,15 @@ const ResumeMain = () => {
             //   "https://reactproject-test-78fcd-default-rtdb.firebaseio.com/mock.json",
             //   { mocksPortfolio }
             // );
-            const mocks = await axios.get('/myportfolio/list', {
-                headers: { authorization: `Bearer ${token}` },
-            });
+            const mocks = await axios
+                .get('/myportfolio/list', {
+                    headers: { authorization: `Bearer ${token}` },
+                })
+                .then(res => res.data)
+                .then(res => res.data);
             console.log(mocks, 'SUCCCCCCCCCess');
+
+            await setRes(mocks);
 
             // console.log(mocks.data["-NJJR5a9003Z0Qw6WOzB"]);
             // const mock = mocks.data["-NJJR5a9003Z0Qw6WOzB"].mocksPortfolio;
@@ -58,11 +63,6 @@ const ResumeMain = () => {
     return (
         <>
             <h1>My Portfolio</h1>
-            {res.length === 0 ? (
-                <p>작성된 이력서가 없습니다.</p>
-            ) : (
-                <p>작성된 이력서가 {res.length}개 있습니다.</p>
-            )}
             <Layout>
                 <div onClick={postPortfolio}>
                     <div>
@@ -73,13 +73,14 @@ const ResumeMain = () => {
                     </div>
                 </div>
 
-                {res.map((e: any) => (
+                {res.map((e: Mock) => (
                     <div key={e.id}>
                         <h3>{e.name}</h3>
-                        <p>{e.date}</p>
+                        <p>{e.updatedAt.split('T')[0]}</p>
                     </div>
                 ))}
             </Layout>
+            <Alert>{res.length === 0 && <p>작성된 이력서가 없습니다.</p>}</Alert>
         </>
     );
 };
