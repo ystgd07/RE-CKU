@@ -42,11 +42,7 @@ export class Board {
   @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP" })
   created: Date;
 
-<<<<<<< HEAD
   @OneToMany((type) => PointFromBoard, (point) => point.board)
-=======
-  @OneToMany((type) => PointFromBoard, (point) => point.boardId)
->>>>>>> 942e880d7c1ee1ca1a10e1cac56fa4191f54f969
   getPoint: PointFromBoard[];
 
   @OneToMany((type) => BoardLikeMaping, (board) => board.board) // 좋아하고있는 유저들

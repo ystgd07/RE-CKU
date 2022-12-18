@@ -6,21 +6,15 @@
 // import { createIndiUser, findOneAuthData, findOneUser, createAuthData, updateAuthData } from "../db/index.schema";
 // import { send } from "../config/sendMail";
 // import { EmailAuth } from "../db/schemas/index.schema";
-<<<<<<< HEAD
-import { createResumeQ, findResumeListQ, createDetailQ, findDetailQ, updateResumeQ, deleteResumeQ } from "../db";
-=======
 import {
-  findOneUser,
   createResumeQ,
   findResumeListQ,
   createDetailQ,
   findDetailQ,
   updateResumeQ,
   deleteResumeQ,
-} from "../db/index.repo";
-import {indiInfo} from "./user.service";
-import * as repository from "../db/index.repo";
->>>>>>> 942e880d7c1ee1ca1a10e1cac56fa4191f54f969
+  findOneUser,
+} from "../db";
 
 // 1. 이력서 생성
 export const createResume = async (userId: number): Promise<Object> => {
@@ -28,13 +22,13 @@ export const createResume = async (userId: number): Promise<Object> => {
   let defaultResumeNameNums = [];
   let newResumeName = "";
 
-  const userInfo = await findOneUser(userId, "비번빼고");
+  const userInfo = await findOneUser(userId);
   const myResumeList = await findResumeList(userId);
 
-  for (let i=0; i<myResumeList[0].length; i++) {
+  for (let i = 0; i < myResumeList[0].length; i++) {
     const resumeNames = myResumeList[0][i].name.split(" ");
 
-    if (resumeNames.length == 2 && resumeNames[0] == userInfo.username && isNumber(Number(resumeNames[1]))) {
+    if (resumeNames.length == 2 && resumeNames[0] == userInfo.username && Number(Number(resumeNames[1]))) {
       defaultResumeNameNums.push(Number(resumeNames[1]));
     }
   }

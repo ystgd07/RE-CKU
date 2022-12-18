@@ -1,11 +1,7 @@
 import server from "./server";
 require("dotenv").config();
 
-<<<<<<< HEAD
 import { dataSource } from "./db";
-=======
-import { dataSource } from "./db/index.repo";
->>>>>>> 942e880d7c1ee1ca1a10e1cac56fa4191f54f969
 dataSource
   .initialize()
   .then(() => {

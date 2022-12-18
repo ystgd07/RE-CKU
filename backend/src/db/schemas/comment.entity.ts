@@ -27,11 +27,7 @@ export class Comment {
   @OneToMany((type) => CommentLikeMaping, (table) => table.comment)
   ownLikes: CommentLikeMaping;
 
-<<<<<<< HEAD
   @OneToMany((type) => PointFromComment, (point) => point.comment)
-=======
-  @OneToMany((type) => PointFromComment, (point) => point.commentId)
->>>>>>> 942e880d7c1ee1ca1a10e1cac56fa4191f54f969
   getPoint: PointFromComment;
 
   @ManyToOne((type) => User, (user) => user.writeComments)

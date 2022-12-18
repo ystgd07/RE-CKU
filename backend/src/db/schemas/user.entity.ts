@@ -7,7 +7,6 @@ import { CommentLikeMaping } from "./commentLikeMaping.entity";
 import { BoardLikeMaping } from "./boardLikeMaping.entity";
 import { PointFromComment } from "./point-comment.schema";
 import { PointFromBoard } from "./point-board.schema";
-<<<<<<< HEAD
 
 export type UserProfile = {
   id: number;
@@ -20,8 +19,6 @@ export type UserProfile = {
   role?: string;
   password?: string;
 };
-=======
->>>>>>> 942e880d7c1ee1ca1a10e1cac56fa4191f54f969
 
 export enum roleEnum {
   bronze = "브론즈",
@@ -71,17 +68,10 @@ export class User {
   @OneToMany((type) => Resume, (resume) => resume.usedUser, { nullable: true })
   resumes: Resume[];
 
-<<<<<<< HEAD
   @OneToMany((type) => PointFromBoard, (point) => point.user)
   getPointFromBoard: PointFromBoard[];
 
   @OneToMany((type) => PointFromComment, (point) => point.user)
-=======
-  @OneToMany((type) => PointFromBoard, (point) => point.userId)
-  getPointFromBoard: PointFromBoard[];
-
-  @OneToMany((type) => PointFromComment, (point) => point.userId)
->>>>>>> 942e880d7c1ee1ca1a10e1cac56fa4191f54f969
   getPointFromComment: PointFromComment[];
 
   @OneToMany((type) => Board, (board) => board.fromUser, { nullable: true })
