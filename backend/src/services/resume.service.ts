@@ -17,6 +17,7 @@ import {
 } from "../db/index.repo";
 import {indiInfo} from "./user.service";
 import * as repository from "../db/index.repo";
+import {isNumber} from "class-validator";
 
 // 1. 이력서 생성
 export const createResume = async (userId: number): Promise<Object> => {
@@ -43,7 +44,9 @@ export const createResume = async (userId: number): Promise<Object> => {
 
   // create newResume
   const newResume = await createResumeQ(userId, newResumeName);
-
+  //const newResumeId = newResume.ResultSetHeader.
+  console.log(newResume[0])
+  return;
   return newResume;
 };
 
