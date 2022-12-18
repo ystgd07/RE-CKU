@@ -1,19 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
 import axios from 'axios';
 import * as S from './style';
 import Logo from 'assets/images/iogo.png';
 import { useForm } from 'react-hook-form';
 
 const Join = () => {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [passwordCheck, setPasswordCheck] = useState('');
-    const [name, setName] = useState('');
-    const [phone, setPhone] = useState('');
-    const [code, setCode] = useState('');
-
     const navigate = useNavigate();
     const {
         register,
@@ -101,12 +93,6 @@ const Join = () => {
             alert('인증 완료');
         } catch (err: any) {
             console.error(err.stack);
-        }
-    };
-
-    const errStyle = () => {
-        if (password !== passwordCheck) {
-            return { border: '3px solid red' };
         }
     };
 

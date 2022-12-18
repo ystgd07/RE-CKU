@@ -46,7 +46,7 @@ const Login = () => {
 
             const accessToken = res.data.accessToken;
             const refreshToken = res.data.refreshToken;
-            const userId = res.data.refreshToken;
+            const userId = res.data.userId;
             localStorage.setItem('accessToken', accessToken);
             localStorage.setItem('refreshToken', refreshToken);
             localStorage.setItem('userId', userId);

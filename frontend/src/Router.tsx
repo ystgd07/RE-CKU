@@ -8,6 +8,8 @@ import FindPw from 'pages/FindPw';
 import MyPortfolio from 'pages/MyPortfolio';
 import Profile from 'pages/Profile';
 import Post from 'pages/Post';
+import Err404 from 'pages/Err404';
+import Admin from 'pages/Admin';
 
 const Router = () => {
     return (
@@ -22,6 +24,7 @@ const Router = () => {
                 <Route path="/FindPw" element={<FindPw />} />
                 <Route path="/myportfolio" element={<MyPortfolio />} />
                 <Route path="/profile" element={<Profile />} />
+                <Route path="/Admin" element={<Admin />} />
             </Routes>
         </BrowserRouter>
     );
