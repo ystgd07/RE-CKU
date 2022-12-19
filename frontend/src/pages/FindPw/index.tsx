@@ -8,12 +8,12 @@ const FindPw = () => {
     const [Email, setEmail] = useState('');
     const navigate = useNavigate();
 
-    useEffect(() => {
-        console.log('이동?');
-        if (localStorage.getItem('accessToken')) {
-            navigate('/');
-        }
-    }, [navigate]);
+    // useEffect(() => {
+    //     console.log('이동?');
+    //     if (localStorage.getItem('accessToken')) {
+    //         navigate('/');
+    //     }
+    // }, []);
 
     const onSubmitHandler = async (e: any) => {
         e.preventDefault();
