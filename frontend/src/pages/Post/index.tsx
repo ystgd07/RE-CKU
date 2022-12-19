@@ -1,8 +1,8 @@
 import { useParams, useLocation } from 'react-router-dom';
 import { useEffect, useState, useRef } from 'react';
 import styled from '@emotion/styled';
-// import { Viewer } from '@toast-ui/react-editor';
-// import '@toast-ui/editor/dist/toastui-editor-viewer.css';
+import { Viewer } from '@toast-ui/react-editor';
+import '@toast-ui/editor/dist/toastui-editor-viewer.css';
 import axios from 'axios';
 
 const Container = styled.div`

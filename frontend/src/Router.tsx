@@ -10,6 +10,7 @@ import Profile from 'pages/Profile';
 import Post from 'pages/Post';
 import Err404 from 'pages/Err404';
 import Admin from 'pages/Admin';
+import Resumeform from 'pages/Resume';
 
 const Router = () => {
     const isLogined = localStorage.getItem('accessToken') ? true : false;
@@ -29,6 +30,7 @@ const Router = () => {
                         <Route path="/find-pw" element={<Navigate replace to="/" />} />
                         <Route path="/join" element={<Navigate replace to="/" />} />
                         <Route path="/*" element={<Err404 />} />
+                        <Route path="resume" element={<Resumeform />} />
                     </>
                 ) : (
                     <>
