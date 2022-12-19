@@ -5,11 +5,9 @@ import { Stack } from "./stacks.entity";
 @Entity()
 export class Skill {
   @PrimaryGeneratedColumn()
+  @OneToMany((type) => Stack, (stack) => stack.skillId)
   id: number;
 
   @Column()
   name: string;
-
-  @OneToMany((type) => Stack, (stack) => stack.skill_id)
-  stacks: Stack;
 }

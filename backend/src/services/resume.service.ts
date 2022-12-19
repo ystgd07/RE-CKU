@@ -14,7 +14,8 @@ import {
   updateProjectQ,
   deleteResumeQ,
   deleteCareerQ,
-  deleteProjectQ
+  deleteProjectQ,
+  findSkillsQ
 } from "../db/index.repo";
 import {isNumber} from "class-validator";
 
@@ -145,3 +146,10 @@ export const deleteProject = async (projectId: number) => {
 
   return deletedProject;
 };
+
+// skill find
+export const findSkills = async () => {
+  const skills = await findSkillsQ();
+
+  return skills;
+}

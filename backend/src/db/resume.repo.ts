@@ -53,7 +53,7 @@ export const findMyResumesQ = async (userId: number) => {
 
 // 2-3. 이력서 상세 조회
 export const findResumeQ = async (resumeId: number) => {
-  const [resumeInfo,] = await db.query(`SELECT id          AS resumeId,
+  const [resumeInfo, ] = await db.query(`SELECT id          AS resumeId,
                                                name        AS resumeName,
                                                information AS intro,
                                                position,
@@ -62,7 +62,7 @@ export const findResumeQ = async (resumeId: number) => {
                                         FROM resume
                                         WHERE id = ?`, resumeId);
 
-  return resumeInfo;
+  return resumeInfo[0];
 };
 
 // 2-4. 업무경험들 조회
@@ -111,9 +111,16 @@ export const findCareerQ = async (careerId: number) => {
 
 // 2-7. 프로젝트 조회
 export const findProjectQ = async (projectId: number) => {
-  const [project,] = await db.query(`SELECT *
-                                     FROM project
-                                     WHERE id = ?`, projectId);
+  const [project,] = await db.query(`SELECT 
+    id AS projectID,
+    projectName,
+    year,
+    information,
+    link1,
+    link2,
+    usedResumeId AS resumeId
+    FROM project
+    WHERE id = ?`, projectId);
 
   return project;
 };
@@ -152,6 +159,7 @@ export const updateProjectQ = async (projectId: number, updateProjectInfo: Recor
 };
 
 // 4-1. 이력서 삭제
+// TODO] ON DELETE CASCADE 사용하기
 export const deleteResumeQ = async (resumeId: number) => {
   let conn = null;
 
@@ -194,5 +202,16 @@ export const deleteProjectQ = async (projectId: number) => {
   return deletedProject;
 };
 
+// skill list
+export const findSkillsQ = async () => {
+  const [skills, ] = await db.query(`SELECT id AS skillId, name FROM skill`);
 
+  return skills;
+};
 
+// skill insert
+export const createSkillsQ = async (skillName: string) => {
+  const newSkill = await db.query(`INSERT INTO skill (name) VALUES (?)`, skillName);
+
+  return newSkill;
+};
