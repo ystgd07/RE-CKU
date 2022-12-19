@@ -14,9 +14,9 @@ export const commentLikes = async (userId: number, commentId: number, likesStatu
 
       // 아래 변수명에 포인트 적립여부가 담겨있음
       const alreadySavePoint = await commentRepo.findSavedPointByComment(userId, commentId);
-
       // 첫번째 좋아요라 포인트적립이 되지 않았을 경우 적립
-      if (!alreadySavePoint && alreadySavePoint.userId !== userId) {
+      if (!alreadySavePoint) {
+        console.log("첫번째 좋아요! 포인트 적립!");
         await commentRepo.savePointByComment(data);
       }
       return true; // 좋아요
@@ -26,5 +26,25 @@ export const commentLikes = async (userId: number, commentId: number, likesStatu
     }
   } catch (err) {
     throw Error(err);
+  }
+};
+
+export const addComment = async (data: { userId: number; boardId: number; text: string }) => {
+  try {
+    const result = await commentRepo.addCommentQ(data);
+    console.log(result);
+    return result;
+  } catch (err) {
+    console.log(err);
+    throw new Error(`500, 서버오류`);
+  }
+};
+
+export const deleteComment = async (userId: number, boardId: number, commentId: number) => {
+  try {
+    const result = await commentRepo.deleteCommentQ(userId, boardId, commentId);
+    return result;
+  } catch (err) {
+    throw new Error(`500, 서버 오류`);
   }
 };

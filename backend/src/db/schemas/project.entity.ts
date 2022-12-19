@@ -29,3 +29,13 @@ export class Project {
   @ManyToOne((type) => Resume, (resume) => resume.projects)
   usedResume: Resume;
 }
+
+export type TypeProject = {
+  id: number;
+  projectName: string;
+  year: string;
+  information: string;
+  link1?: string;
+  link2?: string;
+  usedResumeId: number;
+};
