@@ -81,9 +81,22 @@ userRoute.patch("/individuals", tokenValidator, avatarImg.single("image"), async
   };
   console.log(toUpdate);
   try {
-    const update = await userService.updateInfo(id, currentPw, toUpdate);
+    const update = await userService.updateInfo(id, toUpdate, currentPw);
     return res.status(200).json({
       msg: "회원정보가 수정되었습니다.",
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+userRoute.patch("/sign-out", tokenValidator, async (req, res, next) => {
+  const userId = Number(req.body.jwtDecoded.id);
+  try {
+    const result = userService.updateInfo;
+    return res.status(200).json({
+      msg: "로그아웃 성공",
+      data: "로그아웃 성공",
     });
   } catch (err) {
     next(err);

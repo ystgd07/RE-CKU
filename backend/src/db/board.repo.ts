@@ -4,46 +4,89 @@ import { Board, BoardInfo } from "./schemas/board.entity";
 import * as utils from "./utils";
 import { TypeCareer, TypeProject } from "./schemas";
 import { AlreadyLikesComments } from "./schemas/comment.entity";
-// 게시물 전체 보기
-export const findAllBoard = async () => {
-  // 페이지 네이션 추가해서 리턴해야하는 로직 추가해야함@@
 
-  // 보드와 user 는 ManyToOne , OneToMany 의 관계,
-  // 보드는 자신을 소유한 user의 id 값을 가지고 있기 때문에
-  // 해당유저와 join 하여 리턴할 모양을 만듬
-  let boards = await db.query(`SELECT 
-    b.id as post_id,
-    b.hasResumeId as has_resume,
-    b.title as post_title,
-    b.content as post_description,
-    b.fromUserId as user_id,
-    u.avatarUrl as user_profile_src,
-    commentCnt as comment_count,
-    likeCnt as like_count
+// 두번째 게시글 페이지네이션
+export const findAllBoardToPageNationQ = async () => {
+  // 현재 페이지의 마지막 게시물 id 값을 받아야함
+  // 그 id 값을 기준으로 페이지 네이션 해야함!
+  const [query] = await db.query(`
+    SELECT * FROM board WHERE id > 현재마지막게시글id limit 몇개가져올지
+  `);
+};
+
+/** 인자값 안넣고 부르면 필터없는 전체 게시글 조회! */
+export const findAllBoard = async (filter?: string, boardId?: number, count?: number) => {
+  // 페이지 네이션 추가해서 리턴해야하는 로직 추가해야함@@
+  let perPage = 6;
+  if (count) {
+    perPage = count;
+  }
+  type Board = {
+    postId: number;
+    username: string;
+    hasResume: null;
+    postTitle: string;
+    postDescription: string;
+    userId: number;
+    userProfileSrc: string;
+    commentCount: number;
+    likeCount: number;
+    createdAt: string;
+  };
+
+  let [boards] = await db.query(
+    `SELECT 
+      b.id as postId,
+      u.username as username,
+      b.hasResumeId as hasResume,
+      b.title as postTitle,
+      b.content as postDescription,
+      b.fromUserId as userId,
+      u.avatarUrl as userProfileSrc,
+      commentCnt as commentCount,
+      likeCnt as likeCount,
+      b.created as createdAt
     FROM board b
     JOIN user u
     ON b.fromUserId = u.id
-  `);
-
+    WHERE b.id > ? AND b.hasResumeId ${filter}  
+    ORDER BY createdAt DESC
+    LIMIT ?
+  `,
+    [boardId, perPage]
+  );
   //
-  const boardArr = utils.jsonParse(boards[0]);
-  const result = await boardArr.reduce(async (a, c) => {
-    let result = await a;
-    const commentCnt = await utils.jsonParse(await findComments(c.post_id)).length;
-    const likeCnt = await utils.jsonParse(await findLikesToBoard(c.post_id)).length;
-    c.like_count = likeCnt;
-    c.comment_count = commentCnt;
-    // console.log(`게시물 ID :${c.post_id}에 담긴 , 댓글 :${c.comment_count}, 좋아요 : ${c.like_count}`);
-    result.push(c);
-    return result;
-  }, []);
+
+  const boardArr = utils.jsonParse(boards);
+  // 기존 reduce 써서 한 코드
+  // const reducer = await boardArr.reduce(async (a, c) => {
+  //   const [commentCount, likeCount] = await Promise.all([findComments(c.post_id), findLikesToBoard(c.post_id)]);
+  //   let result = await a;
+  //   c.likeCount = likeCount;
+  //   c.commentCount = commentCount;
+  //   result.push(c);
+  //   return result;
+  // }, []);
+  // result[0] = map;
+
+  const result = await Promise.all(
+    boardArr.map(async (board: Board) => {
+      const [commentCount, likeCount] = await Promise.all([findComments(board.postId), findLikesToBoard(board.postId)]);
+      board.commentCount = commentCount.length;
+      board.likeCount = likeCount.length;
+      return {
+        ...board,
+      };
+    })
+  );
   return result;
 };
 
 // 게시물에 달린 좋아요 전체조회
 export const findLikesToBoard = async (boardId: number) => {
-  const likes = await db.query(`select id from board_like_maping where boardId=?`, [boardId]);
-  return likes[0];
+  const [likes] = await db.query(`select id from board_like_maping where boardId=?`, [boardId]);
+  const result = utils.jsonParse(likes);
+  return result;
 };
 
 // 게시물 있는지 찾는 것
@@ -126,6 +169,7 @@ export const findOneBoardQ = async (boardId: number, userId?: null | number): Pr
     userRepo.findOneUser(boardInfo.ownUserId),
     alreadyLikesBoard(boardInfo.id),
   ]);
+
   result.boardInfo = boardInfo;
   result.boardInfo.email = userInfo.email;
   result.boardInfo.avatarUrl = userInfo.avatarUrl;
@@ -191,7 +235,6 @@ export const findOneBoardQ = async (boardId: number, userId?: null | number): Pr
   // console.log("파싱값 ", parsing);
   const extendedComments = await Promise.all(
     comments.map(async (comment) => {
-      console.log("여기서 막힘??");
       const [mappingTable] = await db.query(
         `
         SELECT id 
