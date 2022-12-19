@@ -1,11 +1,3 @@
-//import bcrypt from "bcrypt";
-//import jwt from "jsonwebtoken";
-
-//import { CreateUserDto } from "../routes/dto/index.dto";
-// import { dataSource, updateUser } from "../db/index.schema";
-// import { createIndiUser, findOneAuthData, findOneUser, createAuthData, updateAuthData } from "../db/index.schema";
-// import { send } from "../config/sendMail";
-// import { EmailAuth } from "../db/schemas/index.schema";
 import {
   findOneUser,
   createResumeQ,
@@ -24,7 +16,6 @@ import {
   deleteCareerQ,
   deleteProjectQ
 } from "../db/index.repo";
-import * as repository from "../db/index.repo";
 import {isNumber} from "class-validator";
 
 // 1-1. 이력서 생성
@@ -134,9 +125,9 @@ export const updateProject = async (projectId: number, updateProjectInfo: Record
   return updatedProject;
 };
 
-// 4-1. 삭제
-export const deleteResume = async (detailId: number, dbname: string, type: string) => {
-  const deletedResume = await deleteResumeQ(detailId, dbname, type);
+// 4-1. 이력서 삭제
+export const deleteResume = async (resumeId: number) => {
+  const deletedResume = await deleteResumeQ(resumeId);
 
   return deletedResume;
 };

@@ -1,10 +1,6 @@
-import bcrypt from "bcrypt";
 import express, {Request, Response, NextFunction} from "express";
-import {validateBody} from "../middlewares/dto-validator";
 import {tokenValidator} from "../middlewares/verify-JWT";
-import {CreateUserDto, CreateAuthDataDto, AuthEmailDto, LoginUserDto} from "./dto";
 import {
-  individualInfo,
   createResume,
   createCareer,
   createProject,
@@ -19,11 +15,6 @@ import {
   deleteCareer,
   deleteProject
 } from "../services/index.service";
-import {isNumber} from "class-validator";
-import {updateNotice} from "../services/board.service";
-import boardRoute from "./board.routes";
-//import { findResumeList } from "../db/resume.repo";
-//import { random } from "../config/sendMail";
 
 const resumeRoute = express();
 
@@ -205,21 +196,17 @@ resumeRoute.patch("/projects/:projectId", async (req, res, next) => {
   }
 });
 
-// 4. 이력서 전체 삭제
+// 4-1. 이력서 전체 삭제
 resumeRoute.delete("/resumes/:resumeId", async (req, res, next) => {
   const resumeId = Number(req.params.resumeId);
 
   try {
-    const deletedCareer = await deleteResume(resumeId, "career", "all");
-    const deletedProject = await deleteResume(resumeId, "project", "all");
-    const deletedResume = await deleteResume(resumeId, "resume", "one");
+    const deletedResume = await deleteResume(resumeId);
 
     return res.json({
       status: 203,
       msg: "이력서 삭제 성공",
-      dataCareer: deletedCareer,
-      dataProject: deletedProject,
-      dataResume: deletedResume
+      data: deletedResume
     });
   } catch (err) {
     next(err);
@@ -231,12 +218,12 @@ resumeRoute.delete("/careers/:careerId", async (req, res, next) => {
   const careerId = Number(req.params.careerId);
 
   try {
-    const deletedResume = await deleteResume(careerId, "career", "one");
+    const deletedCareer = await deleteCareer(careerId);
 
     return res.json({
       status: 203,
       msg: "이력서 업무경험 삭제 성공",
-      data: deletedResume
+      data: deletedCareer
     });
   } catch (err) {
     next(err);
