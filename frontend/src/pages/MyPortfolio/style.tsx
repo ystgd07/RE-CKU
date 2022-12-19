@@ -41,6 +41,18 @@ export const Layout = styled.div`
             color: #999;
             margin-top: 5px;
         }
+        & > button {
+            position: absolute;
+            bottom: 0;
+            height: 41px;
+            width: -webkit-calc(100% - 20px);
+            display: flex;
+            flex-direction: row;
+            padding: 0 12px 0 20px;
+            align-items: center;
+            border-top: 1px solid #e0e0e0;
+            cursor: pointer;
+        }
         & div {
             height: 100%;
             display: flex;
