@@ -28,12 +28,12 @@ const Login = () => {
         email: string;
     }
 
-    useEffect(() => {
-        console.log('이동?');
-        if (localStorage.getItem('accessToken')) {
-            navigate('/');
-        }
-    }, []);
+    // useEffect(() => {
+    //     console.log('이동?');
+    //     if (localStorage.getItem('accessToken')) {
+    //         navigate('/');
+    //     }
+    // }, []);
     const onSubmitHandler = async (data: FormData) => {
         const jsondata = {
             email: data.email,
@@ -100,7 +100,7 @@ const Login = () => {
                         />
                         <button type="submit">로그인</button>
                         <Link
-                            to="/Join"
+                            to="/join"
                             style={{
                                 textDecoration: 'none',
                                 color: 'black',
@@ -112,7 +112,7 @@ const Login = () => {
                             회원가입{' '}
                         </Link>
                         <Link
-                            to="/FindPw"
+                            to="/find-pw"
                             style={{
                                 textDecoration: 'none',
                                 color: 'black',

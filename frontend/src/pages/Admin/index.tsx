@@ -1,26 +1,9 @@
 import React, { useState } from 'react';
-// import { Link, useNavigate } from 'react-router-dom';
-// import { useDispatch } from 'react-redux';
-// import axios from 'axios';
 // // import * as S from './style';
-// import Logo from 'assets/images/iogo.png';
-
-// const Admin = () => {
-//     return (
-//         <S.MobileDiv>
-//             <S.TitleDiv>dsada</S.TitleDiv>
-//         </S.MobileDiv>
-//     );
-// };
-
-// export default Admin;
-
-// import React from 'react';
-// import './index.css';
-import { LaptopOutlined, NotificationOutlined, UserOutlined } from '@ant-design/icons';
+import { UserOutlined, SearchOutlined } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
-import { Breadcrumb, Layout, Menu, theme } from 'antd';
-
+import { Breadcrumb, Layout, Menu, theme, Input, Button } from 'antd';
+import { Link, useNavigate } from 'react-router-dom';
 const { Header, Content, Sider } = Layout;
 
 const items1: MenuProps['items'] = ['Admin'].map(key => ({
@@ -28,19 +11,46 @@ const items1: MenuProps['items'] = ['Admin'].map(key => ({
     label: `${key}`,
 }));
 
-//UserOutlined 아이콘 이름
-//import { LaptopOutlined, NotificationOutlined, UserOutlined } from '@ant-design/icons'; 요기서 가져옴
+const a = [
+    {
+        name: 'Hayes Montoya',
+        email: 'undefined',
+        phone: 'undefined',
+    },
+    {
+        name: 'Hayden Hale',
+        email: 'undefined',
+        phone: 'undefined',
+    },
+    {
+        name: 'Drake Cantu',
+        email: 'undefined',
+        phone: 'undefined',
+    },
+    {
+        name: 'Carissa Peters',
+        email: 'undefined',
+        phone: 'undefined',
+    },
+    {
+        name: 'Clayton Randolph',
+        email: 'undefined',
+        phone: 'undefined',
+    },
+];
 
 const items2: MenuProps['items'] = [UserOutlined].map((icon, index) => {
     //nav 바 메뉴 [UserOutlined] 갯수랑 const key = ['회원관리']; 갯수랑 같아야함
     const key = ['회원관리'];
+
     return {
         key: `sub${key}`,
         icon: React.createElement(icon),
         label: `${key[index]}`,
 
         children: new Array(4).fill(null).map((_, j) => {
-            const subtitle = ['관리1', '관리2', '관리3', '관리4'];
+            const subtitle = ['user', '관리2', '관리3', '관리4'];
+
             return {
                 label: `${subtitle[j]}`,
             };
@@ -52,6 +62,10 @@ const App: React.FC = () => {
     const {
         token: { colorBgContainer },
     } = theme.useToken();
+
+    // const changeapage = () => {
+    //     console.log('dd');
+    // };
 
     return (
         <Layout>
@@ -67,22 +81,30 @@ const App: React.FC = () => {
                         defaultOpenKeys={['sub1']}
                         style={{ height: '100%', borderRight: 0 }}
                         items={items2}
+                        // onClick={changeapage()}
                     />
                 </Sider>
                 <Layout style={{ padding: '0 24px 24px' }}>
                     <Breadcrumb style={{ margin: '16px 0' }}>
                         <Breadcrumb.Item>회원관리</Breadcrumb.Item>
                     </Breadcrumb>
-                    <Content
-                        style={{
-                            padding: 24,
-                            margin: 0,
-                            minHeight: 280,
-                            background: colorBgContainer,
-                        }}
-                    >
-                        내용
-                    </Content>
+                    <div style={{ display: 'flex', margin: '30px' }}>
+                        <Input placeholder="Basic usage" />
+                        <Button type="primary" shape="circle" icon={<SearchOutlined />} />
+                    </div>
+                    {a.map((e: any) => (
+                        <Content
+                            key={e.id}
+                            style={{
+                                padding: 24,
+                                margin: 0,
+                                minHeight: 50,
+                                background: colorBgContainer,
+                            }}
+                        >
+                            {e.name}
+                        </Content>
+                    ))}
                 </Layout>
             </Layout>
         </Layout>
