@@ -1,0 +1,28 @@
+[{
+        "post_id": 1,
+        "post_title": "테스트1",
+        "post_description": "20자 이내",
+        "user_id": 1,
+        "user_profile_src": "https://cdn.discordapp.com/attachments/1019105021905879104/1053115513452109824/viewimage.png",
+        "like_count": 0,
+        "comment_count": 0
+    },
+    {
+        "post_id": 2,
+        "post_title": "테스트2",
+        "post_description": "20자 이내",
+        "user_id": 1,
+        "user_profile_src": "https://cdn.discordapp.com/attachments/1019105021905879104/1053115513452109824/viewimage.png",
+        "like_count": 0,
+        "comment_count": 0
+    },
+    {
+        "post_id": 3,
+        "post_title": "테스트3",
+        "post_description": "20자 이내",
+        "user_id": 1,
+        "user_profile_src": "https://cdn.discordapp.com/attachments/1019105021905879104/1053115513452109824/viewimage.png",
+        "like_count": 0,
+        "comment_count": 0
+    }
+]
