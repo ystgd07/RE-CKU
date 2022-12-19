@@ -1,6 +1,23 @@
 import { db } from "./index.repo";
 import * as userRepository from "../db/user.repo";
 import * as utils from "./utils/";
+
+// 댓글id로 댓글 검색, 없으면 false
+export const findComment = async (commentId: number): Promise<{ id: number } | boolean> => {
+  const [comment] = await db.query(
+    `
+    SELECT id 
+    FROM comment
+    WHERE id = ?
+  `,
+    [commentId]
+  );
+  const parseRow = utils.jsonParse(comment)[0];
+  const result = parseRow !== undefined ? parseRow : false;
+  return result;
+};
+
+// 댓글 좋아요로 포인트 습득
 export const savePointByComment = async (data: { userId: number; commentId: number }) => {
   const [keys, values, valval] = utils.insertData(data);
   await db.query(
@@ -11,19 +28,24 @@ export const savePointByComment = async (data: { userId: number; commentId: numb
     [...valval]
   );
 
-  // 보드정보에서 userId 를 가져옴
+  // 커맨트에서 userId 를 가져옴
   const [commentRows] = await db.query(
     `
     SELECT 
-      boardId
-    FROM board
+      userId
+    FROM comment
     WHERE id = ?
   `,
     [data.commentId]
   );
   const userId = commentRows[0].userId;
-  console.log(userId);
-
+  // const [owner] = await db.query(`
+  //   SELECT
+  //     fromUserId
+  //   FROM board
+  //   WHERE id = ?
+  // `[boardId])
+  // const userId = owner[0].id
   // 해당 댓글 주인의 포인트 상승
   await db.query(
     `
@@ -54,21 +76,36 @@ export const findSavedPointByComment = async (userId: number, commentId: number)
 // 댓글의 좋아요 추가
 export const likeCommentFromUser = async (data: Record<number, number>) => {
   const [keys, values, valval] = utils.insertData(data);
+  const commentId = valval[1];
+
+  // 트렌젝션으로 묶어야 할 수도 ??
+  // 맵핑테이블에 추가
+
   await db.query(
     `
-      INSERT 
-      INTO 
-      comment_like_maping (${keys.join(", ")})
-      VALUES (${values.join(", ")})
+    INSERT 
+    INTO 
+    comment_like_maping (${keys.join(", ")})
+    VALUES (${values.join(", ")})
     `,
     [...valval]
+  );
+  // comment테이블 likes 에 +1
+  await db.query(
+    `
+    UPDATE comment 
+    SET
+      likes= likes + 1
+    WHERE id = ?
+  `,
+    [commentId]
   );
   return true;
 };
 
 // 좋아요 취소
 export const unlikeCommentFromUser = async (userId: number, commentId: number) => {
-  // 삭제에 필요한것들 userId, boardId WHERE (coulmn = ? ADN coulmn2 = ?)
+  // 매핑테이블에서 해당 유저가 해당댓글에 좋아요 눌렀다는 것을 삭제
   await db.query(
     `
       DELETE
@@ -76,6 +113,15 @@ export const unlikeCommentFromUser = async (userId: number, commentId: number) =
       WHERE (userId = ? AND commentId = ?)
     `,
     [userId, commentId]
+  );
+  // 해당 댓글의 좋아요를 1 줄임
+  await db.query(
+    `
+    UPDATE comment
+    SET likes = likes-1
+    WHERE id = ?
+  `,
+    [commentId]
   );
   return true;
 };
@@ -98,6 +144,7 @@ export const alreadyLikesComment = async (commentId: number) => {
 // 댓글 달기
 export const addCommentQ = async (data: { userId: number; boardId: number; text: string }) => {
   const [keys, values, valval] = utils.insertData(data);
+  const boardId = valval[1];
   const [newComment] = await db.query(
     `
     INSERT INTO 
@@ -105,6 +152,16 @@ export const addCommentQ = async (data: { userId: number; boardId: number; text:
     VALUES (${values.join(", ")})
   `,
     [...valval]
+  );
+  // 보드 테이블에 댓글수 추가
+  await db.query(
+    `
+    UPDATE board
+    SET
+      commentCnt = commentCnt+1
+    WHERE id =?
+  `,
+    [boardId]
   );
   const result = utils.jsonParse(newComment);
 
@@ -123,6 +180,16 @@ export const deleteCommentQ = async (userId: number, boardId: number, commentId:
   );
   console.log(rows);
   // 해당 댓글에 달렸던 좋아요 데이터 삭제
+  await db.query(
+    `
+    UPDATE board
+    SET
+      commentCnt = commentCnt-1
+    WHERE id = ?
+  `,
+    [boardId]
+  );
+
   const [mapingRows] = await db.query(
     `
     DELETE 

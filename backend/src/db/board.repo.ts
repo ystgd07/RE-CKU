@@ -21,6 +21,7 @@ export const findAllBoard = async (filter?: string, boardId?: number, count?: nu
   if (count) {
     perPage = count;
   }
+  console.log(boardId);
   type Board = {
     postId: number;
     username: string;
@@ -49,8 +50,8 @@ export const findAllBoard = async (filter?: string, boardId?: number, count?: nu
     FROM board b
     JOIN user u
     ON b.fromUserId = u.id
-    WHERE b.id > ? AND b.hasResumeId ${filter}  
-    ORDER BY createdAt DESC
+    WHERE b.id < ? AND b.hasResumeId ${filter}  
+    ORDER BY b.created DESC
     LIMIT ?
   `,
     [boardId, perPage]
@@ -332,7 +333,7 @@ export const findComments = async (boardId: number): Promise<AlreadyLikesComment
   return result;
 };
 
-/** 해당 id의 게시물로 등록된 userId 배열을 반환하는 REPO */
+/** 해당 id의 게시물에 등록된 좋아요의  userId 배열을 반환하는 REPO */
 export const alreadyLikesBoard = async (boardId: number) => {
   const [resultRows] = await db.query(
     `
@@ -351,6 +352,7 @@ export const alreadyLikesBoard = async (boardId: number) => {
 // 좋아요 테이블에 board 값 추가
 export const likeBoardFromUser = async (data: Record<number, number>) => {
   const [keys, values, valval] = utils.insertData(data);
+  const boardId = valval[1];
   await db.query(
     `
       INSERT 
@@ -359,6 +361,15 @@ export const likeBoardFromUser = async (data: Record<number, number>) => {
       VALUES (${values})
     `,
     [...valval]
+  );
+  await db.query(
+    `
+    UPDATE board
+    SET
+      likeCnt = likeCnt+1
+    WHERE id = ?
+  `,
+    [boardId]
   );
   return true;
 };
@@ -372,6 +383,16 @@ export const unlikeBoardFromUser = async (userId: number, boardId: number) => {
       WHERE (userId = ? AND boardId = ?)
     `,
     [userId, boardId]
+  );
+
+  await db.query(
+    `
+    UPDATE board
+    SET
+      likeCnt = likeCnt -1
+    WHERE id = ?
+  `,
+    [boardId]
   );
   return true;
 };
@@ -405,13 +426,13 @@ export const savePointByBoard = async (data: { userId: number; boardId: number }
   const [boardRows] = await db.query(
     `
     SELECT 
-      boardId
+      fromUserId
     FROM board
     WHERE id = ?
   `,
     [data.boardId]
   );
-  const userId = boardRows[0].userId;
+  const userId = boardRows[0].fromUserId;
   console.log(userId);
 
   // 해당 댓글 주인의 포인트 상승

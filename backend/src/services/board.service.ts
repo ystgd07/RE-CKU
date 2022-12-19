@@ -24,6 +24,7 @@ export const getNoticeAll = async (): Promise<Board[]> => {
 };
 
 export const getNoticeAllPageNation = async (filter: string, boardId: number, count: number): Promise<Board[]> => {
+  console.log(filter, count, boardId);
   try {
     const notices = await boardRepo.findAllBoard(filter, boardId, count);
     const result = jsonParse(notices);

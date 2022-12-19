@@ -20,9 +20,20 @@ boardRoute.get("/", async (req, res, next) => {
 });
 boardRoute.get("/pages", async (req, res, next) => {
   const filter = String(req.query.filter).toUpperCase();
-  if (filter === "IS NOT NULL" || filter === "NOT NULL") throw new Error(`400, 필터값이 이상합니다.`);
+  console.log(filter);
+  if (filter !== "IS NOT NULL" && filter !== "IS NULL") throw new Error(`400, 필터값이 이상합니다.`);
   const count = Number(req.query.count);
-  if (count <= 0) throw new Error(``);
+  if (count <= 0) throw new Error(`404, 0개의 페이지는 보여드릴수 없죠 ?ㅋ`);
+  const boardId = Number(req.query.boardId);
+  try {
+    const result = await boardService.getNoticeAllPageNation(filter, boardId, count);
+    return res.status(200).json({
+      msg: `${filter} 값으로 찾은 내역`,
+      data: result,
+    });
+  } catch (err) {
+    next(err);
+  }
 });
 // 게시물 상세조회
 boardRoute.get("/:id/", async (req, res, next) => {

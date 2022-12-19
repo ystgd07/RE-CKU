@@ -23,7 +23,7 @@ export class Project {
   @Column({ nullable: true })
   link2: string;
 
-  @OneToMany((type) => Stack, (stack) => stack.projectId)
+  @OneToMany((type) => Stack, (stack) => stack.project)
   stacks: Stack[];
 
   @ManyToOne((type) => Resume, (resume) => resume.projects)
