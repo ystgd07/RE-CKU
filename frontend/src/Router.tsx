@@ -26,8 +26,8 @@ const Router = () => {
                         <Route path="/myportfolio" element={<MyPortfolio />} />
                         <Route path="/profile" element={<Profile />} />
                         <Route path="/login" element={<Navigate replace to="/" />} />
-                        <Route path="/FindPw" element={<Navigate replace to="/" />} />
-                        <Route path="/Join" element={<Navigate replace to="/" />} />
+                        <Route path="/find-pw" element={<Navigate replace to="/" />} />
+                        <Route path="/join" element={<Navigate replace to="/" />} />
                         <Route path="/*" element={<Err404 />} />
                     </>
                 ) : (

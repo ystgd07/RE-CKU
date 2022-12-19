@@ -1,6 +1,7 @@
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, OneToMany, OneToOne } from "typeorm";
 import { BoardLikeMaping } from "./boardLikeMaping.entity";
 import { Comment } from "./comment.entity";
+import { PointFromBoard } from "./point-board.schema";
 import { Resume } from "./resume.entity";
 import { User } from "./user.entity";
 
@@ -30,8 +31,8 @@ export class Board {
   @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP" })
   created: Date;
 
-  @ManyToOne((type) => Resume, (resume) => resume.usedBoards, { nullable: true }) // 좋아하고있는 유저들
-  hasResume: Resume | null;
+  @OneToMany((type) => PointFromBoard, (point) => point.boardId)
+  getPoint: PointFromBoard[];
 
   @OneToMany((type) => BoardLikeMaping, (board) => board.board) // 좋아하고있는 유저들
   likesBoard: BoardLikeMaping[];
@@ -41,4 +42,7 @@ export class Board {
 
   @ManyToOne((type) => User, (user) => user.notices) // 누구의 게시물
   fromUser: User[];
+
+  @ManyToOne((type) => Resume, (resume) => resume.usedBoards, { nullable: true }) // 좋아하고있는 유저들
+  hasResume: Resume | null;
 }

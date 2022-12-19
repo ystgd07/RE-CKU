@@ -166,7 +166,6 @@ const Join = () => {
                         <p>비밀번호 확인</p>
                         <input
                             type="password"
-                            //   style={errStyle()}
                             placeholder="비밀번호 확인"
                             {...register('passwordCheck', {
                                 required: '비밀번호를 입력해주세요 ',

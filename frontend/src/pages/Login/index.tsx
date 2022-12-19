@@ -1,26 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import * as S from './style';
 import Logo from 'assets/images/iogo.png';
 import { Link, useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
 import axios from 'axios';
 import { useForm } from 'react-hook-form';
 
-interface hey {
-    email: string;
-    password: string;
-}
-
 const Login = () => {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
     const navigate = useNavigate();
 
     const {
         register,
         handleSubmit,
         formState: { errors },
-        setError,
     } = useForm<FormData>();
 
     interface FormData {
