@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-type Mock = { name: string; address: string; updatedAt: string; id: any };
+type Mock = { resumeName: string; address: string; updatedAt: string; resumeId: any };
 
 const ResumeMain = () => {
     const [res, setRes] = useState<Mock[]>([]);
@@ -12,7 +12,11 @@ const ResumeMain = () => {
     async function deletePortfolio(e: any) {
         console.log(e.target.value);
         try {
-            await axios.delete(`/my-portfolio/resumes/${e.target.value}`);
+            const res = await axios.delete(`/my-portfolio/resumes/${e.target.value}`);
+
+            if (res.status === 200) {
+                getPortfolio();
+            }
         } catch (e) {
             console.log(e);
         }
@@ -25,7 +29,7 @@ const ResumeMain = () => {
             //   { mocksPortfolio }
             // );
             const mocks = await axios
-                .get('/myportfolio/list', {
+                .get('/my-portfolio/resumes', {
                     headers: { authorization: `Bearer ${token}` },
                 })
                 .then(res => res.data)
@@ -49,7 +53,7 @@ const ResumeMain = () => {
             //   { mocksPortfolio }
             // );
             const mocks = await axios.post(
-                '/myportfolio/resume',
+                '/my-portfolio/new-resume',
                 {},
                 { headers: { authorization: `Bearer ${token}` } },
             );
@@ -83,10 +87,10 @@ const ResumeMain = () => {
                 </div>
 
                 {res.map((e: Mock) => (
-                    <div key={e.id}>
-                        <h3>{e.name}</h3>
+                    <div key={e.resumeId}>
+                        <h3>{e.resumeName}</h3>
                         <p>{e.updatedAt.split('T')[0]}</p>
-                        <button value={e.id} onClick={deletePortfolio}>
+                        <button value={e.resumeId} onClick={deletePortfolio}>
                             삭제
                         </button>
                     </div>
