@@ -6,46 +6,65 @@ import { DatePicker } from 'antd';
 import axios from 'axios';
 import Header from 'components/Header';
 import { useParams } from 'react-router-dom';
+import { ResumeDetailModel, UserData, ResumeData } from 'models/resume-model';
 
 const Resume = () => {
     const [swtich, setSwtich] = useState<boolean>(true);
     const [formToggle, setFormToggle] = useState<boolean>(false);
     const [formToggle2, setFormToggle2] = useState<boolean>(false);
-    // const [formc, setFormc] = useState<ReactElement[]>([]);
-    // const [userInfo, setUserInfo] = useState([]);
+    // const [userInfo, setUserInfo] = useState<ResumeDetailModel[]>([]);
+    const [resumeTitle, setResumeTitle] = useState<{ name: string }>({ name: '' });
+    // const [resumeTitle, setResumeTitle] = useState<ResumeData>({
+    //     id: '',
+    //     updatedAt: '',
 
-    // interface user = {
-
-    //         username: string;
-    //         avatarUrl: string;
-    //         created: string;
-    //         email: string;
-    //         id: number;
-    //         phoneNumber?: number;
-    //         username: string;
-    // };
-
-    const choiceJob = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        console.log(e.target.value, '123');
-    };
+    //     name: '',
+    // });
+    const [userInfo, setUserInfo] = useState<{
+        username: string;
+        email: string;
+        phoneNumber: string;
+    }>({
+        username: '',
+        email: '',
+        phoneNumber: '',
+    });
 
     const params = useParams();
-    const ids = params.id;
-    console.log(params.id, 'ididididididid');
+    const resumeIds = params.id;
     const token = localStorage.getItem('accessToken');
+
+    const choiceJob = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const res = axios.patch(`/my-portfolio/resumes/${resumeIds}`, {
+            headers: { authorization: `Bearer ${token}` },
+            body: { position: e.target.value },
+        });
+
+        console.log(
+            '========================================================================',
+            e.target.value,
+            res,
+        );
+    };
 
     useEffect(() => {
         async function fetchResume() {
             try {
-                const res = await axios.get(`/myportfolio/resume/${ids}`, {
+                const res = await axios.get(`/myportfolio/resume/${resumeIds}`, {
                     headers: { authorization: `Bearer ${token}` },
                 });
-                const data = res.data;
-                // setUserInfo(data);
-                console.log('data-- - - - - -- - - - - -- - ', data);
-
-                // const { username, phoneNumber, email } = data;
-                // console.log(res, data, '123123123123', username, phoneNumber, email);
+                const userInfoData = res.data.userData;
+                const resumeTitle = res.data.resumeData;
+                setResumeTitle({ ...resumeTitle });
+                setUserInfo(userInfoData);
+                console.log(
+                    'res=========================================================================== ',
+                    res,
+                    'infoData ==========================================================================',
+                    userInfoData,
+                    'resumeTitle =====================================================================',
+                    resumeTitle,
+                );
             } catch (err) {
                 console.log(err);
             }
@@ -149,7 +168,7 @@ const Resume = () => {
                 <ResumeFrame>
                     <UserInfo>
                         <Title>
-                            <input type="text" value={`Title`} />
+                            <input type="text" defaultValue={`${resumeTitle.name}`} />
                             <span>
                                 <button type="button">
                                     <BiEdit />
@@ -162,7 +181,7 @@ const Resume = () => {
                                     <input
                                         type="text"
                                         placeholder="name"
-                                        // value={`${userInfo.userData.username}`}
+                                        defaultValue={`${userInfo.username}`}
                                     />
                                 </li>
                                 <li>
@@ -170,7 +189,7 @@ const Resume = () => {
                                     <input
                                         type="email"
                                         placeholder="이메일"
-                                        // value={`${users.email}`}
+                                        defaultValue={`${userInfo.email}`}
                                     />
                                 </li>
                                 <li>
@@ -178,7 +197,7 @@ const Resume = () => {
                                     <input
                                         type="tel"
                                         placeholder="연락처"
-                                        // value={`${users.phoneNumber}`}
+                                        defaultValue={`${userInfo.phoneNumber}`}
                                     />
                                 </li>
                                 <li>
@@ -196,8 +215,8 @@ const Resume = () => {
                         <div className="inputFlex">
                             <section>
                                 <div>
-                                    <select onChange={choiceJob}>
-                                        <option selected disabled>
+                                    <select onChange={choiceJob} defaultValue={'position'}>
+                                        <option value="position" disabled>
                                             포지션 선택
                                         </option>
                                         <option>전체</option>
