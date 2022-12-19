@@ -34,6 +34,7 @@ export const savePointByComment = async (data: { userId: number; commentId: numb
     `,
     [100, userId]
   );
+  return true;
 };
 
 // 해당 댓글에 좋아요 누른 사람이 저번에도 눌렀는지 확인하는 것

@@ -7,7 +7,7 @@ import { CreateCommentDto } from "./dto";
 
 export const boardRoute = express();
 // 전체 게시물 목록 조회
-boardRoute.get("/all", async (req, res, next) => {
+boardRoute.get("/", async (req, res, next) => {
   try {
     const notices = await boardService.getNoticeAll();
     return res.status(200).json({
@@ -18,7 +18,12 @@ boardRoute.get("/all", async (req, res, next) => {
     next(err);
   }
 });
-
+boardRoute.get("/pages", async (req, res, next) => {
+  const filter = String(req.query.filter).toUpperCase();
+  if (filter === "IS NOT NULL" || filter === "NOT NULL") throw new Error(`400, 필터값이 이상합니다.`);
+  const count = Number(req.query.count);
+  if (count <= 0) throw new Error(``);
+});
 // 게시물 상세조회
 boardRoute.get("/:id/", async (req, res, next) => {
   const id = Number(req.params.id);

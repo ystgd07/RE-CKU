@@ -13,9 +13,25 @@ interface BoardInFo {
 }
 
 export const getNoticeAll = async (): Promise<Board[]> => {
-  const notices = await boardRepo.findAllBoard();
-  const result = jsonParse(notices);
-  return result;
+  try {
+    const notices = await boardRepo.findAllBoard();
+    const result = jsonParse(notices);
+    return result;
+  } catch (err) {
+    console.log(err);
+    throw new Error(`500, 서버오륲`);
+  }
+};
+
+export const getNoticeAllPageNation = async (filter: string, boardId: number, count: number): Promise<Board[]> => {
+  try {
+    const notices = await boardRepo.findAllBoard(filter, boardId, count);
+    const result = jsonParse(notices);
+    return result;
+  } catch (err) {
+    console.log(err);
+    throw new Error(`500, 서버오륲`);
+  }
 };
 
 // 하나의 게시물 정보를 가져옴
