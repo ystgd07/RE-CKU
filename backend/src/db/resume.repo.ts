@@ -202,16 +202,16 @@ export const deleteProjectQ = async (projectId: number) => {
   return deletedProject;
 };
 
-// skill list
+// skill list 불러오기
 export const findSkillsQ = async () => {
   const [skills, ] = await db.query(`SELECT id AS skillId, name FROM skill`);
 
   return skills;
 };
 
-// skill insert
-export const createSkillsQ = async (skillName: string) => {
-  const newSkill = await db.query(`INSERT INTO skill (name) VALUES (?)`, skillName);
+// skill 생성
+export const createSkillQ = async (newSkillName: string) => {
+  const newSkill = await db.query(`INSERT INTO skill (name) VALUES (?)`, newSkillName);
 
   return newSkill;
 };

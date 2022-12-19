@@ -15,7 +15,8 @@ import {
   deleteResumeQ,
   deleteCareerQ,
   deleteProjectQ,
-  findSkillsQ
+  findSkillsQ,
+  createSkillQ
 } from "../db/index.repo";
 import {isNumber} from "class-validator";
 
@@ -147,9 +148,16 @@ export const deleteProject = async (projectId: number) => {
   return deletedProject;
 };
 
-// skill find
+// skill list 불러오기
 export const findSkills = async () => {
   const skills = await findSkillsQ();
 
   return skills;
+}
+
+// skill 생성
+export const createSkill = async (newSkillName: string) => {
+  const newskill = await createSkillQ(newSkillName);
+
+  return newskill;
 }
