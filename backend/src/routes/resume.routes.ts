@@ -14,7 +14,8 @@ import {
   deleteResume,
   deleteCareer,
   deleteProject,
-  findSkills
+  findSkills,
+  createSkill
 } from "../services/index.service";
 
 const resumeRoute = express();
@@ -248,15 +249,32 @@ resumeRoute.delete("/projects/:projectId", async (req, res, next) => {
   }
 });
 
-// skill 불러오기
+// skill List 불러오기
 resumeRoute.get("/skills", async (req, res, next) => {
   try {
     const skills = await findSkills();
 
     return res.json({
       status: 200,
-      msg: "이력서 업무경험 조회 성공",
+      msg: "스택 목록 조회 성공",
       data: skills
+    });
+  } catch (err) {
+    next(err);
+  }
+})
+
+// skill 새로 생성하기
+resumeRoute.post("/skills/:newSkillName", async (req, res, next) => {
+  try {
+    const newSkillName = req.params.newSkillName;
+
+    const newSkill = await createSkill(newSkillName);
+
+    return res.json({
+      status: 201,
+      msg: "스택 생성 성공",
+      data: newSkill
     });
   } catch (err) {
     next(err);
