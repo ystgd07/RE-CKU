@@ -8,6 +8,15 @@ type Mock = { name: string; address: string; updatedAt: string; id: any };
 const ResumeMain = () => {
     const [res, setRes] = useState<Mock[]>([]);
     const navigate = useNavigate();
+    // /my-portfolio/resumes/:resumeId
+    async function deletePortfolio(e: any) {
+        console.log(e.target.value);
+        try {
+            await axios.delete(`/my-portfolio/resumes/${e.target.value}`);
+        } catch (e) {
+            console.log(e);
+        }
+    }
     async function getPortfolio() {
         try {
             const token = localStorage.getItem('accessToken');
@@ -77,6 +86,9 @@ const ResumeMain = () => {
                     <div key={e.id}>
                         <h3>{e.name}</h3>
                         <p>{e.updatedAt.split('T')[0]}</p>
+                        <button value={e.id} onClick={deletePortfolio}>
+                            삭제
+                        </button>
                     </div>
                 ))}
             </Layout>
