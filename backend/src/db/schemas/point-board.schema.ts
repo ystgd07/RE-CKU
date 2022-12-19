@@ -8,8 +8,8 @@ export class PointFromBoard {
   id: number;
 
   @ManyToOne((type) => User, (user) => user.getPointFromBoard)
-  userId: User;
+  user: User;
 
   @ManyToOne((type) => Board, (board) => board.getPoint)
-  boardId: Board;
+  board: Board;
 }

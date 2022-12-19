@@ -5,6 +5,19 @@ import { PointFromBoard } from "./point-board.schema";
 import { Resume } from "./resume.entity";
 import { User } from "./user.entity";
 
+export type BoardInfo = {
+  id: number;
+  title: string;
+  content: string;
+  hashTags: string;
+  boardCreated: Date;
+  hasResumeId: number;
+  fixed: boolean;
+  ownUserId: number;
+  email: string;
+  avatarUrl: string;
+};
+
 @Entity()
 export class Board {
   @PrimaryGeneratedColumn()
@@ -31,7 +44,7 @@ export class Board {
   @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP" })
   created: Date;
 
-  @OneToMany((type) => PointFromBoard, (point) => point.boardId)
+  @OneToMany((type) => PointFromBoard, (point) => point.board)
   getPoint: PointFromBoard[];
 
   @OneToMany((type) => BoardLikeMaping, (board) => board.board) // 좋아하고있는 유저들
