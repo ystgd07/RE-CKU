@@ -123,10 +123,11 @@ export const deleteNotice = async (userId: number, boardId: number): Promise<boo
     if (boardData.fromUserId !== userId) throw new Error(`400, 이 게시물에 대한 권한이 없습니다.`);
 
     // 게시글 삭제
-    await boardRepo.deleteBoard(boardId);
+    await boardRepo.deleteBoard(userId, boardId);
     return true;
   } catch (err) {
-    throw new Error(err);
+    console.log(err);
+    throw new Error(`500, 서버오류`);
   }
 };
 

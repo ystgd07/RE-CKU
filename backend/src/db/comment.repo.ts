@@ -170,6 +170,24 @@ export const addCommentQ = async (data: { userId: number; boardId: number; text:
 
 // 댓글 지우기  매핑테이블도 지워야함
 export const deleteCommentQ = async (userId: number, boardId: number, commentId: number) => {
+  const [mapingRows] = await db.query(
+    `
+      DELETE 
+      FROM comment_like_maping 
+      WHERE commentId = ?
+      `,
+    [commentId]
+  );
+  console.log("매핑테이블에서 삭제");
+  await db.query(
+    `
+      DELETE 
+      FROM point_from_comment 
+      WHERE commentId = ? AND userId = ?
+      `,
+    [commentId, userId]
+  );
+  console.log("포인트테이블에서 삭제");
   const [rows] = await db.query(
     `
     DELETE
@@ -178,28 +196,95 @@ export const deleteCommentQ = async (userId: number, boardId: number, commentId:
   `,
     [userId, boardId, commentId]
   );
-  console.log(rows);
+  console.log("댓글삭제");
   // 해당 댓글에 달렸던 좋아요 데이터 삭제
   await db.query(
     `
     UPDATE board
     SET
-      commentCnt = commentCnt-1
+    commentCnt = commentCnt-1
     WHERE id = ?
-  `,
+    `,
     [boardId]
   );
 
-  const [mapingRows] = await db.query(
-    `
-    DELETE 
-    FROM comment_like_maping 
-    WHERE commentId = ?
-  `,
-    [commentId]
-  );
+  console.log("게시글 댓글카운트 -1");
   const result = utils.jsonParse(rows)[0];
   return result;
 };
 
-export const updateCommentQ = async (userId: number, boardId: number, commentId: number) => {};
+export const updateCommentQ = async (commentId: number, data: { text: string }): Promise<boolean> => {
+  const [keys, values] = utils.updateData(data);
+  await db.query(
+    `
+    UPDATE comment 
+    SET ${keys.join(", ")} 
+    WHERE id = ?
+    `,
+    [...values, commentId]
+  );
+  return true;
+};
+
+export const moreCommentsPagenationQ = async (boardId: number, userId: number, count: number, mark: string) => {
+  let [comments] = await db.query(
+    `SELECT 
+      s.alreadyLikes,
+      s.id as commentId, 
+      u.username, 
+      u.avatarUrl,
+      s.text,
+      s.created as commentCreated,
+      s.likes,
+      s.userId as fromUserId,
+      s.fixed,
+      concat(
+        LPAD ((s.likes),12,0),
+        LPAD (s.id,8,0)
+      ) as MARK
+    From board a 
+    JOIN comment s 
+    ON s.boardId=a.id 
+    Join user u 
+    On s.userId=u.id 
+    WHERE 
+      ${mark} > CONCAT (
+        LPAD ((s.likes),12,0),
+        LPAD (s.id,8,0)
+      )
+    Order BY  s.likes DESC , s.id DESC
+    limit 2
+    `,
+    [boardId]
+  );
+  const parseComments = utils.jsonParse(comments);
+  const extendedComments = await Promise.all(
+    parseComments.map(async (comment) => {
+      const [mappingTable] = await db.query(
+        `
+        SELECT id 
+        FROM comment_like_maping 
+        WHERE 
+            userId = ? 
+          AND 
+            commentId = ?`,
+
+        [userId, comment.commentId]
+      );
+      // 현재 사용자의 좋아요 여부
+      let parseMappingTable = utils.jsonParse(mappingTable);
+      if (parseMappingTable.length <= 0) {
+        parseMappingTable = null;
+      }
+      return {
+        ...comment,
+        alreadyLikes: parseMappingTable !== null ? true : false,
+        // 현재 댓글의 주인인경우
+        myComment: comment.fromUserId === userId ? true : false,
+      };
+    })
+  );
+  comments = extendedComments;
+  const result = utils.jsonParse(comments);
+  return result;
+};

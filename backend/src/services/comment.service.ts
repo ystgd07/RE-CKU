@@ -1,4 +1,5 @@
 import * as commentRepo from "../db/comment.repo";
+import * as userRepo from "../db/user.repo";
 
 export const commentLikes = async (userId: number, commentId: number, likesStatus: boolean): Promise<boolean> => {
   const data = {
@@ -53,10 +54,28 @@ export const deleteComment = async (userId: number, boardId: number, commentId: 
     return result;
   } catch (err) {
     if (err.message === `404`) throw new Error(`404, 댓글을 찾을 수 없습니다.`);
+    console.log(err.message);
     throw new Error(`500, 서버 오류`);
   }
 };
 
-export const updateComment = async (userId: number, commentId: number) => {
+export const updateComment = async (userId: number, commentId: number, data: { text: string }) => {
   // 해당 댓글이 토큰주인의 것인지 판단
+  try {
+    const user = await userRepo.findOneUser(userId);
+    const update = await commentRepo.updateCommentQ(commentId, data);
+    return update;
+  } catch (err) {
+    throw new Error(`500, 서버 오류`);
+  }
+};
+
+export const moreCommentsPagenation = async (boardId: number, userId: number, count: number, mark: string) => {
+  try {
+    const comments = await commentRepo.moreCommentsPagenationQ(boardId, userId, count, mark);
+    return comments;
+  } catch (err) {
+    console.log(err.message);
+    throw new Error(`500, 서버 오류`);
+  }
 };

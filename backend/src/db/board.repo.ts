@@ -329,38 +329,15 @@ export const findOneBoardQ = async (boardId: number, userId?: null | number): Pr
     console.log(typeof resume);
 
     // 이력서가 있다면 이력서에 종속된 프로젝트와 커리어를 찾아서 각 필드에 넣어줌
-    const [projects, career] = await Promise.all([
+    const [career, projects] = await Promise.all([
       resumeRepo.findCareersQ(resume.resumeId),
       resumeRepo.findProjectsQ(resume.resumeId),
-
-      // db.query(
-      //   `SELECT
-      //     *
-      //   FROM project a
-      //   JOIN resume r
-      //   On a.usedResumeId=r.id
-      //   WHERE a.usedResumeId=?
-      //   `,
-      //   [result.boardInfo.hasResumeId]
-      // ),
-      // db.query(
-      //   `
-      //     SELECT *
-      //     FROM career a
-      //     JOIN resume r
-      //     On a.usedResumeId = r.id
-      //     WHERE a.usedResumeId=?
-      //   `,
-      //   [result.boardInfo.hasResumeId]
-      // ),
     ]);
 
     // 쿼리로 날린 값에 프로젝트와 커리어를 넣고,
     // 리턴할 이력서 정보에 넣음
     resume.project = utils.jsonParse(projects);
     resume.career = utils.jsonParse(career);
-    console.log("바뀔 리조메", resume.project);
-    console.log("바뀔 리조메", resume.career);
     result.resumeInfo = resume;
   }
 
@@ -383,6 +360,7 @@ export const findOneBoardQ = async (boardId: number, userId?: null | number): Pr
             userId = ? 
           AND 
             commentId = ?`,
+
         [userInfo.id, comment.commentId]
       );
       // 현재 사용자의 좋아요 여부
@@ -400,11 +378,6 @@ export const findOneBoardQ = async (boardId: number, userId?: null | number): Pr
   );
   result.comments = extendedComments;
 
-  // console.log(boardInfo[0][0]);
-  // const result = { alreadyLikesThisBoard, boardInfo: boardInfo[0][0], resumeInfo, comments: reduceCmt };
-  // 게시물보여줄때
-  // 게시물id, 타이틀, 내용, 게시일, 작성자, 이력서:{}, 댓글들:[{댓글id ,내용, 유저이름, 유저아바타, 생성일자 }{}{}]
-  // return user[0][0];
   return result;
 };
 
@@ -447,7 +420,59 @@ export const updateBoard = async (boardId: number, data: Record<string, string |
 };
 
 // 게시글 삭제
-export const deleteBoard = async (boardId: number) => {
+export const deleteBoard = async (userId: number, boardId: number) => {
+  // 보드에 연관된 포인트와 좋아요 행 삭제
+  await db.query(
+    `
+      DELETE 
+      FROM board_like_maping 
+      WHERE boardId = ?
+      `,
+    [boardId]
+  );
+  console.log("게시물좋아요매핑 삭제");
+  await db.query(
+    `
+      DELETE 
+      FROM point_from_board 
+      WHERE boardId = ? AND userId = ?
+      `,
+    [boardId, userId]
+  );
+  console.log("게시물 포인트테이블에서 삭제");
+
+  // 보드에 소속된 댓글들에 관련된거 지우고, 댓글까지 지워야함
+  const [comments] = await db.query(
+    `
+    select id as commentId 
+    from comment
+    where boardId = ?
+    `,
+    [boardId]
+  );
+  console.log("게시글에 달린 커맨트 id 찾음");
+  const zz = utils.jsonParse(comments);
+  console.log(zz);
+  // 게시물에 달린 댓글들 모조리 조사해서 연관있는것들 KILL....
+  await Promise.all(
+    zz.map(async (comment) => {
+      console.log("첫번째 id", comment.commentId);
+      await db.query(`DELETE FROM comment_like_maping WHERE commentId=?`, [comment.commentId]);
+      console.log("댓글 좋아요 매핑테이블에서 해당 댓글 id로 등록된것 삭제");
+      await db.query(`DELETE FROM point_from_comment WHERE commentId=?`, [comment.commentId]);
+      console.log("댓글 포인트테이블에서 해당 댓글 id로 등록된것 삭제");
+    })
+  );
+
+  const deleteComment = await db.query(
+    `
+    DELETE
+    FROM comment
+    WHERE boardId = ? 
+  `,
+    [boardId]
+  );
+  console.log("댓글삭제");
   await db.query(
     `
       DELETE 
@@ -473,7 +498,7 @@ export const findComments = async (boardId: number): Promise<AlreadyLikesComment
       s.userId as fromUserId,
       s.fixed,
       concat(
-        lpad (unix_timestamp(s.created),12,0),
+        lpad ((s.likes),12,0),
         lpad (s.id,8,0)
       ) as MARK
     From board a 
@@ -481,7 +506,10 @@ export const findComments = async (boardId: number): Promise<AlreadyLikesComment
     ON s.boardId=a.id 
     Join user u 
     On s.userId=u.id 
-    WHERE a.id=? `,
+    WHERE a.id=? 
+    Order BY  s.likes DESC , s.id DESC
+    limit 2
+    `,
     [boardId]
   );
   const result = utils.jsonParse(comments);

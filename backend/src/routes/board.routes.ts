@@ -162,6 +162,7 @@ boardRoute.patch("/like/:boardId", tokenValidator, async (req, res, next) => {
     const likes = await boardService.addLikes(id, boardId, likesStatus);
     return res.status(200).json({
       msg: `좋아요 상태 : ${likes} `,
+      data: `ok`,
     });
   } catch (err) {
     next(err);
@@ -213,6 +214,22 @@ boardRoute.delete("/:boardId/comments/:commentId", tokenValidator, async (req, r
     const result = await commentService.deleteComment(userId, boardId, commentId);
     return res.status(200).json({
       msg: "댓글 삭제 완료",
+      data: "ok",
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+boardRoute.get("/:boardId/comments/pagenation", async (req, res, next) => {
+  const boardId = Number(req.params.boardId);
+  const mark = String(req.query.mark);
+  const count = Number(req.query.count);
+  const userId = Number(req.query.userId);
+  try {
+    const result = await commentService.moreCommentsPagenation(boardId, userId, count, mark);
+    return res.status(200).json({
+      msg: "댓글 페이지네이션",
       data: result,
     });
   } catch (err) {
