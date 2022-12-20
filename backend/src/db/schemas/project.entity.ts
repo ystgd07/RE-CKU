@@ -8,21 +8,23 @@ export class Project {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  project: string;
+  @Column({ nullable: false })
+  projectName: string;
 
-  @Column()
-  infomation: string;
+  @Column({ nullable: false })
+  year: string;
 
-  @Column()
-  imgUrl: string;
+  @Column({ nullable: true })
+  information: string;
 
-  @Column()
+  @Column({ nullable: true })
   link1: string;
-  @Column()
+
+  @Column({ nullable: true })
   link2: string;
-  @Column()
-  link3: string;
+
+  @OneToMany((type) => Stack, (stack) => stack.project)
+  stacks: Stack[];
 
   @ManyToOne((type) => Resume, (resume) => resume.projects)
   usedResume: Resume;

@@ -1,14 +1,20 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany, OneToOne } from "typeorm";
-import { Company } from "./company.entity";
 import { Connect } from "./connect.entity";
 import { Resume } from "./resume.entity";
-import { Stack } from "./stacks.entity";
 import { Board } from "./board.entity";
 import { Comment } from "./comment.entity";
+import { CommentLikeMaping } from "./commentLikeMaping.entity";
+import { BoardLikeMaping } from "./boardLikeMaping.entity";
+import { PointFromComment } from "./point-comment.schema";
+import { PointFromBoard } from "./point-board.schema";
 
 export enum roleEnum {
-  COMPANY = "기업",
-  USER = "개인",
+  bronze = "브론즈",
+  silver = "실버",
+  gold = "골드",
+  platinum = "플레티넘",
+  diamond = "다이아몬드",
+  master = "마스터",
   ADMIN = "관리자",
 }
 
@@ -23,17 +29,23 @@ export class User {
   @Column({ unique: true, nullable: false })
   email: string;
 
-  @Column({ unique: true, nullable: true })
+  @Column({ unique: true, nullable: true, default: null })
   phoneNumber: string;
 
   @Column()
   password: string;
 
-  @Column({ type: "enum", enum: roleEnum })
+  @Column({ default: "zz" })
+  avatarUrl: string;
+
+  @Column({ type: "enum", enum: roleEnum, default: roleEnum.bronze })
   role: roleEnum;
 
-  @Column()
+  @Column({ nullable: true, default: null })
   RT: string;
+
+  @Column({ default: 0 })
+  point: number;
 
   @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP" })
   created: Date;
@@ -44,18 +56,27 @@ export class User {
   @OneToMany((type) => Resume, (resume) => resume.usedUser, { nullable: true })
   resumes: Resume[];
 
+  @OneToMany((type) => PointFromBoard, (point) => point.userId)
+  getPointFromBoard: PointFromBoard[];
+
+  @OneToMany((type) => PointFromComment, (point) => point.userId)
+  getPointFromComment: PointFromComment[];
+
   @OneToMany((type) => Board, (board) => board.fromUser, { nullable: true })
-  notices: Board[]
+  notices: Board[]; // 작성한 게시글
 
-  @OneToMany((type) => Comment, (comment) => comment.fromUser, { nullable: true })
-  ownComments : Comment[]
+  @OneToMany((type) => BoardLikeMaping, (board) => board.user, { nullable: true })
+  likesBoard: BoardLikeMaping[]; // 좋아하는 게시글 맵핑
 
-  @OneToMany((type) => Connect, (connect) => connect.usedUser, { nullable: true })
-  connects: Connect[];
+  @OneToMany((type) => CommentLikeMaping, (comment) => comment.user)
+  likesResume: CommentLikeMaping[]; //  좋아하는 이력서 맵핑
 
-  @OneToMany((type) => Stack, (stack) => stack.user_id, { nullable: true })
-  stacks: Stack[];
-  //기업회원 전용
-  @OneToOne((type) => Company, (company) => company.owner)
-  ownCompany: Company;
+  @OneToMany((type) => Comment, (comment) => comment.user, { nullable: true })
+  writeComments: Comment[];
+
+  @OneToMany((type) => Connect, (connect) => connect.mento, { nullable: true })
+  asMento: Connect[];
+
+  @OneToMany((type) => Connect, (connect) => connect.mentee, { nullable: true })
+  asMentee: Connect[];
 }
