@@ -7,12 +7,12 @@ export interface ResumeDetailModel {
 }
 
 export interface ResumeData {
-    id: number;
-    information?: string;
-    name: string;
+    userId: number;
+    intro?: string;
+    resumeName: string;
     position?: string;
     updatedAt: string;
-    usedUserId: number;
+    resumeId: number;
 }
 
 export interface UserData {

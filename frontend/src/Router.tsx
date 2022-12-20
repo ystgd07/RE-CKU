@@ -21,8 +21,8 @@ const Router = () => {
                     <>
                         <Route path="/" element={<Main />} />
                         <Route path="/resume/:id" element={<Resume />} />
-                        {/* <Route path="/create-post" element={<CreatePost />} /> */}
-                        {/* <Route path="/post/:postId" element={<Post />} /> */}
+                        <Route path="/create-post" element={<CreatePost />} />
+                        <Route path="/post/:postId" element={<Post />} />
                         <Route path="/myportfolio" element={<MyPortfolio />} />
                         <Route path="/profile" element={<Profile />} />
                         <Route path="/login" element={<Navigate replace to="/" />} />
