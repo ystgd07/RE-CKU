@@ -81,6 +81,14 @@ const style = css`
     select {
         border: 0;
     }
+
+    a,
+    a:visited,
+    a:link,
+    a:active {
+        color: #000;
+        text-decoration: none;
+    }
 `;
 
 const GlobalStyle = () => {
