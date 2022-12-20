@@ -2,7 +2,6 @@ import { DataSource } from "typeorm";
 // const mysql2 = require("mysql2/promise");
 import mysql from "mysql2/promise";
 require("dotenv").config();
-
 // mysql2 Connect
 export const db = mysql.createPool({
   host: process.env.MYSQL_HOST || "13.124.107.224",

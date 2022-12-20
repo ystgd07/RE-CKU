@@ -13,7 +13,9 @@ import {
   updateProject,
   deleteResume,
   deleteCareer,
-  deleteProject
+  deleteProject,
+  findSkills,
+  createSkill
 } from "../services/index.service";
 
 const resumeRoute = express();
@@ -213,7 +215,7 @@ resumeRoute.delete("/resumes/:resumeId", async (req, res, next) => {
   }
 });
 
-// 4-2. 업무경험 삭제
+// 4-2. 업무경 험 삭제
 resumeRoute.delete("/careers/:careerId", async (req, res, next) => {
   const careerId = Number(req.params.careerId);
 
@@ -246,5 +248,37 @@ resumeRoute.delete("/projects/:projectId", async (req, res, next) => {
     next(err);
   }
 });
+
+// skill List 불러오기
+resumeRoute.get("/skills", async (req, res, next) => {
+  try {
+    const skills = await findSkills();
+
+    return res.json({
+      status: 200,
+      msg: "스택 목록 조회 성공",
+      data: skills
+    });
+  } catch (err) {
+    next(err);
+  }
+})
+
+// skill 새로 생성하기
+resumeRoute.post("/skills/:newSkillName", async (req, res, next) => {
+  try {
+    const newSkillName = req.params.newSkillName;
+
+    const newSkill = await createSkill(newSkillName);
+
+    return res.json({
+      status: 201,
+      msg: "스택 생성 성공",
+      data: newSkill
+    });
+  } catch (err) {
+    next(err);
+  }
+})
 
 export default resumeRoute;

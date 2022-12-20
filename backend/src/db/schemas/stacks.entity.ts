@@ -13,6 +13,6 @@ export class Stack {
   @ManyToOne((type) => Project, (project) => project.stacks)
   project: Project;
 
-  @ManyToOne((type) => Skill, (skill) => skill.stacks)
-  skill_id: Skill;
+  @ManyToOne((type) => Skill, (skill) => skill.id)
+  skill: Skill;
 }

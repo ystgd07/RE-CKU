@@ -6,13 +6,70 @@ import { validateBody, tokenValidator } from "../middlewares";
 import { CreateCommentDto } from "./dto";
 
 export const boardRoute = express();
-// 전체 게시물 목록 조회
-boardRoute.get("/all", async (req, res, next) => {
+/**type으로 최신,좋아요,댓글 순으로 리스트 반환 */
+boardRoute.get("/", async (req, res, next) => {
+  const filter = String(req.query.filter);
+  const perPage = Number(req.query.perPage);
+  const enumFilter = ["likeCnt", "commentCnt", "created"];
+  if (enumFilter.includes(filter) === false || perPage <= 0) {
+    next(new Error(`400, query를 확인해주세요`));
+    return;
+  }
   try {
-    const notices = await boardService.getNoticeAll();
+    const notices = await boardService.getNoticeForMain(filter, perPage);
     return res.status(200).json({
       msg: "게시글 전체 목록 조회",
       data: notices,
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// 이력서 게시판의 첫 요청 및 페이지네이션
+boardRoute.get("/resumes", async (req, res, next) => {
+  const firstRequest = Number(req.query.firstRequest);
+  const type = String(req.query.type);
+  const mark = String(req.query.mark).toUpperCase();
+  const count = Number(req.query.count);
+  const position = String(req.query.position).toUpperCase();
+  const accessType = ["likeCnt", "created"];
+  const accessPosition = ["FE", "BE", "FS", "PM", "ALL"];
+  if (accessPosition.includes(position) === false || count < 2 || accessType.includes(type) === false) {
+    next(new Error(`404, 입력정보를 정확히 입력해주세요.`));
+    return;
+  }
+  console.log(req.query);
+  try {
+    const result = await boardService.getResumeNotices(firstRequest, type, position, count, mark);
+    return res.status(200).json({
+      msg: "이력서 게시물 조회",
+      data: result,
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// 자유 게시판의 첫 요청 및 페이지네이션
+boardRoute.get("/community", async (req, res, next) => {
+  const firstRequest = Number(req.query.firstRequest);
+  const type = String(req.query.type);
+  const mark = String(req.query.mark).toUpperCase();
+  const count = Number(req.query.count);
+  console.log(req.query);
+  console.log(typeof firstRequest);
+  const accessType = ["likeCnt", "created"];
+  if (accessType.includes(type) === false || count < 2) {
+    next(new Error(`404, 입력정보를 정확히 입력해주세요.`));
+    return;
+  }
+
+  try {
+    const result = await boardService.getCommunityNotices(firstRequest, type, count, mark);
+    return res.status(200).json({
+      msg: "자유게시물입니다.",
+      data: result,
     });
   } catch (err) {
     next(err);
@@ -72,12 +129,14 @@ boardRoute.patch("/:boardId", tokenValidator, async (req, res, next) => {
   const content = req.body.content;
   const title = req.body.title;
   const hashTags = req.body.hashTags;
+  const complate = req.body.complate;
   let hasResumeId = req.body.resumeId;
   if (hasResumeId === 0) hasResumeId = null;
   const toUpdate = {
     ...(content && { content }),
     ...(title && { title }),
     ...(hashTags && { hashTags }),
+    ...(complate && { complate }),
   };
 
   try {
@@ -103,6 +162,7 @@ boardRoute.patch("/like/:boardId", tokenValidator, async (req, res, next) => {
     const likes = await boardService.addLikes(id, boardId, likesStatus);
     return res.status(200).json({
       msg: `좋아요 상태 : ${likes} `,
+      data: `ok`,
     });
   } catch (err) {
     next(err);
@@ -154,6 +214,22 @@ boardRoute.delete("/:boardId/comments/:commentId", tokenValidator, async (req, r
     const result = await commentService.deleteComment(userId, boardId, commentId);
     return res.status(200).json({
       msg: "댓글 삭제 완료",
+      data: "ok",
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+boardRoute.get("/:boardId/comments/pagenation", async (req, res, next) => {
+  const boardId = Number(req.params.boardId);
+  const mark = String(req.query.mark);
+  const count = Number(req.query.count);
+  const userId = Number(req.query.userId);
+  try {
+    const result = await commentService.moreCommentsPagenation(boardId, userId, count, mark);
+    return res.status(200).json({
+      msg: "댓글 페이지네이션",
       data: result,
     });
   } catch (err) {
