@@ -1,14 +1,20 @@
 import { Bar } from './style';
 import { useEffect } from 'react';
-import { Breadcrumb, Layout, Menu, theme, Avatar, Divider, Space, Progress } from 'antd';
+import { Breadcrumb, Layout, Menu, theme, Avatar, Divider, Space, Progress, Tabs } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
 import axios from 'axios';
+//TODO:코드라인이 심각하게 많아지고 있다 컴포넌트의 필요성을 절실하게 느끼는 중..
 const { Header, Content, Footer } = Layout;
 const tierColors = {
     bronze: '#964b00',
     silver: '#c0c0c0',
     gold: '#ffbd1b',
 };
+
+const onChange = (key: string) => {
+    console.log(key);
+};
+
 const Profile: React.FC = () => {
     let mock: {
         name: string;
@@ -50,7 +56,9 @@ const Profile: React.FC = () => {
     let lowerLimit = 0;
     let tier = 'Bronze';
     let tierColor = tierColors.bronze;
-    arr.map((e, idx) => {
+
+    //FIXME:API요청 시 수정되어야 함 mock[0].point.
+    arr.map((e: number, idx: number): void => {
         if (e <= mock[0].point) {
             upperLimit = arr[idx + 1];
             if (upperLimit === 40) {
@@ -69,8 +77,11 @@ const Profile: React.FC = () => {
     });
 
     console.log(upperLimit, lowerLimit);
-    let testWidth = ((mock[0].point - lowerLimit) / (upperLimit - lowerLimit)) * 100;
+
+    let testWidth: number = ((mock[0].point - lowerLimit) / (upperLimit - lowerLimit)) * 100;
+
     if (testWidth === 100) testWidth = 0;
+
     console.log(testWidth);
 
     return (
@@ -100,7 +111,56 @@ const Profile: React.FC = () => {
                             />
                         </Space>
                     </div>
-                    <Divider />
+                    {tier === 'platinum' ? (
+                        <Tabs
+                            defaultActiveKey="1"
+                            onChange={onChange}
+                            items={[
+                                {
+                                    label: `유저정보`,
+                                    key: '1',
+                                    children: `Content of Tab Pane 1`,
+                                },
+                                {
+                                    label: `좋아요`,
+                                    key: '2',
+                                    children: ``,
+                                },
+                                {
+                                    label: `첨삭`,
+                                    key: '3',
+                                    children: `Content of Tab Pane 3`,
+                                },
+                            ]}
+                        />
+                    ) : (
+                        <Tabs
+                            defaultActiveKey="1"
+                            onChange={onChange}
+                            items={[
+                                {
+                                    label: `유저정보`,
+                                    key: '1',
+                                    children: (
+                                        <div>
+                                            <h1>test</h1>
+                                        </div>
+                                    ),
+                                },
+                                {
+                                    label: `좋아요`,
+                                    key: '2',
+                                    children: ``,
+                                },
+                                {
+                                    label: `첨삭(플레티넘)`,
+                                    key: '3',
+                                    children: `Content of Tab Pane 3`,
+                                    disabled: true,
+                                },
+                            ]}
+                        />
+                    )}
                 </div>
             </Content>
             <Footer style={{ textAlign: 'center' }}></Footer>
@@ -109,18 +169,3 @@ const Profile: React.FC = () => {
 };
 
 export default Profile;
-{
-    /* <h1>profile page</h1>
-            <Bar>
-                <div>
-                    <div></div>
-                </div>
-                <div>
-                    <span>안녕 이름이야 여긴</span>
-                    <div></div>
-                    <div>
-                        <div style={{ width: `${testWidth}%` }}></div>
-                    </div>
-                </div>
-            </Bar> */
-}
