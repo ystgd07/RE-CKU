@@ -36,7 +36,6 @@ export const login = async (email: string, password: string) => {
   // 가입한 이메일 있는지 확인
   const user = await userRepo.findOneUser(email);
   if (!user) throw Error(`404, ${email}로 가입한 회원이 없습니다.`);
-
   // 비밀번호 일치하는지 확인
   const existence = user.password;
   const comparePw = await bcrypt.compare(password, existence);

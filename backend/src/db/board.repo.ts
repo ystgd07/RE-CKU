@@ -5,37 +5,145 @@ import * as utils from "./utils";
 import { TypeCareer, TypeProject } from "./schemas";
 import { AlreadyLikesComments } from "./schemas/comment.entity";
 
-// 두번째 게시글 페이지네이션
-export const findAllBoardToPageNationQ = async () => {
-  // 현재 페이지의 마지막 게시물 id 값을 받아야함
-  // 그 id 값을 기준으로 페이지 네이션 해야함!
-  const [query] = await db.query(`
-    SELECT * FROM board WHERE id > 현재마지막게시글id limit 몇개가져올지
-  `);
+/**
+ * 페이지네이션 해결할 방법!!!
+ * more 버튼 클릭시 아래와 같은
+ * SELECT 
+ *  ID, 
+ *  CONTENT ,
+ *  created,
+		CONCAT(LPAD(created, 3, '0'), LPAD(ID, 3, '0')) as CURSOR
+  FROM board
+  WHERE CURSOR < CONCAT(LPAD(created, 19, '0'), LPAD(id, 8, '0')) 
+    => 최신순 나열이고, AND 붙여서 filter = value 해서 filter 넣으면 될듯
+    => 예를들어 FE 인놈들만 보고싶어
+    => position = FE , 그럼 최신순으로 정렬하되, position이 FE인 놈들만 나오는것!!!
+	ORDER BY created DESC, ID DESC
+	LIMIT 5;
+   */
+
+// type에 따라 자유게시판 목록
+export const firstGetCommunityNoticesQ = async (type: string, count: number) => {
+  let asType = "";
+  if (type === "created") {
+    asType = "unix_timestamp";
+  }
+  const [boards] = await db.query(
+    `
+      SELECT 
+        b.id as postId,
+        u.username as username,
+        b.hasResumeId as hasResume,
+        b.title as postTitle,
+        b.content as postDescription,
+        b.fromUserId as userId,
+        u.avatarUrl as userProfileSrc,
+        commentCnt as commentCount,
+        likeCnt as likeCount,
+        b.created as createdAt,
+        CONCAT (
+          LPAD (${asType}(b.${type}),12,0)
+          ,
+          LPAD (b.id,8,0)
+        ) as MARK
+      FROM board b
+      JOIN user u
+      ON b.fromUserId = u.id
+      WHERE
+          b.hasResumeId IS NULL
+      ORDER BY b.${type} DESC , b.id DESC
+      LIMIT ?
+      `,
+    [count]
+  );
+  const result = utils.jsonParse(boards);
+  return result;
+};
+export const moreGetCommunityNoticesQ = async (type: string, count: number, mark: string) => {
+  let asType = "";
+  if (type === "created") {
+    asType = "unix_timestamp";
+  }
+  const [boards] = await db.query(
+    `
+      SELECT 
+        b.id as postId,
+        u.username as username,
+        b.hasResumeId as hasResume,
+        b.title as postTitle,
+        b.content as postDescription,
+        b.fromUserId as userId,
+        u.avatarUrl as userProfileSrc,
+        commentCnt as commentCount,
+        likeCnt as likeCount,
+        b.created as createdAt,
+        CONCAT (
+          LPAD (${asType}(b.${type}),12,0),
+          LPAD (b.id,8,0)
+        ) as MARK
+      FROM 
+        board b
+      JOIN 
+        user u
+      ON 
+        b.fromUserId = u.id
+      WHERE 
+        ${mark} >  CONCAT (
+            LPAD (${asType}(b.${type}),12,0),
+            LPAD (b.id,8,0)
+          )
+      ORDER BY 
+        b.${type} DESC ,
+        b.id DESC
+      LIMIT ?
+      `,
+    [count]
+  );
+  const result = utils.jsonParse(boards);
+  return result;
+};
+
+// 메인페이지 애서 활용됨
+export const findAllBoardForMainpage = async (filter: string, perPage: number): Promise<Board[]> => {
+  const [boards] = await db.query(
+    `
+    SELECT 
+      b.id as postId,
+      u.username as username,
+      b.hasResumeId as hasResume,
+      b.title as postTitle,
+      b.content as postDescription,
+      b.fromUserId as userId,
+      u.avatarUrl as userProfileSrc,
+      commentCnt as commentCount,
+      likeCnt as likeCount,
+      b.created as createdAt
+    FROM board b
+    JOIN user u
+    ON b.fromUserId = u.id
+    WHERE b.hasResumeId IS NOT NULL  
+    ORDER BY b.${filter} DESC
+    LIMIT ?
+  `,
+    [perPage]
+  );
+  const result = utils.jsonParse(boards);
+  return result;
 };
 
 /** 인자값 안넣고 부르면 필터없는 전체 게시글 조회! */
-export const findAllBoard = async (filter?: string, boardId?: number, count?: number) => {
-  // 페이지 네이션 추가해서 리턴해야하는 로직 추가해야함@@
+export const findAllBoardToPageNationQ = async (
+  filter?: string,
+  boardId?: number,
+  count?: number
+): Promise<Board[]> => {
+  // 페이지 크기 기본값 6
   let perPage = 6;
   if (count) {
     perPage = count;
   }
-  console.log(boardId);
-  type Board = {
-    postId: number;
-    username: string;
-    hasResume: null;
-    postTitle: string;
-    postDescription: string;
-    userId: number;
-    userProfileSrc: string;
-    commentCount: number;
-    likeCount: number;
-    createdAt: string;
-  };
-
-  let [boards] = await db.query(
+  // filter = FE BE FS PM * 임
+  const [boards] = await db.query(
     `SELECT 
       b.id as postId,
       u.username as username,
@@ -50,36 +158,16 @@ export const findAllBoard = async (filter?: string, boardId?: number, count?: nu
     FROM board b
     JOIN user u
     ON b.fromUserId = u.id
-    WHERE b.id < ? AND b.hasResumeId ${filter}  
+    JOIN resume r
+    WHERE 
+      r.${filter} AND 
+      b.hasResumeId IS NOT NULL  
     ORDER BY b.created DESC
     LIMIT ?
   `,
-    [boardId, perPage]
+    [perPage]
   );
-  //
-
-  const boardArr = utils.jsonParse(boards);
-  // 기존 reduce 써서 한 코드
-  // const reducer = await boardArr.reduce(async (a, c) => {
-  //   const [commentCount, likeCount] = await Promise.all([findComments(c.post_id), findLikesToBoard(c.post_id)]);
-  //   let result = await a;
-  //   c.likeCount = likeCount;
-  //   c.commentCount = commentCount;
-  //   result.push(c);
-  //   return result;
-  // }, []);
-  // result[0] = map;
-
-  const result = await Promise.all(
-    boardArr.map(async (board: Board) => {
-      const [commentCount, likeCount] = await Promise.all([findComments(board.postId), findLikesToBoard(board.postId)]);
-      board.commentCount = commentCount.length;
-      board.likeCount = likeCount.length;
-      return {
-        ...board,
-      };
-    })
-  );
+  const result = utils.jsonParse(boards);
   return result;
 };
 
@@ -272,9 +360,14 @@ export const findBoardData = async (boardId: number) => {
 export const create = async (data: Record<string, string | number | boolean>): Promise<any> => {
   console.log("서비스가 받아온 data : ", data);
   const [keys, values, arrValues] = utils.insertData(data);
-  const newBoard = await db.query(`INSERT INTO board (${keys.join(", ")}) VALUES (${values.join(",")})`, [
-    ...arrValues,
-  ]);
+  const newBoard = await db.query(
+    `
+      INSERT 
+      INTO board (${keys.join(", ")}) 
+      VALUES (${values.join(",")})
+  `,
+    [...arrValues]
+  );
   console.log(typeof newBoard);
   return newBoard[0];
 };
@@ -288,7 +381,7 @@ export const updateBoard = async (boardId: number, data: Record<string, string |
     UPDATE board 
     SET ${keys.join(", ")}, 
       fixed=true,
-      created=now()
+      created=now(),
     WHERE id = ?`,
     [...values, boardId]
   );

@@ -6,10 +6,17 @@ import { validateBody, tokenValidator } from "../middlewares";
 import { CreateCommentDto } from "./dto";
 
 export const boardRoute = express();
-// 전체 게시물 목록 조회
+/**type으로 최신,좋아요,댓글 순으로 리스트 반환 */
 boardRoute.get("/", async (req, res, next) => {
+  const filter = String(req.query.filter);
+  const perPage = Number(req.query.perPage);
+  const enumFilter = ["likeCnt", "commentCnt", "created"];
+  if (enumFilter.includes(filter) === false || perPage <= 0) {
+    next(new Error(`400, query를 확인해주세요`));
+    return;
+  }
   try {
-    const notices = await boardService.getNoticeAll();
+    const notices = await boardService.getNoticeForMain(filter, perPage);
     return res.status(200).json({
       msg: "게시글 전체 목록 조회",
       data: notices,
@@ -18,23 +25,52 @@ boardRoute.get("/", async (req, res, next) => {
     next(err);
   }
 });
-boardRoute.get("/pages", async (req, res, next) => {
-  const filter = String(req.query.filter).toUpperCase();
-  console.log(filter);
-  if (filter !== "IS NOT NULL" && filter !== "IS NULL") throw new Error(`400, 필터값이 이상합니다.`);
+
+// 이력서 게시판의 첫 요청 및 페이지네이션
+boardRoute.get("/resumes", async (req, res, next) => {
+  const firstRequest = Number(req.query.firstRequest);
+  const type = String(req.query.type);
+  const mark = String(req.query.mark).toUpperCase();
   const count = Number(req.query.count);
-  if (count <= 0) throw new Error(`404, 0개의 페이지는 보여드릴수 없죠 ?ㅋ`);
-  const boardId = Number(req.query.boardId);
+  const position = String(req.query.position).toUpperCase();
+  const accessType = ["likeCnt", "created"];
+  const accessPosition = ["FE", "BE", "FS", "PM", "ALL"];
+  if (accessPosition.includes(position) === false || count < 6) {
+    next(new Error(`404, 입력정보를 정확히 입력해주세요.`));
+    return;
+  }
+
   try {
-    const result = await boardService.getNoticeAllPageNation(filter, boardId, count);
+  } catch (err) {
+    next(err);
+  }
+});
+
+// 자유 게시판의 첫 요청 및 페이지네이션
+boardRoute.get("/community", async (req, res, next) => {
+  const firstRequest = Number(req.query.firstRequest);
+  const type = String(req.query.type);
+  const mark = String(req.query.mark).toUpperCase();
+  const count = Number(req.query.count);
+  console.log(req.query);
+  console.log(typeof firstRequest);
+  const accessType = ["likeCnt", "created"];
+  if (accessType.includes(type) === false || count < 2) {
+    next(new Error(`404, 입력정보를 정확히 입력해주세요.`));
+    return;
+  }
+
+  try {
+    const result = await boardService.getCommunityNotices(firstRequest, type, count, mark);
     return res.status(200).json({
-      msg: `${filter} 값으로 찾은 내역`,
+      msg: "자유게시물입니다.",
       data: result,
     });
   } catch (err) {
     next(err);
   }
 });
+
 // 게시물 상세조회
 boardRoute.get("/:id/", async (req, res, next) => {
   const id = Number(req.params.id);
@@ -88,12 +124,14 @@ boardRoute.patch("/:boardId", tokenValidator, async (req, res, next) => {
   const content = req.body.content;
   const title = req.body.title;
   const hashTags = req.body.hashTags;
+  const complate = req.body.complate;
   let hasResumeId = req.body.resumeId;
   if (hasResumeId === 0) hasResumeId = null;
   const toUpdate = {
     ...(content && { content }),
     ...(title && { title }),
     ...(hashTags && { hashTags }),
+    ...(complate && { complate }),
   };
 
   try {

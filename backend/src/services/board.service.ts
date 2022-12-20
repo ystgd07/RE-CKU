@@ -1,32 +1,29 @@
 import { CreateCommentDto } from "../routes/dto";
 import * as boardRepo from "../db/board.repo";
-import { Board } from "../db/schemas";
+import { Board, CreateBoardInFo } from "../db/schemas";
 import { jsonParse } from "../db/utils/parseToJSON";
 
-interface BoardInFo {
-  fieldCount: null | number;
-  affectedRows: null | number;
-  insertId: null | number;
-  info: null | string;
-  serverStatus: null | number;
-  warningStatus: null | number;
-}
-
-export const getNoticeAll = async (): Promise<Board[]> => {
+export const getCommunityNotices = async (firstRequest: number, type: string, count: number, mark: string) => {
   try {
-    const notices = await boardRepo.findAllBoard();
-    const result = jsonParse(notices);
-    return result;
+    console.log("퍼스트", firstRequest);
+    // 첫 요청일시
+    if (firstRequest > 0) {
+      console.log("되냐");
+      const notices = await boardRepo.firstGetCommunityNoticesQ(type, count);
+      return notices;
+    }
+    // 페이지네이션 요청일때
+    const notices = await boardRepo.moreGetCommunityNoticesQ(type, count, mark);
+    return notices;
   } catch (err) {
-    console.log(err);
-    throw new Error(`500, 서버오륲`);
+    console.log(err.message);
+    throw new Error(`500, 서버오류`);
   }
 };
 
-export const getNoticeAllPageNation = async (filter: string, boardId: number, count: number): Promise<Board[]> => {
-  console.log(filter, count, boardId);
+export const getNoticeForMain = async (filter: string, perPage: number): Promise<Board[]> => {
   try {
-    const notices = await boardRepo.findAllBoard(filter, boardId, count);
+    const notices = await boardRepo.findAllBoardForMainpage(filter, perPage);
     const result = jsonParse(notices);
     return result;
   } catch (err) {
@@ -65,15 +62,7 @@ export const findOneBoard = async (id: number, userId: null | number) => {
 };
 
 // 게시글 생성 서비스
-export const postNotice = async (data: Record<string, string | boolean | number>): Promise<BoardInFo> => {
-  if (data.resumeId !== null) {
-    //이력서 아이디가 있다면
-    // 이력서 찾는 해당 아이디로 이력서 찾는 로직 실행.
-    // 받아온 정보.usedUserId 와 data.fromUserId 가 같은지 확인
-    // 정보가 같지않으면 에러  "이건 당신의 이력서가 아니잖아"
-    // 이렇게까지 에러처리를 해야할까 ...?
-  }
-
+export const postNotice = async (data: Record<string, string | boolean | number>): Promise<CreateBoardInFo> => {
   try {
     const newNotice = await boardRepo.create(data);
     return newNotice;

@@ -17,7 +17,14 @@ export type BoardInfo = {
   email: string;
   avatarUrl: string;
 };
-
+export type CreateBoardInFo = {
+  fieldCount: null | number;
+  affectedRows: null | number;
+  insertId: null | number;
+  info: null | string;
+  serverStatus: null | number;
+  warningStatus: null | number;
+};
 @Entity()
 export class Board {
   @PrimaryGeneratedColumn()
@@ -40,6 +47,9 @@ export class Board {
 
   @Column({ default: 0 })
   commentCnt: number;
+
+  @Column({ default: null, nullable: true })
+  complate: boolean;
 
   @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP" })
   created: Date;
