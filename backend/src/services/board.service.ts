@@ -21,6 +21,29 @@ export const getCommunityNotices = async (firstRequest: number, type: string, co
   }
 };
 
+export const getResumeNotices = async (
+  firstRequest: number,
+  type: string,
+  position: string,
+  count: number,
+  mark: string
+) => {
+  try {
+    // 첫조회
+    if (firstRequest > 0) {
+      console.log("이력서 게시글 첫 조회,", type);
+      const notices = await boardRepo.firstGetResumeNoticesQ(type, position, count);
+      return notices;
+    }
+    // 페이지네이션
+    const notices = await boardRepo.moreGetResumeNoticesQ(type, position, count, mark);
+    return notices;
+  } catch (err) {
+    console.log(err.message);
+    throw new Error(`500, 서버 오류`);
+  }
+};
+
 export const getNoticeForMain = async (filter: string, perPage: number): Promise<Board[]> => {
   try {
     const notices = await boardRepo.findAllBoardForMainpage(filter, perPage);

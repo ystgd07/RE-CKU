@@ -35,12 +35,17 @@ boardRoute.get("/resumes", async (req, res, next) => {
   const position = String(req.query.position).toUpperCase();
   const accessType = ["likeCnt", "created"];
   const accessPosition = ["FE", "BE", "FS", "PM", "ALL"];
-  if (accessPosition.includes(position) === false || count < 6) {
+  if (accessPosition.includes(position) === false || count < 2 || accessType.includes(type) === false) {
     next(new Error(`404, 입력정보를 정확히 입력해주세요.`));
     return;
   }
-
+  console.log(req.query);
   try {
+    const result = await boardService.getResumeNotices(firstRequest, type, position, count, mark);
+    return res.status(200).json({
+      msg: "이력서 게시물 조회",
+      data: result,
+    });
   } catch (err) {
     next(err);
   }

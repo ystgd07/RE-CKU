@@ -5,23 +5,6 @@ import * as utils from "./utils";
 import { TypeCareer, TypeProject } from "./schemas";
 import { AlreadyLikesComments } from "./schemas/comment.entity";
 
-/**
- * 페이지네이션 해결할 방법!!!
- * more 버튼 클릭시 아래와 같은
- * SELECT 
- *  ID, 
- *  CONTENT ,
- *  created,
-		CONCAT(LPAD(created, 3, '0'), LPAD(ID, 3, '0')) as CURSOR
-  FROM board
-  WHERE CURSOR < CONCAT(LPAD(created, 19, '0'), LPAD(id, 8, '0')) 
-    => 최신순 나열이고, AND 붙여서 filter = value 해서 filter 넣으면 될듯
-    => 예를들어 FE 인놈들만 보고싶어
-    => position = FE , 그럼 최신순으로 정렬하되, position이 FE인 놈들만 나오는것!!!
-	ORDER BY created DESC, ID DESC
-	LIMIT 5;
-   */
-
 // type에 따라 자유게시판 목록
 export const firstGetCommunityNoticesQ = async (type: string, count: number) => {
   let asType = "";
@@ -103,6 +86,105 @@ export const moreGetCommunityNoticesQ = async (type: string, count: number, mark
   return result;
 };
 
+// type에 따라 이력서 게시판 목록
+export const firstGetResumeNoticesQ = async (type: string, position: string, count: number) => {
+  let asType = "";
+  let wherePosition = "r.position Is not null";
+  if (type === "created") {
+    asType = "unix_timestamp";
+  }
+  if (position !== "ALL") {
+    wherePosition = "r.position =" + `'${position}'`;
+  }
+  console.log(wherePosition);
+  const [boards] = await db.query(
+    `
+      SELECT 
+        b.id as postId,
+        r.position as position,
+        u.username as username,
+        b.hasResumeId as hasResume,
+        b.title as postTitle,
+        b.content as postDescription,
+        b.fromUserId as userId,
+        u.avatarUrl as userProfileSrc,
+        commentCnt as commentCount,
+        likeCnt as likeCount,
+        b.created as createdAt,
+        b.complate,
+        CONCAT (
+          LPAD (${asType}(b.${type}),12,0)
+          ,
+          LPAD (b.id,8,0)
+        ) as MARK
+      FROM board b
+      JOIN user u
+      ON b.fromUserId = u.id
+      JOIN resume r
+      ON b.hasResumeId = r.id
+      WHERE
+          b.hasResumeId IS NOT NULL 
+        AND
+          ${wherePosition}
+      ORDER BY b.${type} DESC , b.id DESC
+      LIMIT ?
+      `,
+    [count]
+  );
+  const result = utils.jsonParse(boards);
+  return result;
+};
+export const moreGetResumeNoticesQ = async (type: string, position: string, count: number, mark: string) => {
+  let asType = "";
+  let wherePosition = "r.position Is not null";
+  if (type === "created") {
+    asType = "unix_timestamp";
+  }
+  if (position !== "ALL") {
+    wherePosition = "r.position =" + `'${position}'`;
+  }
+  console.log(wherePosition);
+  const [boards] = await db.query(
+    `
+      SELECT 
+        b.id as postId,
+        u.username as username,
+        b.hasResumeId as hasResume,
+        b.title as postTitle,
+        b.content as postDescription,
+        b.fromUserId as userId,
+        u.avatarUrl as userProfileSrc,
+        commentCnt as commentCount,
+        likeCnt as likeCount,
+        b.created as createdAt,
+        b.complate,
+        CONCAT (
+          LPAD (${asType}(b.${type}),12,0),
+          LPAD (b.id,8,0)
+        ) as MARK
+      FROM board b
+      JOIN user u
+      ON b.fromUserId = u.id
+      JOIN resume r
+      ON b.hasResumeId = r.id
+      WHERE
+          b.hasResumeId IS NOT NULL 
+        AND
+          ${wherePosition}
+        AND
+          ${mark} > CONCAT (
+              LPAD (${asType}(b.${type}),12,0),
+              LPAD (b.id,8,0)     
+            )
+      ORDER BY b.${type} DESC , b.id DESC
+      LIMIT ?
+      `,
+    [count]
+  );
+  const result = utils.jsonParse(boards);
+  return result;
+};
+
 // 메인페이지 애서 활용됨
 export const findAllBoardForMainpage = async (filter: string, perPage: number): Promise<Board[]> => {
   const [boards] = await db.query(
@@ -123,46 +205,6 @@ export const findAllBoardForMainpage = async (filter: string, perPage: number): 
     ON b.fromUserId = u.id
     WHERE b.hasResumeId IS NOT NULL  
     ORDER BY b.${filter} DESC
-    LIMIT ?
-  `,
-    [perPage]
-  );
-  const result = utils.jsonParse(boards);
-  return result;
-};
-
-/** 인자값 안넣고 부르면 필터없는 전체 게시글 조회! */
-export const findAllBoardToPageNationQ = async (
-  filter?: string,
-  boardId?: number,
-  count?: number
-): Promise<Board[]> => {
-  // 페이지 크기 기본값 6
-  let perPage = 6;
-  if (count) {
-    perPage = count;
-  }
-  // filter = FE BE FS PM * 임
-  const [boards] = await db.query(
-    `SELECT 
-      b.id as postId,
-      u.username as username,
-      b.hasResumeId as hasResume,
-      b.title as postTitle,
-      b.content as postDescription,
-      b.fromUserId as userId,
-      u.avatarUrl as userProfileSrc,
-      commentCnt as commentCount,
-      likeCnt as likeCount,
-      b.created as createdAt
-    FROM board b
-    JOIN user u
-    ON b.fromUserId = u.id
-    JOIN resume r
-    WHERE 
-      r.${filter} AND 
-      b.hasResumeId IS NOT NULL  
-    ORDER BY b.created DESC
     LIMIT ?
   `,
     [perPage]
