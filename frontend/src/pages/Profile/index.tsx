@@ -2,7 +2,10 @@ import { Bar } from './style';
 import { useEffect } from 'react';
 import { Breadcrumb, Layout, Menu, theme, Avatar, Divider, Space, Progress, Tabs } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
+import { UserInfo } from 'components/User/UserInfo';
+import { Like } from 'components/User/Like';
 import axios from 'axios';
+
 //TODO:코드라인이 심각하게 많아지고 있다 컴포넌트의 필요성을 절실하게 느끼는 중..
 const { Header, Content, Footer } = Layout;
 const tierColors = {
@@ -119,7 +122,7 @@ const Profile: React.FC = () => {
                                 {
                                     label: `유저정보`,
                                     key: '1',
-                                    children: `Content of Tab Pane 1`,
+                                    children: <UserInfo></UserInfo>,
                                 },
                                 {
                                     label: `좋아요`,
@@ -141,16 +144,12 @@ const Profile: React.FC = () => {
                                 {
                                     label: `유저정보`,
                                     key: '1',
-                                    children: (
-                                        <div>
-                                            <h1>test</h1>
-                                        </div>
-                                    ),
+                                    children: <UserInfo></UserInfo>,
                                 },
                                 {
                                     label: `좋아요`,
                                     key: '2',
-                                    children: ``,
+                                    children: <Like></Like>,
                                 },
                                 {
                                     label: `첨삭(플레티넘)`,
