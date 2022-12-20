@@ -218,7 +218,7 @@ export const updateCommentQ = async (commentId: number, data: { text: string }):
   await db.query(
     `
     UPDATE comment 
-    SET ${keys.join(", ")} 
+    SET ${keys.join(", ")},created=now() 
     WHERE id = ?
     `,
     [...values, commentId]
