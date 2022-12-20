@@ -21,8 +21,16 @@ commentRoute.patch("/:commentId/like", tokenValidator, async (req, res, next) =>
 });
 
 // 댓글 수정
-
+commentRoute.patch("/:commentId", tokenValidator, async (req, res, next) => {
+  const userId = Number(req.body.jwtDecoded.id);
+  const commentId = Number(req.params.commentId);
+});
 //
+
+commentRoute.get("/pagenation", async (req, res, next) => {
+  const mark = String(req.query.mark);
+  const count = Number(req.query.count);
+});
 
 // 개발용 댓글 목록불러오기
 commentRoute.get("/", async (req, res, next) => {

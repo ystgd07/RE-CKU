@@ -1,5 +1,6 @@
 import { db } from ".";
 import * as userRepo from "./user.repo";
+import * as resumeRepo from "./resume.repo";
 import { Board, BoardInfo } from "./schemas/board.entity";
 import * as utils from "./utils";
 import { TypeCareer, TypeProject } from "./schemas";
@@ -266,7 +267,13 @@ export const findOneBoardQ = async (boardId: number, userId?: null | number): Pr
       email: "",
       avatarUrl: "",
     },
-    resumeInfo: null,
+    resumeInfo: {
+      id: 0,
+      usedUserId: 0,
+      name: "",
+      career: null,
+      projects: null,
+    },
     comments: [],
   };
 
@@ -313,65 +320,72 @@ export const findOneBoardQ = async (boardId: number, userId?: null | number): Pr
 
   // 게시물이 가지고 있는 이력서Id 가 있다면
   if (boardInfo.hasResumeId > 0 || boardInfo.hasResumeId !== null) {
-    const [resumeRows] = await db.query(
-      `Select
-        id,
-        usedUserId,
-        name,
-        FROM resume a
-      WHERE a.id=?
-      `,
-      [boardInfo.hasResumeId]
-    );
+    const resumeRows = await resumeRepo.findResumeQ(boardInfo.hasResumeId);
+    console.log(resumeRows);
+    console.log(typeof resumeRows);
     // 값을 수정하기 위해서 jsonParse 해야함.
     const resume = utils.jsonParse(resumeRows);
+    console.log(resume);
+    console.log(typeof resume);
 
     // 이력서가 있다면 이력서에 종속된 프로젝트와 커리어를 찾아서 각 필드에 넣어줌
     const [projects, career] = await Promise.all([
-      db.query(
-        `SELECT 
-          * 
-        FROM project a 
-        JOIN resume r
-        On a.usedResumeId=r.id  
-        WHERE a.usedResumeId=?
-        `,
-        [result.boardInfo.hasResumeId]
-      ),
-      db.query(
-        `
-          SELECT * 
-          FROM career a 
-          JOIN resume r 
-          On a.usedResumeId = r.id   
-          WHERE a.usedResumeId=?
-        `,
-        [result.boardInfo.hasResumeId]
-      ),
+      resumeRepo.findCareersQ(resume.resumeId),
+      resumeRepo.findProjectsQ(resume.resumeId),
+
+      // db.query(
+      //   `SELECT
+      //     *
+      //   FROM project a
+      //   JOIN resume r
+      //   On a.usedResumeId=r.id
+      //   WHERE a.usedResumeId=?
+      //   `,
+      //   [result.boardInfo.hasResumeId]
+      // ),
+      // db.query(
+      //   `
+      //     SELECT *
+      //     FROM career a
+      //     JOIN resume r
+      //     On a.usedResumeId = r.id
+      //     WHERE a.usedResumeId=?
+      //   `,
+      //   [result.boardInfo.hasResumeId]
+      // ),
     ]);
 
     // 쿼리로 날린 값에 프로젝트와 커리어를 넣고,
     // 리턴할 이력서 정보에 넣음
     resume.project = utils.jsonParse(projects);
     resume.career = utils.jsonParse(career);
+    console.log("바뀔 리조메", resume.project);
+    console.log("바뀔 리조메", resume.career);
     result.resumeInfo = resume;
   }
 
   // 좋아요 한 댓글을 찾는다.
   const comments = await findComments(boardId);
   // 좋아요 한 댓글이 없을 경우에는 그냥 넣는다.
+
   if (comments.length !== 0) {
     result.comments = comments;
   }
+
   // console.log("파싱값 ", parsing);
   const extendedComments = await Promise.all(
     comments.map(async (comment) => {
       const [mappingTable] = await db.query(
         `
         SELECT id 
-        FROM comment_like_maping WHERE userId = ? AND commentId = ?`,
+        FROM comment_like_maping 
+        WHERE 
+            userId = ? 
+          AND 
+            commentId = ?`,
         [userInfo.id, comment.commentId]
       );
+      // 현재 사용자의 좋아요 여부
       let parseMappingTable = utils.jsonParse(mappingTable);
       if (parseMappingTable.length <= 0) {
         parseMappingTable = null;
@@ -379,6 +393,8 @@ export const findOneBoardQ = async (boardId: number, userId?: null | number): Pr
       return {
         ...comment,
         alreadyLikes: parseMappingTable !== null ? true : false,
+        // 현재 댓글의 주인인경우
+        myComment: comment.fromUserId === userId ? true : false,
       };
     })
   );
@@ -455,7 +471,11 @@ export const findComments = async (boardId: number): Promise<AlreadyLikesComment
       s.created as commentCreated,
       s.likes,
       s.userId as fromUserId,
-      s.fixed
+      s.fixed,
+      concat(
+        lpad (unix_timestamp(s.created),12,0),
+        lpad (s.id,8,0)
+      ) as MARK
     From board a 
     JOIN comment s 
     ON s.boardId=a.id 

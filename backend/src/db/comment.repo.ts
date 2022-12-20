@@ -201,3 +201,5 @@ export const deleteCommentQ = async (userId: number, boardId: number, commentId:
   const result = utils.jsonParse(rows)[0];
   return result;
 };
+
+export const updateCommentQ = async (userId: number, boardId: number, commentId: number) => {};

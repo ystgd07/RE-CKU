@@ -56,3 +56,7 @@ export const deleteComment = async (userId: number, boardId: number, commentId: 
     throw new Error(`500, 서버 오류`);
   }
 };
+
+export const updateComment = async (userId: number, commentId: number) => {
+  // 해당 댓글이 토큰주인의 것인지 판단
+};
