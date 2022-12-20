@@ -20,14 +20,9 @@ export type UserProfile = {
   password?: string;
 };
 
-export enum roleEnum {
-  bronze = "브론즈",
-  silver = "실버",
-  gold = "골드",
-  platinum = "플레티넘",
-  diamond = "다이아몬드",
-  master = "마스터",
-  ADMIN = "관리자",
+export enum sosialEnum {
+  local = "local",
+  sosial = "sosial",
 }
 
 @Entity()
@@ -44,14 +39,14 @@ export class User {
   @Column({ unique: true, nullable: true, default: null })
   phoneNumber: string;
 
-  @Column()
+  @Column({ nullable: true })
   password: string;
 
   @Column({ default: "zz" })
   avatarUrl: string;
 
-  @Column({ type: "enum", enum: roleEnum, default: roleEnum.bronze })
-  role: roleEnum;
+  @Column({ type: "enum", enum: sosialEnum, default: sosialEnum.local })
+  howToLogin: string;
 
   @Column({ nullable: true, default: null })
   RT: string;
