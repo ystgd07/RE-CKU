@@ -7,6 +7,7 @@ import { useForm } from 'react-hook-form';
 
 const Join = () => {
     const [email, setEmail] = useState();
+    const [code, setCode] = useState();
     const navigate = useNavigate();
     const {
         register,
@@ -63,6 +64,7 @@ const Join = () => {
     const onChange = (e: any) => {
         setEmail(e.target.value);
     };
+
     const sendEmail = async (e: any) => {
         e.preventDefault();
         const jsondata = {
@@ -78,10 +80,11 @@ const Join = () => {
         }
     };
 
-    const emailAuth = async (data: FormData) => {
+    const emailAuth = async (e: any) => {
+        e.preventDefault();
         const jsondata = {
-            email: data.email,
-            code: Number(data.code),
+            email: email,
+            code: Number(code),
         };
 
         console.log('data', jsondata);
@@ -93,7 +96,7 @@ const Join = () => {
             const reqConfirm = res.data.msg;
 
             sessionStorage.setItem('reqConfirm', reqConfirm);
-            sessionStorage.setItem('email', data.email);
+            sessionStorage.setItem('email', res.data.email);
             alert('인증 완료');
         } catch (err: any) {
             console.error(err.stack);
@@ -146,8 +149,12 @@ const Join = () => {
                             <input
                                 placeholder="인증번호를 입력해주세요"
                                 {...register('code')}
+                                value={code}
+                                onChange={(e: any) => {
+                                    setCode(e.target.value);
+                                }}
                             ></input>
-                            <button onClick={handleSubmit(emailAuth)}>인증하기</button>
+                            <button onClick={emailAuth}>인증하기</button>
                         </div>
                         <p>비밀번호</p>
                         <input
