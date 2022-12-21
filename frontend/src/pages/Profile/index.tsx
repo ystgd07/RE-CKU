@@ -124,6 +124,7 @@ const Profile: React.FC = () => {
                             />
                         </Space>
                     </div>
+                    {/* //TODO: 추후 Tabs 이부분 컴포넌트화 해야함^^ */}
                     {tier === 'platinum' ? (
                         <Tabs
                             defaultActiveKey="1"
