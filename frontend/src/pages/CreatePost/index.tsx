@@ -7,8 +7,9 @@ import '@toast-ui/editor/dist/toastui-editor.css';
 import '@toast-ui/editor-plugin-color-syntax/dist/toastui-editor-plugin-color-syntax.css';
 import '@toast-ui/editor/dist/i18n/ko-kr';
 import colorSyntax from '@toast-ui/editor-plugin-color-syntax';
-import axios from 'axios';
 import { Button, Input, Switch, Typography } from 'antd';
+import API from 'utils/api';
+
 const { Title, Text } = Typography;
 
 const Container = styled.div`
@@ -133,27 +134,14 @@ function CreatePost() {
             content,
             resumeId,
         };
-        console.log(data);
-
-        // 게시물 작성 api 요청
 
         try {
-            console.log('API 요청');
-            const res = await axios.post('http://localhost:3001/board', data, {
-                headers: {
-                    Authorization: `bearer ${localStorage.getItem('accessToken')}`,
-                },
-            });
-            console.log('생성된 게시물 아이디', res.data.data);
-            navigate(`/post/${res.data.data}`);
+            const res = await API.post('/board', data);
+            navigate(`/post/${res.data}`, { state: res.data });
         } catch (err) {
             console.log(err);
         }
     };
-
-    const initValues = `# hi
-   hello
-   `;
 
     useEffect(() => {
         if (editorRef.current) {
@@ -167,9 +155,9 @@ function CreatePost() {
                     // 아래와 같이 저장하면 formData {image:blob} 형태가 됨
                     formData.append('image', blob);
                     // 서버에 이미지 저장 및 저장된 이미지 url 응답 받기
-                    const url = await axios.post('/file/url', formData);
+                    const url = await API.post('/file/url', formData);
                     // 에디터에 url과 파일 이름을 이용한 마크다운 이미지 문법 작성 콜백 함수
-                    callback('http://localhost:3001/' + url.data.imageUrl, blob.name);
+                    callback(process.env.REACT_APP_SERVER_URL + url.imageUrl, blob.name);
                     return false;
                 });
         }
@@ -228,9 +216,4 @@ function CreatePost() {
     );
 }
 
-const BlockComponent = () => {
-    return <div>Block Toast UI Editor</div>;
-};
-
 export default CreatePost;
-// export default BlockComponent;

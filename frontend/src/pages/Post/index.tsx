@@ -1,9 +1,18 @@
 import { useParams, useLocation } from 'react-router-dom';
 import { useEffect, useState, useRef } from 'react';
 import styled from '@emotion/styled';
-// import { Viewer } from '@toast-ui/react-editor';
-// import '@toast-ui/editor/dist/toastui-editor-viewer.css';
-import axios from 'axios';
+import { Viewer } from '@toast-ui/react-editor';
+import '@toast-ui/editor/dist/toastui-editor-viewer.css';
+import Header from 'components/Header';
+import API from 'utils/api';
+import TestProfileImg from 'assets/images/logo-header.png';
+import { LikeOutlined, CommentOutlined, LikeFilled } from '@ant-design/icons';
+import { Button, Typography, Input } from 'antd';
+const { Title, Text } = Typography;
+
+// 본인 게시물일 경우 수정/삭제 버튼 생성
+// 좋아요 누른 경우, 누르지 않은 경우 구분
+// 댓글 좋아요도 마찬가지
 
 const Container = styled.div`
     display: flex;
@@ -24,27 +33,53 @@ const Wrapper = styled.div`
     display: flex;
     flex-direction: column;
     width: 100%;
-    border: 1px solid black;
 `;
 
-const Title = styled.h1`
-    font-size: 24px;
+const Profile = styled.div`
+    width: 100%;
+    margin: 10px 0;
+    display: flex;
+    align-items: center;
 `;
-const Profile = styled.div``;
+
+const ProfileImg = styled.img`
+    width: 50px;
+    height: 50px;
+    background-color: #ea8532;
+    border-radius: 50%;
+`;
+
+const ProfileInfo = styled.div`
+    height: 70%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-left: 15px;
+`;
+
+const ProfileInfoName = styled.p`
+    font-size: 18px;
+`;
 
 const Contents = styled.div`
-    border: 1px solid black;
     padding: 20px;
     box-sizing: border-box;
 `;
-const PostStates = styled.div``;
+
+const PostStates = styled.div`
+    display: flex;
+    button {
+        margin-left: 10px;
+    }
+`;
 
 const CommentWrapper = styled(Wrapper)`
     display: flex;
     justify-content: space-evenly;
     align-items: center;
-    background-color: rgba(0, 0, 0, 0.2);
     margin: 10px 0;
+    border: 1px solid black;
+    border-radius: 10px;
 `;
 
 const CommentHeader = styled.h1`
@@ -53,11 +88,14 @@ const CommentHeader = styled.h1`
     justify-content: space-between;
     align-items: center;
     font-size: 16px;
+    padding-left: 30px;
+    button {
+        margin-right: 20px;
+    }
 `;
 
 const CommentProfile = styled.div`
     width: 100px;
-    background-color: yellowgreen;
 `;
 const CommentLikes = styled.div`
     width: 100px;
@@ -66,8 +104,8 @@ const CommentLikes = styled.div`
 
 const CommentBody = styled.div`
     width: 100%;
-    font-size: 18px;
-    padding: 20px;
+    font-size: 14px;
+    padding: 10px;
     box-sizing: border-box;
 `;
 
@@ -128,51 +166,50 @@ interface IPostData {
         hasResumeId: string | null;
         fixed: number;
         ownUserId: number;
+        likeCnt: number;
+        commentCnt: number;
+        email: string;
     };
-    comments: {
-        commentId: number;
-        username: string;
-        text: string;
-        commentCreated: Date;
-        userId: number;
-        fixed: number;
-    } | null;
+    comments: ICommentData[];
     resumeInfo: IResumeData | null;
 }
+
+interface ICommentData {
+    MARK: string;
+    alreadyLikes: boolean;
+    avatarUrl: string;
+    commentCreated: Date;
+    commentId: number;
+    fixed: number;
+    fromUserId: number;
+    likes: number;
+    myComment: boolean;
+    text: string;
+    username: string;
+}
+
 const Post = () => {
     const [postData, setPostData] = useState<IPostData | null>(null);
+    const [comment, setComment] = useState<string>('');
     const { postId } = useParams<{ postId: string }>();
     const { state } = useLocation() as RouteState;
-    console.log(state);
+    console.log('State =', state);
     const viewerRef = useRef<Viewer>(null);
 
-    const commentData = [
-        {
-            userProfile: '하하',
-            likes: 7,
-            comment: '좋은 이력서네요!',
-        },
-        {
-            userProfile: '옐로',
-            likes: 1,
-            comment: '잘 쓰셨습니다 ㅎㅎ',
-        },
-        {
-            userProfile: '그린',
-            likes: 0,
-            comment: '오타가 있군요?',
-        },
-    ];
+    const updateViewerContent = (content: string) => {
+        viewerRef.current?.getInstance().setMarkdown(content);
+    };
 
     useEffect(() => {
         const fetchPostData = async () => {
             try {
-                const post = await axios.get(`http://localhost:3001/board/${postId}`);
-                const data = post.data.data;
+                const data = await API.get(
+                    `/board/${postId}`,
+                    `?lifeIsGood=${localStorage.getItem('userId')}`,
+                );
                 setPostData(data);
                 const content = data.boardInfo.content;
-                viewerRef.current?.getInstance().setMarkdown(content);
-                return post.data.data;
+                updateViewerContent(content);
             } catch (err) {
                 console.log(err);
                 return;
@@ -180,29 +217,86 @@ const Post = () => {
         };
         fetchPostData();
     }, [postId]);
+
+    const handleSubmitComment = async () => {
+        console.log(comment);
+        const data = {
+            text: comment,
+        };
+        try {
+            const res = await API.post(`/board/${postId}/comments`, data);
+            console.log(res);
+        } catch (err) {
+            console.log(err);
+        }
+    };
+
+    const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        e.preventDefault();
+        setComment(e.target.value);
+    };
+
     return (
-        <Container>
-            <Wrapper>
-                <Title>{postData?.boardInfo.title}</Title>
-                <Profile>유저 프로필 이미지 + email + 1일 전</Profile>
-                <Contents>
-                    <Viewer initialValue={postData?.boardInfo.title} ref={viewerRef} />
-                </Contents>
-                <PostStates>좋아요: 10개, 댓글 수: 3개</PostStates>
-            </Wrapper>
-            <Wrapper>
-                <Title>댓글</Title>
-                {commentData.map((item, index) => (
-                    <CommentWrapper key={index}>
-                        <CommentHeader>
-                            <CommentProfile>{item.userProfile}</CommentProfile>
-                            <CommentLikes>좋아요 {item.likes}개</CommentLikes>
-                        </CommentHeader>
-                        <CommentBody>{item.comment}</CommentBody>
-                    </CommentWrapper>
-                ))}
-            </Wrapper>
-        </Container>
+        <>
+            <Header />
+            <Container>
+                <Wrapper>
+                    <Title level={2}>{postData?.boardInfo.title}</Title>
+                    <Profile>
+                        <ProfileImg src={TestProfileImg}></ProfileImg>
+                        <ProfileInfo>
+                            <ProfileInfoName>{postData?.boardInfo.email}</ProfileInfoName>
+                            <Text>1일 전</Text>
+                        </ProfileInfo>
+                    </Profile>
+                    <Contents>
+                        <Viewer initialValue={postData?.boardInfo.title} ref={viewerRef} />
+                    </Contents>
+                    <PostStates>
+                        {/* <LikeFilled /> 좋아요 누른 상태일 경우 채워진 아이콘으로 */}
+                        <Button type="primary" icon={<LikeOutlined />} size={'large'}>
+                            {String(postData?.boardInfo.likeCnt)}
+                        </Button>
+                        <Button icon={<CommentOutlined />} size={'large'}>
+                            {String(postData?.boardInfo.commentCnt)}
+                        </Button>
+                    </PostStates>
+                </Wrapper>
+                <Wrapper>
+                    <>
+                        <Title level={4}>댓글</Title>
+                        <div>
+                            댓글 작성
+                            <Input value={comment} onChange={onChange} />
+                            <Button onClick={handleSubmitComment}>작성</Button>
+                        </div>
+                        {postData?.comments.map((item, index) => (
+                            <CommentWrapper key={index}>
+                                <CommentHeader>
+                                    <Profile>
+                                        <ProfileImg src={item.avatarUrl}></ProfileImg>
+                                        <ProfileInfo>
+                                            <ProfileInfoName>{item.username}</ProfileInfoName>
+                                            <Text>1일 전</Text>
+                                        </ProfileInfo>
+                                    </Profile>
+
+                                    <Button
+                                        type="link"
+                                        icon={item.alreadyLikes ? <LikeFilled /> : <LikeOutlined />}
+                                        size={'large'}
+                                    >
+                                        {String(item.likes)}
+                                    </Button>
+                                </CommentHeader>
+                                <CommentBody>{item.text}</CommentBody>
+                            </CommentWrapper>
+                        ))}
+                    </>
+                    <Button type="link">더보기</Button>
+                </Wrapper>
+            </Container>
+        </>
     );
 };
 
