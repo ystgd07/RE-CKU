@@ -55,8 +55,11 @@ export const MobileDiv = styled.div`
             display: flex;
             width: 200px;
             text-align: center;
-*6            padding: 0px 30px;
+*6          padding: 0px 30px;
         }
+    }
+    & div {
+      text-align: center;
     }
 `;
 

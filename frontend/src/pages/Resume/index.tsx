@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import * as S from './style';
-import Logo from 'assets/images/iogo.png';
+import Logo from 'assets/images/logo.png';
+import Header from 'components/Header';
 
 interface careerDataRes {
     company: string;
@@ -74,6 +75,7 @@ const Resume = () => {
     // console.log('careerData', careerData);
     return (
         <div>
+            <Header />
             <S.MobileDiv>
                 <div>
                     {resumeData.map((data: any) => (

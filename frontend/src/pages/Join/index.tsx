@@ -46,7 +46,7 @@ const Join = () => {
 
         try {
             console.log('data', jsondata);
-            const res = await axios.post('/users/individual', jsondata);
+            const res = await axios.post('/users/individuals', jsondata);
             console.log(res, '성공');
 
             alert('회원가입이 완료되었습니다.');
