@@ -8,14 +8,20 @@ import { send } from "../config/sendMail";
 import { EmailAuth, UserProfile } from "../db/schemas";
 
 // 유저한명정보 불러오기 섭스
-export const individualInfo = async (id: number): Promise<UserProfile> => {
-  const user = await userRepo.findOneUser(id);
+export const individualInfo = async (userIdOrEmail: number | string): Promise<UserProfile> => {
+  const user = await userRepo.findOneUser(userIdOrEmail);
   return user;
 };
 
 // 회원가입 서비스
-export const join = async (data: CreateUserDto): Promise<Object> => {
+export const join = async (data: CreateUserDto): Promise<{ insertId: number }> => {
   // 우선 인증을 완료했는지 검증,
+  const inserData = {
+    email: data.email,
+    password: data.password,
+    username: data.username,
+    phoneNumber: data.phoneNumber,
+  };
   const statusVerify = await authRepo.findOneAuthData(data.email);
   console.log(statusVerify);
   if (!statusVerify) throw Error(`404, [${data.email}] 해당 이메일로 진행된 인증절차가 없습니다.`);
@@ -27,19 +33,21 @@ export const join = async (data: CreateUserDto): Promise<Object> => {
   if (overlapUser) throw Error("400, 이미 가입한 회원입니다.");
 
   // 검증끝났으면 만들어!
-  const newUser = await userRepo.createIndiUser(data);
+  const newUser = await userRepo.createIndiUser(inserData);
   return newUser;
 };
 
 // 로그인 서비스
-export const login = async (email: string, password: string) => {
+export const login = async (email: string, password?: string) => {
   // 가입한 이메일 있는지 확인
   const user = await userRepo.findOneUser(email);
   if (!user) throw Error(`404, ${email}로 가입한 회원이 없습니다.`);
   // 비밀번호 일치하는지 확인
-  const existence = user.password;
-  const comparePw = await bcrypt.compare(password, existence);
-  if (!comparePw) throw Error(`400, 비밀번호가 일치하지 않습니다.`);
+  if (password) {
+    const existence = user.password;
+    const comparePw = await bcrypt.compare(password, existence);
+    if (!comparePw) throw Error(`400, 비밀번호가 일치하지 않습니다.`);
+  }
 
   // 로그인시작 - JWT 발급해야함
   // accessToken 은 10분, refreshToken 은 하루동안 유효
@@ -59,6 +67,11 @@ export const login = async (email: string, password: string) => {
     process.env.JWT_SECRET_KEY || "secret",
     { expiresIn: 60 * 60 * 24 }
   );
+  const data = {
+    RT: refreshToken,
+  };
+  // RT 교체
+  await userRepo.updateUser(user.id, data);
 
   // 옵젝으로 묶어서 리턴
   const result = {
