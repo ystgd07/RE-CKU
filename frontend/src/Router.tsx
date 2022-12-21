@@ -10,7 +10,9 @@ import Profile from 'pages/Profile';
 // import Post from 'pages/Post';
 import Err404 from 'pages/Err404';
 import Admin from 'pages/Admin';
-
+import Post from 'pages/Post';
+import Resumeform from 'pages/Resume';
+import Loading from 'pages/Loading';
 const Router = () => {
     const isLogined = localStorage.getItem('accessToken') ? true : false;
     // <Route> => <BasicRouter>, <AdminRouter>, <AuthRouter>
@@ -21,7 +23,6 @@ const Router = () => {
                     <>
                         <Route path="/" element={<Main />} />
                         <Route path="/resume/:id" element={<Resume />} />
-                        <Route path="/create-post" element={<CreatePost />} />
                         <Route path="/post/:postId" element={<Post />} />
                         <Route path="/myportfolio" element={<MyPortfolio />} />
                         <Route path="/profile" element={<Profile />} />
@@ -29,6 +30,9 @@ const Router = () => {
                         <Route path="/find-pw" element={<Navigate replace to="/" />} />
                         <Route path="/join" element={<Navigate replace to="/" />} />
                         <Route path="/*" element={<Err404 />} />
+                        <Route path="/resume" element={<Resumeform />} />
+                        <Route path="/admin" element={<Admin />} />
+                        <Route path="/loading" element={<Loading />} />
                     </>
                 ) : (
                     <>
@@ -42,6 +46,8 @@ const Router = () => {
                         <Route path="/FindPw" element={<FindPw />} />
                         <Route path="/Join" element={<Join />} />
                         <Route path="/*" element={<Err404 />} />
+                        <Route path="/admin" element={<Admin />} />
+                        <Route path="/loading" element={<Loading />} />
                     </>
                 )}
             </Routes>
