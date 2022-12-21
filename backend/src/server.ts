@@ -1,7 +1,7 @@
 import express, { Request, Response, NextFunction } from "express";
 import { errorHandler } from "./middlewares/error-handdler";
 
-import { userRoute, boardRoute, rootRoute, commentRoute } from "./routes";
+import { userRoute, boardRoute, rootRoute, commentRoute, sosialRoute } from "./routes";
 
 import cors from "cors";
 import resumeRoute from "./routes/resume.routes";
@@ -21,6 +21,7 @@ app.use("/users", userRoute);
 app.use("/my-portfolio", resumeRoute);
 app.use("/board", boardRoute);
 app.use("/comments", commentRoute);
+app.use("/sosial", sosialRoute);
 
 // 에러 미들웨어
 app.use(errorHandler);

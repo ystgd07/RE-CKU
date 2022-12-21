@@ -16,6 +16,8 @@ export type BoardInfo = {
   ownUserId: number;
   email: string;
   avatarUrl: string;
+  likeCnt: number;
+  commentCnt: number;
 };
 export type CreateBoardInFo = {
   fieldCount: null | number;
