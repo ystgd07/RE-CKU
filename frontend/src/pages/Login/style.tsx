@@ -34,7 +34,7 @@ export const MobileDiv = styled.div`
     }
 
     & button {
-        margin: 40px;
+        margin: 30px;
         padding: 20px;
         border: 1px none #c9cacc;
         border-radius: 10px;
@@ -51,12 +51,15 @@ export const MobileDiv = styled.div`
         padding: 0px 30px;
     }
     & form {
-        text-align: center;
-        text-align: -webkit-center;
         & p {
+            display: flex;
             width: 200px;
-            padding: 0px 30px;
+            text-align: center;
+*6          padding: 0px 30px;
         }
+    }
+    & div {
+      text-align: center;
     }
 `;
 
