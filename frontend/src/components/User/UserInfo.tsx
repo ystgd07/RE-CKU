@@ -1,15 +1,27 @@
 import React from 'react';
 import { Descriptions } from 'antd';
-export const UserInfo = () => {
+type Mock = {
+    // id: string;
+    email: string;
+    // password: string;
+    phoneNumber: string;
+    // point: number;
+    username: string;
+    // created: string;
+    // avatarUrl: string;
+};
+type UserProps = {
+    user: Mock;
+};
+export const UserInfo = ({ user }: UserProps) => {
+    const { username, phoneNumber, email } = user;
+
     return (
         <Descriptions title="User Info">
-            <Descriptions.Item label="UserName">Zhou Maomao</Descriptions.Item>
-            <Descriptions.Item label="Telephone">1810000000</Descriptions.Item>
-            <Descriptions.Item label="Live">Hangzhou, Zhejiang</Descriptions.Item>
-            <Descriptions.Item label="Remark">empty</Descriptions.Item>
-            <Descriptions.Item label="Address">
-                No. 18, Wantang Road, Xihu District, Hangzhou, Zhejiang, China
-            </Descriptions.Item>
+            <Descriptions.Item label="UserName">{username}</Descriptions.Item>
+            <Descriptions.Item label="Telephone">{phoneNumber}</Descriptions.Item>
+
+            <Descriptions.Item label="email">{email}</Descriptions.Item>
         </Descriptions>
     );
 };

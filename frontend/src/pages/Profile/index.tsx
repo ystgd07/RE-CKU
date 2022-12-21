@@ -1,5 +1,5 @@
 import { Bar } from './style';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Breadcrumb, Layout, Menu, theme, Avatar, Divider, Space, Progress, Tabs } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
 import { UserInfo } from 'components/User/UserInfo';
@@ -17,21 +17,31 @@ const tierColors = {
 const onChange = (key: string) => {
     console.log(key);
 };
-
+type Mock = {
+    id: string;
+    email: string;
+    password: string;
+    phoneNumber: string;
+    point: number;
+    username: string;
+    created: string;
+    avatarUrl: string;
+};
 const Profile: React.FC = () => {
-    let mock: {
-        name: string;
-        point: number;
-    }[];
-    mock = [
-        {
-            name: 'sungsoo',
-            point: 90,
-        },
-    ];
     const {
         token: { colorBgContainer },
     } = theme.useToken();
+
+    const [res, setRes] = useState<Mock>({
+        id: '',
+        email: '',
+        password: '',
+        phoneNumber: '',
+        point: 0,
+        username: '',
+        created: '',
+        avatarUrl: '',
+    });
     async function getProfile() {
         try {
             const token = localStorage.getItem('accessToken');
@@ -39,14 +49,19 @@ const Profile: React.FC = () => {
             //   "https://reactproject-test-78fcd-default-rtdb.firebaseio.com/mock.json",
             //   { mocksPortfolio }
             // );
-            const mocks = await axios.get('users/individual', {
-                headers: { authorization: `Bearer ${token}` },
-            });
+            const mocks = await axios
+                .get('/users/individuals', {
+                    headers: { authorization: `Bearer ${token}` },
+                })
+                .then(res => res.data)
+                .then(res => res.data);
 
             console.log(mocks);
+
             // console.log(mocks.data["-NJJR5a9003Z0Qw6WOzB"]);
             // const mock = mocks.data["-NJJR5a9003Z0Qw6WOzB"].mocksPortfolio;
-            // setRes(mock);
+            setRes(mocks);
+            console.log(res.point);
         } catch (e) {
             console.log(e);
         }
@@ -62,7 +77,7 @@ const Profile: React.FC = () => {
 
     //FIXME:API요청 시 수정되어야 함 mock[0].point.
     arr.map((e: number, idx: number): void => {
-        if (e <= mock[0].point) {
+        if (e <= res.point) {
             upperLimit = arr[idx + 1];
             if (upperLimit === 40) {
                 tier = 'Silver';
@@ -78,10 +93,9 @@ const Profile: React.FC = () => {
             }
         }
     });
-
     console.log(upperLimit, lowerLimit);
 
-    let testWidth: number = ((mock[0].point - lowerLimit) / (upperLimit - lowerLimit)) * 100;
+    let testWidth: number = ((res.point - lowerLimit) / (upperLimit - lowerLimit)) * 100;
 
     if (testWidth === 100) testWidth = 0;
 
@@ -101,7 +115,7 @@ const Profile: React.FC = () => {
                                 <Avatar size={120} icon={<UserOutlined />} />
                             </div>
                             <div style={{ height: '38px' }}>
-                                <span style={{ fontSize: '35px' }}>{mock[0].name}</span>
+                                <span style={{ fontSize: '35px' }}>{res.username}</span>
                             </div>
                             <div>
                                 <div style={{ width: `${testWidth}%` }}></div>
@@ -122,7 +136,7 @@ const Profile: React.FC = () => {
                                 {
                                     label: `유저정보`,
                                     key: '1',
-                                    children: <UserInfo></UserInfo>,
+                                    children: <UserInfo user={res}></UserInfo>,
                                 },
                                 {
                                     label: `좋아요`,
@@ -144,7 +158,7 @@ const Profile: React.FC = () => {
                                 {
                                     label: `유저정보`,
                                     key: '1',
-                                    children: <UserInfo></UserInfo>,
+                                    children: <UserInfo user={res}></UserInfo>,
                                 },
                                 {
                                     label: `좋아요`,
