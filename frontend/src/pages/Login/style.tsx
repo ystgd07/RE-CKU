@@ -55,7 +55,7 @@ export const MobileDiv = styled.div`
             display: flex;
             width: 200px;
             text-align: center;
-            padding: 0px 30px;
+*6            padding: 0px 30px;
         }
     }
 `;

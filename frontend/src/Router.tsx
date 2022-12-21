@@ -2,12 +2,12 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Main from 'pages/Main';
 import Login from 'pages/Login';
 import Resume from 'components/Resume/index';
-import CreatePost from 'pages/CreatePost';
+// import CreatePost from 'pages/CreatePost';
 import Join from 'pages/Join';
 import FindPw from 'pages/FindPw';
 import MyPortfolio from 'pages/MyPortfolio';
 import Profile from 'pages/Profile';
-import Post from 'pages/Post';
+// import Post from 'pages/Post';
 import Err404 from 'pages/Err404';
 import Admin from 'pages/Admin';
 import Resumeform from 'pages/Resume';
@@ -16,7 +16,7 @@ const Router = () => {
     const isLogined = localStorage.getItem('accessToken') ? true : false;
     // <Route> => <BasicRouter>, <AdminRouter>, <AuthRouter>
     return (
-        <BrowserRouter basename={process.env.PUBLIC_URL}>
+        <BrowserRouter>
             <Routes>
                 {isLogined ? (
                     <>

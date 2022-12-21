@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import * as S from './style';
-import Logo from 'assets/images/iogo.png';
+import Logo from 'assets/images/logo.png';
 import { useForm } from 'react-hook-form';
 
 const Join = () => {
@@ -103,14 +103,14 @@ const Join = () => {
     return (
         <S.Div>
             <S.MobileDiv>
-                <p>
-                    <div>
+                <div>
+                    <article>
                         <Link to="/">
                             {' '}
                             <S.Image src={Logo} alt="로고" />
                         </Link>
-                    </div>
-                </p>
+                    </article>
+                </div>
                 <form onSubmit={handleSubmit(onValid)} autoComplete="off">
                     <div
                         style={{
