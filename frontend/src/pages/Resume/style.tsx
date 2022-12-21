@@ -10,7 +10,7 @@ export const MobileDiv = styled.div`
     margin: 2% auto 0;
     text-align: start;
     align-items: center;
-    background-color: #b4c1db;
+    /* background-color: #b4c1db; */
     opacity: 0.8;
     border-radius: 5px;
 
@@ -57,7 +57,7 @@ export const BorderDiv = styled.div`
     padding: 20px;
     box-sizing: border-box;
     flex-wrap: wrap;
-    background-color: #ffffff52;
+    background-color: #ffffffc1;
 
     & div {
         display: flex;

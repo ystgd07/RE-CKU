@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import * as S from './style';
 import Logo from 'assets/images/iogo.png';
+import Kakao from 'assets/images/kakao_login_medium_wide.png';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useForm } from 'react-hook-form';
@@ -49,6 +50,16 @@ const Login = () => {
         }
     };
 
+    const kakao = async () => {
+        try {
+            const res = await axios.get(
+                '/oauth/authorize?client_id=${3f53392c3ccd5f3bf877a33827822107}&redirect_uri=${https://localhost:3000}&response_type=code HTTP/1.1',
+            );
+        } catch (e) {
+            console.log(e);
+        }
+    };
+
     return (
         <S.Div>
             <S.MobileDiv>
@@ -90,6 +101,10 @@ const Login = () => {
                             autoComplete="new-password"
                         />
                         <button type="submit">로그인</button>
+                        <div>
+                            <img src={Kakao}></img>
+                        </div>
+
                         <Link
                             to="/join"
                             style={{

@@ -41,23 +41,6 @@ interface userDataRes {
     username: string;
 }
 
-// interface ResumeDataRes {
-//     careerData: [
-//         {
-//             company: string;
-//             endDate: string;
-//             id: string;
-//             notDevelop: string;
-//             position: string;
-//             reward: string;
-//             startDay: string;
-//             useResumeId: string;
-//             nowWork: string;
-//             children?: JSX.Element | JSX.Element[];
-//         },
-//     ];
-// }
-
 const resumeId = 34;
 const Resume = () => {
     const navigate = useNavigate();
@@ -125,7 +108,7 @@ const Resume = () => {
                     <S.BorderDiv key={data.id}>
                         <h2>{data.projectName}</h2>
                         <div>
-                            <img src={Logo}></img>
+                            {/* <img src={Logo}></img> */}
                             <div>
                                 <p>{data.information}</p>
                                 <p>{data.year}</p>

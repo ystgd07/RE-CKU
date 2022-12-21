@@ -30,7 +30,8 @@ const Router = () => {
                         <Route path="/find-pw" element={<Navigate replace to="/" />} />
                         <Route path="/join" element={<Navigate replace to="/" />} />
                         <Route path="/*" element={<Err404 />} />
-                        <Route path="resume" element={<Resumeform />} />
+                        <Route path="/resume" element={<Resumeform />} />
+                        <Route path="/admin" element={<Admin />} />
                     </>
                 ) : (
                     <>
