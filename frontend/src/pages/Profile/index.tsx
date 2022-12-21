@@ -45,10 +45,7 @@ const Profile: React.FC = () => {
     async function getProfile() {
         try {
             const token = localStorage.getItem('accessToken');
-            // const res = await axios.post(
-            //   "https://reactproject-test-78fcd-default-rtdb.firebaseio.com/mock.json",
-            //   { mocksPortfolio }
-            // );
+
             const mocks = await axios
                 .get('/users/individuals', {
                     headers: { authorization: `Bearer ${token}` },
@@ -58,24 +55,23 @@ const Profile: React.FC = () => {
 
             console.log(mocks);
 
-            // console.log(mocks.data["-NJJR5a9003Z0Qw6WOzB"]);
-            // const mock = mocks.data["-NJJR5a9003Z0Qw6WOzB"].mocksPortfolio;
             setRes(mocks);
             console.log(res.point);
         } catch (e) {
             console.log(e);
         }
     }
+
     useEffect(() => {
         getProfile();
     }, []);
+
     const arr = [20, 40, 100];
     let upperLimit = arr[0];
     let lowerLimit = 0;
     let tier = 'Bronze';
     let tierColor = tierColors.bronze;
 
-    //FIXME:API요청 시 수정되어야 함 mock[0].point.
     arr.map((e: number, idx: number): void => {
         if (e <= res.point) {
             upperLimit = arr[idx + 1];
