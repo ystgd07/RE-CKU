@@ -266,6 +266,8 @@ export const findOneBoardQ = async (boardId: number, userId?: null | number): Pr
       ownUserId: 0,
       email: "",
       avatarUrl: "",
+      likeCnt: 0,
+      commentCnt: 0,
     },
     resumeInfo: {
       id: 0,
@@ -291,6 +293,8 @@ export const findOneBoardQ = async (boardId: number, userId?: null | number): Pr
     created as boardCreated,
     hasResumeId, 
     fixed,
+    likeCnt,
+    commentCnt,
     fromUserId as ownUserId 
     From board 
     WHERE id=?`,
