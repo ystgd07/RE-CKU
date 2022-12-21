@@ -1,4 +1,10 @@
-import React, { FunctionComponent, useEffect, useState } from 'react';
+import React, {
+    FunctionComponent,
+    MouseEventHandler,
+    SetStateAction,
+    useEffect,
+    useState,
+} from 'react';
 import { ResumeContainer, ResumeFrame, UserInfo, FormTitle, InputForm, Title } from './style';
 import { BiPlus } from '@react-icons/all-files/bi/BiPlus';
 import { BiEdit } from '@react-icons/all-files/bi/BiEdit';
@@ -6,63 +12,30 @@ import { DatePicker } from 'antd';
 import axios, { AxiosResponse } from 'axios';
 import Header from 'components/Header';
 import { useParams } from 'react-router-dom';
-import { ResumeDetailModel, UserData, ResumeData } from 'models/resume-model';
+import { Moment } from 'moment';
+import { UserData, ResumeData, WorkFormData } from 'models/resume-model';
 
 const Resume = () => {
-    const [swtich, setSwtich] = useState<boolean>(true);
-    const [formToggle, setFormToggle] = useState<boolean>(false);
-    const [formToggle2, setFormToggle2] = useState<boolean>(false);
+    const [isStilWork, setIsStilWork] = useState<boolean>(true);
+    const [isWorkFormToggle, setIsWorkFormToggle] = useState<boolean>(false);
+    const [projectFormToggle, setProjectFormToggle] = useState<boolean>(false);
+    const [workFormDataState, setWorkFormDataState] = useState<WorkFormData>({
+        companyName: '',
+        jobGroup: '',
+        startWork: '',
+        endWork: '',
+        workPerformance: '',
+    });
+    // const [projectFromDataState, setProjectFromDataState] = useState<>({});
 
-    const [value, setValue] = useState<string>('');
+    // const [value, setValue] = useState<string>('');
     const [userInfo, setUserInfo] = useState<UserData>({} as UserData);
     const [resumeTitle, setResumeTitle] = useState<ResumeData>({} as ResumeData);
-    // const [resumeTitle, setResumeTitle] = useState<ResumeData>({
-    //     id: '',
-    //     updatedAt: '',
-
-    //     name: '',
-    // });
-    // const [userInfo, setUserInfo] = useState<{
-    //     username: string;
-    //     email: string;
-    //     phoneNumber: string;
-    // }>({
-    //     username: '',
-    //     email: '',
-    //     phoneNumber: '',
-    // });
 
     const params = useParams();
     const resumeIds = params.id;
     const token = localStorage.getItem('accessToken');
     console.log('id ======================================', resumeIds);
-
-    const patchPo = async () => {
-        // console.log(
-        //     '========================================================================',
-        //     value,
-        // );
-        // try {
-        //     const res = await axios.patch(`/my-portfolio/resumes/${resumeIds}`, {
-        //         position: '왜 안되냐',
-        //     });
-        // } catch (err: unknown) {
-        //     console.log(err);
-        // }
-    };
-
-    const choiceJob = async (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const value = e.target.value;
-        // setValue(value);
-        // console.log(value, 'value value value');
-        try {
-            const res = await axios.patch(`/my-portfolio/resumes/${resumeIds}`, {
-                position: value,
-            });
-        } catch (err: unknown) {
-            console.log(err);
-        }
-    };
 
     useEffect(() => {
         async function fetchResume() {
@@ -88,96 +61,178 @@ const Resume = () => {
             }
         }
         fetchResume();
-    }, []);
+    }, [resumeIds, token]);
 
-    const JobEx: FunctionComponent = () => {
-        return (
-            <form>
-                <div className="formWrap">
-                    <ul>
-                        <li>
-                            <dl>
-                                <dt>회사명</dt>
-                                <dd>
-                                    <input type="text" name="companyName" placeholder="회사 이름" />
-                                </dd>
-                            </dl>
-                            <dl>
-                                <dt>직무</dt>
-                                <dd>
-                                    <input type="text" name="companyJob" placeholder="프론트엔드" />
-                                </dd>
-                            </dl>
-                            <dl className="noneDevelop">
-                                <dt>
-                                    <input type="checkbox" />
-                                </dt>
-                                <dd>
-                                    <label>비개발 경력</label>
-                                </dd>
-                            </dl>
-                        </li>
-                    </ul>
+    const workFormHandler = (
+        e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement>,
+    ) => {
+        const target = e.target;
 
-                    <ul>
-                        <li>
-                            <dl>
-                                <dt>
-                                    <label>입사</label>
-                                    <small>재직 중 </small>
-                                    <label className="switch">
-                                        <input
-                                            type="checkbox"
-                                            checked={swtich ? true : false}
-                                            onChange={(): void => setSwtich(!swtich)}
-                                        />
-                                        <span className="slider"></span>
-                                    </label>
-                                </dt>
-
-                                <dd>
-                                    <DatePicker
-                                        placeholder="YYYY-MM"
-                                        picker="month"
-                                        onChange={(date, dateString): void =>
-                                            console.log('asd', dateString)
-                                        }
-                                    />
-                                </dd>
-                            </dl>
-                            {!swtich && (
-                                <dl>
-                                    <dt>퇴사</dt>
-                                    <dd>
-                                        <DatePicker placeholder="YYYY-MM" picker="month" />
-                                    </dd>
-                                </dl>
-                            )}
-                        </li>
-                    </ul>
-
-                    <ul>
-                        <li>
-                            <label>업무 성과</label>
-                        </li>
-                        <li>
-                            <textarea
-                                maxLength={500}
-                                placeholder={`구체적인 역할과 성과 위주의 글을 작성해보세요. \n수치와 함께 표현되면 경험이 잘 전달될 수 있습니다.`}
-                            ></textarea>
-                        </li>
-                    </ul>
-                </div>
-
-                <div className="formBtn">
-                    <button type="button" onClick={() => setFormToggle(!formToggle)}>
-                        취소
-                    </button>
-                    <button type="submit">저장</button>
-                </div>
-            </form>
-        );
+        setWorkFormDataState({
+            ...workFormDataState,
+            [target.name]: target.value,
+        });
     };
+
+    const workStartTimeHandler = (date: any, dateString: string) => {
+        setWorkFormDataState({
+            ...workFormDataState,
+            startWork: dateString,
+        });
+    };
+
+    const workEndTimeHandler = (date: any, dateString: string) => {
+        setWorkFormDataState({
+            ...workFormDataState,
+            endWork: dateString,
+        });
+    };
+
+    console.log(workFormDataState, 'datadata 1231 123 123 ');
+    const createWorkForm = async (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.preventDefault();
+        try {
+            const res = await axios.post(`/my-portfolio/resumes/${resumeIds}/new-career`, {
+                company: workFormDataState.companyName,
+                position: workFormDataState.jobGroup,
+                startDate: workFormDataState.startWork,
+                endDate: workFormDataState.endWork,
+                reward: workFormDataState.workPerformance,
+            });
+            console.log(res, '123123123 - post');
+        } catch (err: unknown) {
+            console.log(err);
+        }
+    };
+
+    // const patchPo = async () => {
+    //     console.log(
+    //         '========================================================================',
+    //         value,
+    //     );
+    //     try {
+    //         const res = await axios.patch(`/my-portfolio/resumes/${resumeIds}`, {
+    //             position: '왜 안되냐',
+    //         });
+    //     } catch (err: unknown) {
+    //         console.log(err);
+    //     }
+    // };
+
+    const choiceJob = async (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const posionValue = e.target.value;
+        // setValue(value);
+        // console.log(value, 'value value value');
+        try {
+            const res = await axios.patch(`/my-portfolio/resumes/${resumeIds}`, {
+                position: posionValue,
+            });
+            console.log(res);
+        } catch (err: unknown) {
+            console.log(err);
+        }
+    };
+
+    // const JobEx: FunctionComponent = () => {
+    //     return (
+    //         <form>
+    //             <div className="formWrap">
+    //                 <ul>
+    //                     <li>
+    //                         <dl>
+    //                             <dt>회사명</dt>
+    //                             <dd>
+    //                                 <input
+    //                                     type="text"
+    //                                     name="companyName"
+    //                                     placeholder="회사 이름"
+    //                                     value={workFormDataState.companyName}
+    //                                     onChange={workFormHandler}
+    //                                 />
+    //                             </dd>
+    //                         </dl>
+    //                         <dl>
+    //                             <dt>직무</dt>
+    //                             <dd>
+    //                                 <input
+    //                                     type="text"
+    //                                     name="jobGroup"
+    //                                     placeholder="프론트엔드"
+    //                                     value={workFormDataState.jobGroup}
+    //                                     onChange={workFormHandler}
+    //                                 />
+    //                             </dd>
+    //                         </dl>
+    //                         <dl className="noneDevelop">
+    //                             <dt>
+    //                                 <input type="checkbox" name="noneDevelop" />
+    //                             </dt>
+    //                             <dd>
+    //                                 <label>비개발 경력</label>
+    //                             </dd>
+    //                         </dl>
+    //                     </li>
+    //                 </ul>
+
+    //                 <ul>
+    //                     <li>
+    //                         <dl>
+    //                             <dt>
+    //                                 <label>입사</label>
+    //                                 <small>재직 중 </small>
+    //                                 <label className="switch">
+    //                                     <input
+    //                                         type="checkbox"
+    //                                         checked={isStilWork ? true : false}
+    //                                         onChange={(): void => setIsStilWork(!isStilWork)}
+    //                                     />
+    //                                     <span className="slider"></span>
+    //                                 </label>
+    //                             </dt>
+
+    //                             <dd>
+    //                                 <DatePicker
+    //                                     placeholder="YYYY-MM"
+    //                                     picker="month"
+    //                                     onChange={(date, dateString): void =>
+    //                                         console.log('asd', dateString)
+    //                                     }
+    //                                 />
+    //                             </dd>
+    //                         </dl>
+    //                         {!isStilWork && (
+    //                             <dl>
+    //                                 <dt>퇴사</dt>
+    //                                 <dd>
+    //                                     <DatePicker placeholder="YYYY-MM" picker="month" />
+    //                                 </dd>
+    //                             </dl>
+    //                         )}
+    //                     </li>
+    //                 </ul>
+
+    //                 <ul>
+    //                     <li>
+    //                         <label>업무 성과</label>
+    //                     </li>
+    //                     <li>
+    //                         <textarea
+    //                             maxLength={500}
+    //                             placeholder={`구체적인 역할과 성과 위주의 글을 작성해보세요. \n수치와 함께 표현되면 경험이 잘 전달될 수 있습니다.`}
+    //                         ></textarea>
+    //                     </li>
+    //                 </ul>
+    //             </div>
+
+    //             <div className="formBtn">
+    //                 <button type="button" onClick={() => setIsWorkFormToggle(!isWorkFormToggle)}>
+    //                     취소
+    //                 </button>
+    //                 <button type="submit">저장</button>
+    //             </div>
+    //         </form>
+    //     );
+    // };
 
     return (
         <>
@@ -255,22 +310,145 @@ const Resume = () => {
                             <section>
                                 <FormTitle>
                                     <label>업무경험</label>
-                                    <span onClick={() => setFormToggle(!formToggle)}>
-                                        <BiPlus className={formToggle ? 'rotate' : ''} />
+                                    <span onClick={() => setIsWorkFormToggle(!isWorkFormToggle)}>
+                                        <BiPlus className={isWorkFormToggle ? 'rotate' : ''} />
                                     </span>
                                 </FormTitle>
 
-                                {formToggle && <JobEx />}
+                                {isWorkFormToggle && (
+                                    <form>
+                                        <div className="formWrap">
+                                            <ul>
+                                                <li>
+                                                    <dl>
+                                                        <dt>회사명</dt>
+                                                        <dd>
+                                                            <input
+                                                                type="text"
+                                                                name="companyName"
+                                                                placeholder="회사 이름"
+                                                                value={
+                                                                    workFormDataState.companyName
+                                                                }
+                                                                onChange={workFormHandler}
+                                                            />
+                                                        </dd>
+                                                    </dl>
+                                                    <dl>
+                                                        <dt>직무</dt>
+                                                        <dd>
+                                                            <input
+                                                                type="text"
+                                                                name="jobGroup"
+                                                                placeholder="프론트엔드"
+                                                                value={workFormDataState.jobGroup}
+                                                                onChange={workFormHandler}
+                                                            />
+                                                        </dd>
+                                                    </dl>
+                                                    <dl className="noneDevelop">
+                                                        <dt>
+                                                            <input
+                                                                type="checkbox"
+                                                                name="noneDevelop"
+                                                            />
+                                                        </dt>
+                                                        <dd>
+                                                            <label>비개발 경력</label>
+                                                        </dd>
+                                                    </dl>
+                                                </li>
+                                            </ul>
+
+                                            <ul>
+                                                <li>
+                                                    <dl>
+                                                        <dt>
+                                                            <label>입사</label>
+                                                            <small>재직 중 </small>
+                                                            <label className="switch">
+                                                                <input
+                                                                    type="checkbox"
+                                                                    checked={
+                                                                        isStilWork ? true : false
+                                                                    }
+                                                                    onChange={(): void =>
+                                                                        setIsStilWork(!isStilWork)
+                                                                    }
+                                                                />
+                                                                <span className="slider"></span>
+                                                            </label>
+                                                        </dt>
+
+                                                        <dd>
+                                                            <DatePicker
+                                                                placeholder="YYYY-MM"
+                                                                picker="month"
+                                                                name="startWork"
+                                                                onChange={workStartTimeHandler}
+                                                            />
+                                                        </dd>
+                                                    </dl>
+                                                    {!isStilWork && (
+                                                        <dl>
+                                                            <dt>퇴사</dt>
+                                                            <dd>
+                                                                <DatePicker
+                                                                    placeholder="YYYY-MM"
+                                                                    picker="month"
+                                                                    name="endWork"
+                                                                    onChange={workEndTimeHandler}
+                                                                />
+                                                            </dd>
+                                                        </dl>
+                                                    )}
+                                                </li>
+                                            </ul>
+
+                                            <ul>
+                                                <li>
+                                                    <label>업무 성과</label>
+                                                </li>
+                                                <li>
+                                                    <textarea
+                                                        maxLength={500}
+                                                        placeholder={`구체적인 역할과 성과 위주의 글을 작성해보세요. \n수치와 함께 표현되면 경험이 잘 전달될 수 있습니다.`}
+                                                        name="workPerformance"
+                                                        onChange={workFormHandler}
+                                                    ></textarea>
+                                                </li>
+                                            </ul>
+                                        </div>
+
+                                        <div className="formBtn">
+                                            <button
+                                                type="button"
+                                                onClick={() =>
+                                                    setIsWorkFormToggle(!isWorkFormToggle)
+                                                }
+                                            >
+                                                취소
+                                            </button>
+                                            <button type="submit" onClick={createWorkForm}>
+                                                저장
+                                            </button>
+                                        </div>
+                                    </form>
+                                )}
                             </section>
 
                             <section>
                                 <FormTitle>
                                     <label>프로젝트</label>
-                                    <span onClick={(): void => setFormToggle2(!formToggle2)}>
-                                        <BiPlus className={formToggle2 ? 'rotate' : ''} />
+                                    <span
+                                        onClick={(): void =>
+                                            setProjectFormToggle(!projectFormToggle)
+                                        }
+                                    >
+                                        <BiPlus className={projectFormToggle ? 'rotate' : ''} />
                                     </span>
                                 </FormTitle>
-                                {formToggle2 && (
+                                {projectFormToggle && (
                                     <form>
                                         <div className="formWrap">
                                             <ul>
@@ -359,7 +537,9 @@ const Resume = () => {
                                             <div className="formBtn">
                                                 <button
                                                     type="button"
-                                                    onClick={() => setFormToggle2(!formToggle2)}
+                                                    onClick={() =>
+                                                        setProjectFormToggle(!projectFormToggle)
+                                                    }
                                                 >
                                                     취소
                                                 </button>

@@ -9,7 +9,7 @@ import MyPortfolio from 'pages/MyPortfolio';
 import Profile from 'pages/Profile';
 // import Post from 'pages/Post';
 import Err404 from 'pages/Err404';
-import Admin from 'pages/Admin';
+// import Admin from 'pages/Admin';
 
 const Router = () => {
     const isLogined = localStorage.getItem('accessToken') ? true : false;
@@ -21,8 +21,8 @@ const Router = () => {
                     <>
                         <Route path="/" element={<Main />} />
                         <Route path="/resume/:id" element={<Resume />} />
-                        <Route path="/create-post" element={<CreatePost />} />
-                        <Route path="/post/:postId" element={<Post />} />
+                        {/* <Route path="/create-post" element={<CreatePost />} /> */}
+                        {/* <Route path="/post/:postId" element={<Post />} /> */}
                         <Route path="/myportfolio" element={<MyPortfolio />} />
                         <Route path="/profile" element={<Profile />} />
                         <Route path="/login" element={<Navigate replace to="/" />} />

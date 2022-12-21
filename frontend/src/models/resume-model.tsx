@@ -23,3 +23,11 @@ export interface UserData {
     phoneNumber: string;
     username: string;
 }
+
+export interface WorkFormData {
+    companyName: string;
+    jobGroup: string;
+    startWork: string;
+    endWork: string;
+    workPerformance: string;
+}
