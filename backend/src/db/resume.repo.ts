@@ -2,6 +2,7 @@ import { db } from ".";
 import { positonEnum, Resume } from "./schemas";
 import { updateData, insertData } from "./utils/transData";
 import { deleteBoard } from "./board.repo";
+import {convertToArray} from "class-validator/types/utils";
 
 // 1-1. 이력서 (틀) 생성
 export const createResumeQ = async (userId: number, newResumeName: string) => {
@@ -28,18 +29,62 @@ export const createCareerQ = async (resumeId: number, newCareerInfo: Record<stri
 };
 
 // 1-3. 프로젝트 생성
-export const createProjectQ = async (resumeId: number, newProjectInfo: Record<string, string | number | boolean>) => {
-  const [keys, values, arrValues] = insertData(newProjectInfo);
+// TODO] for문 수정
+export const createProjectQ = async (resumeId: number, newProjectInfos: Record<string, string | number | boolean>) => {
+  let conn = null;
 
-  const newProject = await db.query(
-    `INSERT INTO project (usedResumeId, ${keys.join(", ")})
-     VALUES (?, ${values.join(",")})`,
-    [resumeId, ...arrValues]
-  );
+  try {
+    const {skills, ...newProjectInfo} = newProjectInfos;
+    const [keys, values, arrValues] = insertData(newProjectInfo);
 
-  return newProject;
+    if (skills) {
+      const skillsList = Object.values(skills);
+
+      conn = await db.getConnection();
+      await conn.beginTransaction();
+
+      const newProject = await conn.query(
+        `INSERT INTO project (usedResumeId, ${keys.join(", ")})
+       VALUES (?, ${values.join(",")})`,
+        [resumeId, ...arrValues]
+      );
+
+      const projectId = Object.values(newProject[0])[2];
+
+      const [ids, ] = await conn.query(`SELECT id AS skillId FROM skill WHERE name IN ("${skillsList.join('", "')}")`)
+
+      const skillsIds = Object.values(ids);
+
+      for (let i=0; i<skillsIds.length; i++) {
+        await conn.query(`INSERT INTO stack (projectId, skillId) VALUES (?, ?)`, [projectId, Object.values(skillsIds[i])])
+      }
+
+      conn.commit();
+
+      return newProject;
+    } else {
+      const newProject = await db.query(
+        `INSERT INTO project (usedResumeId, ${keys.join(", ")})
+       VALUES (?, ${values.join(",")})`,
+        [resumeId, ...arrValues]
+      );
+
+      return newProject;
+    }
+  } catch {
+    console.log('프로젝트 생성 실패')
+    conn.rollback();
+  } finally {
+    if (conn) {
+      await conn.release();
+      console.log("✅ Transaction Finish");
+    }
+  }
 };
 
+const createStack = async (skills: Object) => {
+
+}
 // 2-2. 내 이력서 목록 조회
 export const findMyResumesQ = async (userId: number) => {
   const [myResumes] = await db.query(
@@ -175,6 +220,7 @@ export const updateCareerQ = async (careerId: number, updateCareerInfo: Record<s
 };
 
 // 3-3. 프로젝트 수정
+// TODO] for문 수정
 export const updateProjectQ = async (projectId: number, updateProjectInfo: Record<string, string | number>) => {
   const [key, value] = updateData(updateProjectInfo);
 
