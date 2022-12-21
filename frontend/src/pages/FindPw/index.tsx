@@ -2,18 +2,18 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import * as S from './style';
-import Logo from 'assets/images/iogo.png';
+import Logo from 'assets/images/logo.png';
 
 const FindPw = () => {
     const [Email, setEmail] = useState('');
     const navigate = useNavigate();
 
-    useEffect(() => {
-        console.log('이동?');
-        if (localStorage.getItem('accessToken')) {
-            navigate('/');
-        }
-    }, [navigate]);
+    // useEffect(() => {
+    //     console.log('이동?');
+    //     if (localStorage.getItem('accessToken')) {
+    //         navigate('/');
+    //     }
+    // }, []);
 
     const onSubmitHandler = async (e: any) => {
         e.preventDefault();

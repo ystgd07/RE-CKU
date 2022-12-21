@@ -3,73 +3,92 @@ import { ResumeContainer, ResumeFrame, UserInfo, FormTitle, InputForm, Title } f
 import { BiPlus } from '@react-icons/all-files/bi/BiPlus';
 import { BiEdit } from '@react-icons/all-files/bi/BiEdit';
 import { DatePicker } from 'antd';
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 import Header from 'components/Header';
 import { useParams } from 'react-router-dom';
+import { ResumeDetailModel, UserData, ResumeData } from 'models/resume-model';
 
 const Resume = () => {
     const [swtich, setSwtich] = useState<boolean>(true);
     const [formToggle, setFormToggle] = useState<boolean>(false);
     const [formToggle2, setFormToggle2] = useState<boolean>(false);
-    // const [formc, setFormc] = useState<ReactElement[]>([]);
-    const [userInfo, setUserInfo] = useState([]);
 
-    // interface user = {
+    const [value, setValue] = useState<string>('');
+    const [userInfo, setUserInfo] = useState<UserData>({} as UserData);
+    const [resumeTitle, setResumeTitle] = useState<ResumeData>({} as ResumeData);
+    // const [resumeTitle, setResumeTitle] = useState<ResumeData>({
+    //     id: '',
+    //     updatedAt: '',
 
-    //         username: string;
-    //         avatarUrl: string;
-    //         created: string;
-    //         email: string;
-    //         id: number;
-    //         phoneNumber?: number;
-    //         username: string;
-    // };
-
-    // Record<string, string | number | boolean>
-
-    const choiceJob = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        console.log(e.target.value, '123');
-    };
+    //     name: '',
+    // });
+    // const [userInfo, setUserInfo] = useState<{
+    //     username: string;
+    //     email: string;
+    //     phoneNumber: string;
+    // }>({
+    //     username: '',
+    //     email: '',
+    //     phoneNumber: '',
+    // });
 
     const params = useParams();
-    const ids = params.id;
-    console.log(params.id, 'ididididididid');
+    const resumeIds = params.id;
     const token = localStorage.getItem('accessToken');
+    console.log('id ======================================', resumeIds);
 
-    async function fetchResume() {
+    const patchPo = async () => {
+        // console.log(
+        //     '========================================================================',
+        //     value,
+        // );
+        // try {
+        //     const res = await axios.patch(`/my-portfolio/resumes/${resumeIds}`, {
+        //         position: '왜 안되냐',
+        //     });
+        // } catch (err: unknown) {
+        //     console.log(err);
+        // }
+    };
+
+    const choiceJob = async (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const value = e.target.value;
+        // setValue(value);
+        // console.log(value, 'value value value');
         try {
-            const res = await axios.get(`/myportfolio/resume/${ids}`, {
-                headers: { authorization: `Bearer ${token}` },
+            const res = await axios.patch(`/my-portfolio/resumes/${resumeIds}`, {
+                position: value,
             });
-            const data = res.data;
-            setUserInfo(data);
-            console.log(userInfo, 'infoinfoinfoinfoinfoinfo', data);
-
-            // const { username, phoneNumber, email } = data;
-            // console.log(res, data, '123123123123', username, phoneNumber, email);
-        } catch (err) {
+        } catch (err: unknown) {
             console.log(err);
         }
-    }
+    };
 
     useEffect(() => {
         async function fetchResume() {
             try {
-                const res = await axios.get(`/myportfolio/resume/${ids}`, {
+                const res = await axios.get<
+                    AxiosResponse<{ userData: UserData; resumeData: ResumeData }>
+                >(`/my-portfolio/resumes/${resumeIds}`, {
                     headers: { authorization: `Bearer ${token}` },
                 });
-                const data = res.data;
-                setUserInfo(data);
-                console.log(userInfo, 'infoinfoinfoinfoinfoinfo', data);
-
-                // const { username, phoneNumber, email } = data;
-                // console.log(res, data, '123123123123', username, phoneNumber, email);
+                const userInfoData = res.data.data.userData;
+                const resumeTitle = res.data.data.resumeData;
+                setResumeTitle(resumeTitle);
+                setUserInfo(userInfoData);
+                console.log(
+                    res.data.data,
+                    'infoData ==========================================================================',
+                    userInfoData,
+                    'resumeTitle =====================================================================',
+                    resumeTitle,
+                );
             } catch (err) {
                 console.log(err);
             }
         }
         fetchResume();
-    }, [ids, token, userInfo]);
+    }, []);
 
     const JobEx: FunctionComponent = () => {
         return (
@@ -80,13 +99,13 @@ const Resume = () => {
                             <dl>
                                 <dt>회사명</dt>
                                 <dd>
-                                    <input type="text" placeholder="회사 이름" />
+                                    <input type="text" name="companyName" placeholder="회사 이름" />
                                 </dd>
                             </dl>
                             <dl>
                                 <dt>직무</dt>
                                 <dd>
-                                    <input type="text" placeholder="프론트엔드" />
+                                    <input type="text" name="companyJob" placeholder="프론트엔드" />
                                 </dd>
                             </dl>
                             <dl className="noneDevelop">
@@ -167,7 +186,7 @@ const Resume = () => {
                 <ResumeFrame>
                     <UserInfo>
                         <Title>
-                            <input type="text" value={`Title`} />
+                            <input type="text" readOnly value={`${resumeTitle.resumeName}`} />
                             <span>
                                 <button type="button">
                                     <BiEdit />
@@ -180,7 +199,8 @@ const Resume = () => {
                                     <input
                                         type="text"
                                         placeholder="name"
-                                        // value={`${userInfo.userData.username}`}
+                                        readOnly
+                                        value={`${userInfo.username}`}
                                     />
                                 </li>
                                 <li>
@@ -188,7 +208,8 @@ const Resume = () => {
                                     <input
                                         type="email"
                                         placeholder="이메일"
-                                        // value={`${users.email}`}
+                                        readOnly
+                                        value={`${userInfo.email}`}
                                     />
                                 </li>
                                 <li>
@@ -196,7 +217,8 @@ const Resume = () => {
                                     <input
                                         type="tel"
                                         placeholder="연락처"
-                                        // value={`${users.phoneNumber}`}
+                                        readOnly
+                                        value={`${userInfo.phoneNumber}`}
                                     />
                                 </li>
                                 <li>
@@ -214,8 +236,8 @@ const Resume = () => {
                         <div className="inputFlex">
                             <section>
                                 <div>
-                                    <select onChange={choiceJob}>
-                                        <option selected disabled>
+                                    <select onChange={choiceJob} defaultValue={'position'}>
+                                        <option value="position" disabled>
                                             포지션 선택
                                         </option>
                                         <option>전체</option>
@@ -224,6 +246,9 @@ const Resume = () => {
                                         <option>디자인</option>
                                         <option>기획</option>
                                     </select>
+                                    {/* <button type="button" onClick={patchPo}>
+                                        저장
+                                    </button> */}
                                 </div>
                             </section>
 

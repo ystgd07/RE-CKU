@@ -1,11 +1,12 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import * as S from './style';
-import Logo from 'assets/images/iogo.png';
+import Logo from 'assets/images/logo.png';
 import { useForm } from 'react-hook-form';
 
 const Join = () => {
+    const [email, setEmail] = useState();
     const navigate = useNavigate();
     const {
         register,
@@ -24,12 +25,12 @@ const Join = () => {
         passwordCheck: string;
     }
 
-    useEffect(() => {
-        console.log('이동?');
-        if (localStorage.getItem('accessToken')) {
-            navigate('/');
-        }
-    }, [navigate]);
+    // useEffect(() => {
+    //     console.log('이동?');
+    //     if (localStorage.getItem('accessToken')) {
+    //         navigate('/');
+    //     }
+    // }, []);
 
     const onValid = async (data: FormData) => {
         if (data.password !== data.passwordCheck) {
@@ -59,11 +60,14 @@ const Join = () => {
         }
     };
 
-    const sendEmail = async (data: FormData) => {
+    const onChange = (e: any) => {
+        setEmail(e.target.value);
+    };
+    const sendEmail = async (e: any) => {
+        e.preventDefault();
         const jsondata = {
-            email: data.email,
+            email,
         };
-        console.log('jsondata', jsondata);
 
         try {
             const res = await axios.post('/users/email', jsondata);
@@ -99,14 +103,14 @@ const Join = () => {
     return (
         <S.Div>
             <S.MobileDiv>
-                <p>
-                    <div>
+                <div>
+                    <article>
                         <Link to="/">
                             {' '}
                             <S.Image src={Logo} alt="로고" />
                         </Link>
-                    </div>
-                </p>
+                    </article>
+                </div>
                 <form onSubmit={handleSubmit(onValid)} autoComplete="off">
                     <div
                         style={{
@@ -130,10 +134,12 @@ const Join = () => {
                             })}
                             placeholder="이메일 입력"
                             autoComplete="off"
+                            value={email}
+                            onChange={onChange}
                         />
                         <label>{errors?.email?.message}</label>
                         {/* <label>아무말</label> */}
-                        <button style={{ marginTop: '10px' }} onClick={handleSubmit(sendEmail)}>
+                        <button style={{ marginTop: '10px' }} onClick={sendEmail}>
                             인증번호 보내기
                         </button>
                         <div style={{ display: 'flex', textAlign: 'left' }}>

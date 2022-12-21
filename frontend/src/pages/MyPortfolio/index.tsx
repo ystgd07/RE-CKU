@@ -8,44 +8,31 @@ type Mock = { name: string; address: string; date: string; id: any };
 const ResumeMain = () => {
     const [res, setRes] = useState<Mock[]>([]);
     const navigate = useNavigate();
+    const token = localStorage.getItem('accessToken');
+
     async function getPortfolio() {
         try {
-            const token = localStorage.getItem('accessToken');
-            // const res = await axios.post(
-            //   "https://reactproject-test-78fcd-default-rtdb.firebaseio.com/mock.json",
-            //   { mocksPortfolio }
-            // );
-            const mocks = await axios.get('/myportfolio/list', {
+            const mocks = await axios.get('/my-portfolio/resumes', {
                 headers: { authorization: `Bearer ${token}` },
             });
             console.log(mocks, 'SUCCCCCCCCCess');
-
-            // console.log(mocks.data["-NJJR5a9003Z0Qw6WOzB"]);
-            // const mock = mocks.data["-NJJR5a9003Z0Qw6WOzB"].mocksPortfolio;
-            // setRes(mock);
         } catch (e) {
             console.log(e);
         }
     }
     async function postPortfolio() {
         try {
-            const token = localStorage.getItem('accessToken');
-            // const res = await axios.post(
-            //   "https://reactproject-test-78fcd-default-rtdb.firebaseio.com/mock.json",
-            //   { mocksPortfolio }
-            // );
             const mocks = await axios.post(
-                '/myportfolio/resume',
+                '/my-portfolio/new-resume',
                 {},
-                { headers: { authorization: `Bearer ${token}` } },
+                {
+                    headers: { authorization: `Bearer ${token}` },
+                },
             );
 
-            const id = mocks.data.createdResumeId;
-
-            if (mocks.status === 200) {
-                navigate(`/resume/${id}`);
-            }
-            console.log(mocks);
+            const ids = mocks.data.createdResumeId;
+            console.log(mocks, 'success');
+            if (mocks.status === 200) navigate(`/resume/${ids}`);
         } catch (e) {
             console.log(e);
         }
