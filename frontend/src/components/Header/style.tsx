@@ -8,9 +8,9 @@ export const HContainer = styled.section`
 export const HHeader = styled.header`
     display: flex;
     justify-content: space-around;
-    padding: 1.2rem;
+    padding: 1.9rem;
     align-items: center;
-    font-size: 1.2rem;
+    font-size: 2rem;
     border-bottom: 1px solid #6495ed;
     box-sizing: border-box;
     font-weight: 600;
@@ -28,18 +28,18 @@ export const HHeader = styled.header`
 
     & div {
         display: flex;
-        gap: 3rem;
+        gap: 4.8rem;
 
         & nav {
             & ul {
                 display: flex;
-                gap: 1.2rem;
+                gap: 1.9rem;
             }
         }
 
         & .util {
             display: flex;
-            gap: 1.2rem;
+            gap: 1.9rem;
         }
     }
 `;
