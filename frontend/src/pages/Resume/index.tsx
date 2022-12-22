@@ -8,30 +8,30 @@ import Header from 'components/Header';
 interface careerDataRes {
     company: string;
     endDate: string;
-    id: number;
+    careerId: number;
     notDevelop: number;
     position: string;
     reward: string;
-    startDay: string;
-    useResumeId: number;
-    nowWork: number;
+    startDate: string;
+    resumeId: number;
+    workNow: number;
 }
 interface projectDataRes {
-    id: number;
+    projectId: number;
     information: string;
     link1: string;
     link2: string;
     projectName: string;
-    usedResumeId: number;
+    resumeId: number;
     year: string;
 }
 interface resumeDataRes {
-    id: number;
-    information: string;
-    name: string;
+    resumeId: number;
+    intro: string;
+    resumeName: string;
     position: string;
     updatedAt: string;
-    usedUserId: number;
+    userId: number;
 }
 interface userDataRes {
     avatarUrl: string;
@@ -40,68 +40,73 @@ interface userDataRes {
     email: string;
     phoneNumber: string;
     username: string;
+    password: string;
+    point: number;
 }
 
-const resumeId = 34;
+const resumeId = 1;
 const Resume = () => {
     const navigate = useNavigate();
     const [careerData, setCareerData] = useState<careerDataRes[]>([]);
     const [projectData, setProjectData] = useState<projectDataRes[]>([]);
-    const [resumeData, setResumeData] = useState<resumeDataRes[]>([]);
-    const [userDataRes, setUserData] = useState<userDataRes[]>([]);
+    const [resumeData, setResumeData] = useState<resumeDataRes>();
+    const [userData, setUserData] = useState<userDataRes>();
 
     async function getResume() {
         try {
             const token = localStorage.getItem('accessToken');
-            const res = await axios.get(`/myportfolio/resume/${resumeId}`, {
+            const res = await axios.get(`/my-portfolio/resumes/${resumeId}`, {
                 headers: { authorization: `Bearer ${token}` },
             });
-
-            setCareerData(res.data.careerData);
-            setProjectData(res.data.projectData);
-            setResumeData(res.data.resumeData);
-            setUserData(res.data.userDataRes);
-
+            console.log('여기 사람 있어요!!');
+            console.log(res.data.data);
+            setCareerData(res.data.data.careersData);
+            setProjectData(res.data.data.projectsData);
+            setResumeData(res.data.data.resumeData);
+            setUserData(res.data.data.userData);
             console.log('됬나?');
             console.log('res!!!!!!!!!!', res);
         } catch (e) {
             console.log(e);
         }
     }
+    console.log('resumeData?', resumeData);
     useEffect(() => {
         getResume();
     }, []);
-    // console.log('data', data);
-    // console.log('careerData', careerData);
+
     return (
         <div>
             <Header />
             <S.MobileDiv>
                 <div>
-                    {resumeData.map((data: any) => (
-                        <h1 key={data.id}>{data.name} 의 이력서</h1>
-                    ))}
+                    {/* {resumeData.map((data: any) => ( */}
+                    <h1 key={resumeData?.resumeId}>{resumeData?.resumeName}</h1>
+                    {/* ))} */}
                 </div>
                 <S.LineDiv>
                     <S.H2>Info</S.H2>
                 </S.LineDiv>
-                {resumeData.map((data: any) => (
-                    <S.BorderDiv key={data.id}>
-                        <h2>{data.name}</h2>
+                {/* {resumeData.map((data: any) => ( */}
+                <S.BorderDiv key={resumeData?.resumeId}>
+                    <h2>{userData?.username}</h2>
+                    <div>
+                        <img src={Logo}></img>
                         <div>
-                            <img src={Logo}></img>
-                            <div>
-                                <p>
-                                    information <br /> {data.information}
-                                </p>
-                                <br />
-                                <p>
-                                    포지션 <br /> {data.position}
-                                </p>
-                            </div>
+                            <p>
+                                information <br /> {resumeData?.intro}
+                            </p>
+                            <br />
+                            <p>
+                                포지션 <br /> {resumeData?.position}
+                            </p>
+                            <p>
+                                이메일 <br /> {userData?.email}
+                            </p>
                         </div>
-                    </S.BorderDiv>
-                ))}
+                    </div>
+                </S.BorderDiv>
+                {/* ))} */}
                 <S.LineDiv>
                     <S.H2>Project</S.H2>
                 </S.LineDiv>
