@@ -28,3 +28,5 @@ sosialRoute.get("/kakao/auth", async (req, res, next) => {
   }
 });
 export default sosialRoute;
+
+// 진영님 : 게시글 상세조회 요청주소 확인 board/:boardId/like

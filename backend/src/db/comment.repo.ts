@@ -1,6 +1,7 @@
 import { db } from "./index.repo";
 import * as userRepository from "../db/user.repo";
 import * as utils from "./utils/";
+import { AlreadyLikesComments } from "./schemas/comment.entity";
 
 // 댓글id로 댓글 검색, 없으면 false
 export const findComment = async (commentId: number): Promise<{ id: number } | boolean> => {
@@ -226,6 +227,72 @@ export const updateCommentQ = async (commentId: number, data: { text: string }):
   return true;
 };
 
+export const findComments = async (boardId: number, count: number): Promise<AlreadyLikesComments[]> => {
+  console.log("댓글찾기");
+  const [comments] = await db.query(
+    `SELECT 
+      s.alreadyLikes,
+      s.id as commentId, 
+      u.username, 
+      u.avatarUrl,
+      s.text,
+      s.created as commentCreated,
+      s.likes,
+      s.userId as fromUserId,
+      s.fixed,
+      CONCAT(
+        LPAD ((s.likes),12,0),
+        LPAD (s.id,8,0)
+      ) as MARK
+    From board a 
+    JOIN comment s 
+    ON s.boardId=a.id 
+    Join user u 
+    On s.userId=u.id 
+    WHERE a.id=? 
+    Order BY  s.likes DESC , s.created DESC
+    limit ?
+    `,
+    [boardId, count]
+  );
+  const result = utils.jsonParse(comments);
+  // const zz = new Date(result[result.length - 1].commentCreated).getTime();
+  return result;
+};
+export const firstGetComments = async (boardId: number, userId: number, count: number, mark?: string) => {
+  // 댓글관련
+  const comments = await findComments(boardId, count);
+  console.log("첫시도");
+  // console.log("파싱값 ", parsing);
+  const extendedComments = await Promise.all(
+    comments.map(async (comment) => {
+      const [mappingTable] = await db.query(
+        `
+        SELECT id
+        FROM comment_like_maping
+        WHERE
+            userId = ?
+          AND
+            commentId = ?`,
+        [userId, comment.commentId]
+      );
+      // 현재 사용자의 좋아요 여부
+      let parseMappingTable = utils.jsonParse(mappingTable);
+      if (parseMappingTable.length <= 0) {
+        parseMappingTable = null;
+      }
+      console.log("이미 좋아요 한 댓글?", parseMappingTable);
+      return {
+        ...comment,
+        alreadyLikes: parseMappingTable !== null ? true : false,
+        // 현재 댓글의 주인인경우
+        myComment: comment.fromUserId === userId ? true : false,
+      };
+    })
+  );
+  const result = utils.jsonParse(extendedComments);
+  return result;
+};
 export const moreCommentsPagenationQ = async (boardId: number, userId: number, count: number, mark: string) => {
   let [comments] = await db.query(
     `SELECT 
@@ -251,11 +318,13 @@ export const moreCommentsPagenationQ = async (boardId: number, userId: number, c
       ${mark} > CONCAT (
         LPAD ((s.likes),12,0),
         LPAD (s.id,8,0)
-      )
+      ) 
+      AND
+      boardId = ?
     Order BY  s.likes DESC , s.id DESC
-    limit 2
+    limit ?
     `,
-    [boardId]
+    [boardId, count]
   );
   const parseComments = utils.jsonParse(comments);
   const extendedComments = await Promise.all(

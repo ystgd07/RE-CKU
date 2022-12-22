@@ -84,7 +84,6 @@ boardRoute.get("/:id/", async (req, res, next) => {
   if (req.query.lifeIsGood) {
     userId = Number(req.query.lifeIsGood);
   }
-  console.log(userId, "유저아이디 ");
   try {
     const notice = await boardService.findOneBoard(id, userId);
     return res.status(200).json({
@@ -153,11 +152,11 @@ boardRoute.patch("/:boardId", tokenValidator, async (req, res, next) => {
 });
 
 // 게시글 좋아요 API
-boardRoute.patch("/like/:boardId", tokenValidator, async (req, res, next) => {
+boardRoute.patch("/:boardId/like", tokenValidator, async (req, res, next) => {
   const id = Number(req.body.jwtDecoded.id);
   const boardId = Number(req.params.boardId);
   const { likesStatus } = req.body;
-  console.log(id, boardId, likesStatus);
+  console.log("userID ", id, "boardId", boardId, likesStatus);
   try {
     const likes = await boardService.addLikes(id, boardId, likesStatus);
     return res.status(200).json({
@@ -221,13 +220,14 @@ boardRoute.delete("/:boardId/comments/:commentId", tokenValidator, async (req, r
   }
 });
 
-boardRoute.get("/:boardId/comments/pagenation", async (req, res, next) => {
+boardRoute.get("/:boardId/comments", async (req, res, next) => {
   const boardId = Number(req.params.boardId);
   const mark = String(req.query.mark);
   const count = Number(req.query.count);
-  const userId = Number(req.query.userId);
+  const userId = Number(req.query.lifeIsGood);
+  const firstRequest = Number(req.query.firstRequest);
   try {
-    const result = await commentService.moreCommentsPagenation(boardId, userId, count, mark);
+    const result = await commentService.moreCommentsPagenation(firstRequest, boardId, userId, count, mark);
     return res.status(200).json({
       msg: "댓글 페이지네이션",
       data: result,
