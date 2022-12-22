@@ -1,10 +1,4 @@
-import {
-  Entity,
-  Column,
-  PrimaryGeneratedColumn,
-  OneToMany,
-  OneToOne,
-} from "typeorm";
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany, OneToOne } from "typeorm";
 import { Connect } from "./connect.entity";
 import { Resume } from "./resume.entity";
 import { Board } from "./board.entity";
@@ -30,6 +24,10 @@ export enum sosialEnum {
   local = "local",
   sosial = "sosial",
 }
+enum roleEnum {
+  user = "user",
+  admin = "admin",
+}
 
 @Entity()
 export class User {
@@ -54,11 +52,20 @@ export class User {
   @Column({ type: "enum", enum: sosialEnum, default: sosialEnum.local })
   howToLogin: string;
 
+  @Column({ type: "enum", enum: roleEnum, default: roleEnum.user })
+  role: roleEnum;
+
   @Column({ nullable: true, default: null })
   RT: string;
 
   @Column({ default: 0 })
   point: number;
+
+  @Column({ default: 0 })
+  clickedLikes: number;
+
+  @Column({ default: false })
+  working: boolean;
 
   @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP" })
   created: Date;
