@@ -18,6 +18,8 @@ export type UserProfile = {
   point: number;
   role?: string;
   password?: string;
+  ban?: number;
+  howToLogin?: string;
 };
 
 export enum sosialEnum {
@@ -46,7 +48,9 @@ export class User {
   @Column({ nullable: true })
   password: string;
 
-  @Column({ default: "zz" })
+  @Column({
+    default: "https://url.kr/7h42va",
+  })
   avatarUrl: string;
 
   @Column({ type: "enum", enum: sosialEnum, default: sosialEnum.local })
@@ -67,14 +71,23 @@ export class User {
   @Column({ default: 0 })
   clickedLikes: number;
 
+  @Column({ default: 0 })
+  reported: number;
+
   @Column({ default: false })
   working: boolean;
 
   @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP" })
   created: Date;
 
+  @Column({ type: "datetime", default: null, nullable: true })
+  updated: Date;
+
   @Column({ default: true })
   active: boolean;
+
+  @Column({ type: "bigint", default: 0, nullable: true })
+  ban: number;
 
   @OneToMany((type) => Resume, (resume) => resume.usedUser, { nullable: true })
   resumes: Resume[];

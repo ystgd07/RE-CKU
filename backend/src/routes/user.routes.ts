@@ -5,13 +5,22 @@ import { CreateUserDto, CreateAuthDataDto, AuthEmailDto, LoginUserDto } from "./
 import { random } from "../config/sendMail";
 import { createIndiUser, findOneUser } from "../db/user.repo";
 import { avatarImg, tokenValidator, validateBody } from "../middlewares";
+import { CreateReportDto } from "./dto/create-report.dto";
 export const userRoute = express();
+
+userRoute.get("/", tokenValidator, async (req, res, next) => {
+  const userRole = req.body.jwtDecoded.role;
+  try {
+  } catch (err) {
+    next(err);
+  }
+});
 
 userRoute.get("/individuals", tokenValidator, async (req, res, next) => {
   const { id } = req.body.jwtDecoded;
   console.log(id);
   try {
-    const user = await userService.individualInfo(id);
+    const user = await userService.unIncludePasswordUserInfo(id);
     return res.status(200).json({
       msg: "회원정보",
       data: user,
@@ -147,6 +156,71 @@ userRoute.post("/eamil/password", validateBody(CreateAuthDataDto), async (req, r
     return res.status(200).json({
       msg: `임시 비밀번호가 ${email}로 발송되었습니다.`,
       data: newPassword, // 배포시 수정 -삭제
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+userRoute.get("/report", tokenValidator, async (req, res, next) => {
+  const reporterUserId = Number(req.body.jwtDecoded.id);
+  const defendantUserId = Number(req.query.defendantUserId);
+  try {
+    const result = await userService.checkReported(reporterUserId, defendantUserId);
+    return res.status(200).json({
+      msg: "해당 유저에 대한 신고접수 존재여부",
+      data: { reported: result },
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+userRoute.post("/report", validateBody(CreateReportDto), tokenValidator, async (req, res, next) => {
+  const reporterUserId = Number(req.body.jwtDecoded.id);
+  const { defendantUserId, reason } = req.body;
+  const data = {
+    reporterUserId,
+    defendantUserId,
+    reason,
+  };
+  console.log(data);
+  try {
+    const result = await userService.report(data);
+    return res.status(201).json({
+      msg: "정상적으로 신고접수가 되었습니다.",
+      data: { reported: result },
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+userRoute.patch("/report", tokenValidator, async (req, res, next) => {
+  const reporterUserId = Number(req.body.jwtDecoded.id);
+  const defendantUserId = req.body.defendantUserId;
+  try {
+    await userService.cancelReport(reporterUserId, defendantUserId);
+    return res.status(200).json({
+      msg: "신고접수가 취소됐읍니다.",
+      data: { reported: false },
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+userRoute.patch("/ban", async (req, res, next) => {
+  const type = req.body.type.toUpperCase();
+  const targetId = req.body.targetId;
+  const typeEnum = ["BAN", "RECOVERY"];
+  if (typeEnum.includes(type) === false) {
+    next(new Error(`400, 제대로된 타입입력 부탁합니다.`));
+  }
+  try {
+    const date = await userService.banUser(targetId, type);
+    return res.status(200).json({
+      msg: "회원 벤",
+      data: { expire: date },
     });
   } catch (err) {
     next(err);

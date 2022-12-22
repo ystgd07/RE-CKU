@@ -223,12 +223,13 @@ export const deleteCommentQ = async (userId: number, boardId: number, commentId:
   return result;
 };
 
+// 댓글 수정
 export const updateCommentQ = async (commentId: number, data: { text: string }): Promise<boolean> => {
   const [keys, values] = utils.updateData(data);
   await db.query(
     `
     UPDATE comment 
-    SET ${keys.join(", ")},created=now() 
+    SET ${keys.join(", ")},updated=now() 
     WHERE id = ?
     `,
     [...values, commentId]

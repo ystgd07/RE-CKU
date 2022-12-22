@@ -370,7 +370,7 @@ export const updateBoard = async (boardId: number, data: Record<string, string |
     UPDATE board 
     SET ${keys.join(", ")}, 
       fixed=true,
-      created=now(),
+      updated=now(),
     WHERE id = ?`,
     [...values, boardId]
   );
