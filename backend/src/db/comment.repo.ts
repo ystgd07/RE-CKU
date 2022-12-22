@@ -78,7 +78,7 @@ export const findSavedPointByComment = async (userId: number, commentId: number)
 export const likeCommentFromUser = async (data: Record<number, number>) => {
   const [keys, values, valval] = utils.insertData(data);
   const commentId = valval[1];
-
+  const userId = valval[0];
   // 트렌젝션으로 묶어야 할 수도 ??
   // 맵핑테이블에 추가
 
@@ -100,6 +100,15 @@ export const likeCommentFromUser = async (data: Record<number, number>) => {
     WHERE id = ?
   `,
     [commentId]
+  );
+  await db.query(
+    `
+    UPDATE user
+    SET
+      clickedLikes = clickedLikes+1
+    WHERE id = ?
+  `,
+    [userId]
   );
   return true;
 };
@@ -214,12 +223,13 @@ export const deleteCommentQ = async (userId: number, boardId: number, commentId:
   return result;
 };
 
+// 댓글 수정
 export const updateCommentQ = async (commentId: number, data: { text: string }): Promise<boolean> => {
   const [keys, values] = utils.updateData(data);
   await db.query(
     `
     UPDATE comment 
-    SET ${keys.join(", ")},created=now() 
+    SET ${keys.join(", ")},updated=now() 
     WHERE id = ?
     `,
     [...values, commentId]
