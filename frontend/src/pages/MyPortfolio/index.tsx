@@ -4,12 +4,13 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 type Mock = { resumeName: string; address: string; updatedAt: string; resumeId: any };
-
+let id: any;
 const ResumeMain = () => {
     const [res, setRes] = useState<Mock[]>([]);
     const navigate = useNavigate();
     // /my-portfolio/resumes/:resumeId
     async function deletePortfolio(e: any) {
+        e.stopPropagation();
         console.log(e.target.value);
         try {
             const res = await axios.delete(`/my-portfolio/resumes/${e.target.value}`);
@@ -21,6 +22,13 @@ const ResumeMain = () => {
             console.log(e);
         }
     }
+    const gotoModify = (e: any) => {
+        e.stopPropagation();
+        navigate(`/resume/${id}`);
+    };
+    const gotoPost = (e: any) => {
+        navigate(`/`);
+    };
     async function getPortfolio() {
         try {
             const token = localStorage.getItem('accessToken');
@@ -58,8 +66,8 @@ const ResumeMain = () => {
                 { headers: { authorization: `Bearer ${token}` } },
             );
 
-            const id = mocks.data.createdResumeId;
-
+            id = mocks.data.createdResumeId;
+            console.log(id);
             if (mocks.status === 200) {
                 navigate(`/resume/${id}`);
             }
@@ -87,11 +95,14 @@ const ResumeMain = () => {
                 </div>
 
                 {res.map((e: Mock) => (
-                    <div key={e.resumeId}>
+                    <div onClick={gotoPost} key={e.resumeId}>
                         <h3>{e.resumeName}</h3>
                         <p>{e.updatedAt.split('T')[0]}</p>
                         <button value={e.resumeId} onClick={deletePortfolio}>
                             삭제
+                        </button>
+                        <button value={e.resumeId} onClick={gotoModify}>
+                            수정
                         </button>
                     </div>
                 ))}
