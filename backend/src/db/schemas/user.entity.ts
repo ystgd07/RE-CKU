@@ -1,10 +1,4 @@
-import {
-  Entity,
-  Column,
-  PrimaryGeneratedColumn,
-  OneToMany,
-  OneToOne,
-} from "typeorm";
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany, OneToOne } from "typeorm";
 import { Connect } from "./connect.entity";
 import { Resume } from "./resume.entity";
 import { Board } from "./board.entity";
@@ -59,6 +53,12 @@ export class User {
 
   @Column({ default: 0 })
   point: number;
+
+  @Column({ default: 0 })
+  clickedLikes: number;
+
+  @Column({ default: false })
+  working: boolean;
 
   @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP" })
   created: Date;
