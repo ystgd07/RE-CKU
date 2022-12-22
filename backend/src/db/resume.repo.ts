@@ -4,7 +4,7 @@ import { updateData, insertData } from "./utils/transData";
 import { deleteBoard } from "./board.repo";
 import {convertToArray} from "class-validator/types/utils";
 
-// TODO] 프로젝트 생성, 프로젝트 수정, 이력서 삭제
+// TODO] 프로젝트 생성, 프로젝트들 조회, 프로젝트 수정, 이력서 삭제
 
 // 1-1. 이력서 (틀) 생성
 export const createResumeQ = async (userId: number, newResumeName: string) => {
@@ -139,18 +139,42 @@ export const findCareersQ = async (resumeId: number) => {
 };
 
 // 2-5. 프로젝트들 조회
+// TODO] for문 수정
 export const findProjectsQ = async (resumeId: number) => {
-  const [projects] = await db.query(
-    `SELECT id AS projectId,
-                                             projectName, year, information, link1, link2, usedResumeId AS resumeId
-                                      FROM project
-                                      WHERE usedResumeId = ?`,
-    resumeId
-  );
+  const conn = await db.getConnection();
+  await conn.beginTransaction();
 
-  console.log(projects)
+  try {
+    const [projects] = await conn.query(
+      `SELECT id AS projectId, projectName, year, information, link1, link2, usedResumeId AS resumeId
+            FROM project
+            WHERE usedResumeId = ?`,
+      resumeId
+    );
 
-  return projects;
+    for(let i=0; i<Object.values(projects).length; i++){
+      const [skillName,] = await conn.query(
+        `SELECT name AS stackName FROM stack JOIN skill ON stack.skillId = skill.id WHERE projectId = ${Object.values(projects)[i].projectId}`);
+
+      for (let j=0; j<Object.values(skillName).length; j++) {
+        skillName[j] = skillName[j].stackName
+      }
+
+      projects[i]['skills'] = skillName
+    }
+
+    conn.commit();
+
+    return projects;
+  } catch {
+    console.log("프로젝트 정보 불러오기 실패");
+    conn.rollback();
+  } finally {
+    if (conn) {
+      await conn.release();
+      console.log("✅ Transaction Finish");
+    }
+  }
 };
 
 // 2-6. 업무경험 조회
@@ -240,7 +264,7 @@ export const updateProjectQ = async (projectId: number, updateProjectInfos: Reco
       const updatedProject = await conn.query(`UPDATE project SET ${key.join(", ")} WHERE id = ?`, [...value, projectId]);
 
       /* stack Table 수정 (delete 후 insert) */
-      await deleteSkillQ(projectId);
+      const deletedSkill = await conn.query(`DELETE FROM stack WHERE projectId = ${projectId}`);
 
       const [ids, ] = await conn.query(`SELECT id AS skillId FROM skill WHERE name IN ("${skillsList.join('", "')}")`)
 
@@ -278,7 +302,7 @@ export const deleteResumeQ = async (resumeId: number) => {
     conn = await db.getConnection();
     await conn.beginTransaction();
 
-    const [projectIds, ] = await db.query(`SELECT id AS projectId FROM project WHERE usedResumeId = ?`, resumeId);
+    const [projectIds, ] = await conn.query(`SELECT id AS projectId FROM project WHERE usedResumeId = ?`, resumeId);
 
     for(let i=0; i<Object.values(projectIds).length; i++){
       const deletedSkill = await conn.query(`DELETE FROM stack WHERE projectId = ${projectIds[i].projectId}`);
@@ -347,10 +371,3 @@ export const createSkillQ = async (newSkillName: string) => {
 
   return newSkill;
 };
-
-// skill 삭제
-export const deleteSkillQ = async (projectId: number) => {
-  const deletedSkill = await db.query(`DELETE FROM stack WHERE projectId = ${projectId}`);
-
-  return deletedSkill;
-}
