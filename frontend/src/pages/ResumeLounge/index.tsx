@@ -8,6 +8,7 @@ import React, {
 import * as S from "./style";
 import { SlArrowRight, SlPencil, SlHeart } from "react-icons/sl";
 import { useInView } from "react-intersection-observer";
+import axios from "axios";
 
 type resultType = {
   isConnect: boolean;
@@ -26,6 +27,22 @@ function fakeLoadItem(
   position: string,
   mark: string = ""
 ): resultType {
+  const jsonData = require("./fake.json");
+
+  return {
+    isConnect: true,
+    postList: jsonData.slice(0, count),
+    mark: "",
+  };
+}
+
+async function realLoadItem(
+  firstRequest: number,
+  type: string,
+  count: number,
+  position: string,
+  mark: string = ""
+) {
   const jsonData = require("./fake.json");
 
   return {
@@ -145,7 +162,7 @@ function FreePostListContainer() {
       );
       setPostListState([...postListState, ...postList]);
       setLastMark(mark);
-
+      alert("help me");
       setLoading(false);
     }
   }, [inView, loading]);
@@ -164,6 +181,7 @@ function FreePostListContainer() {
           <PostItem post={i} key={i["post_id"]} />
         ))}
       </ul>
+      {inView && !loading ? 1 : 2}
       <button type="button" ref={ref}>
         더보기
       </button>
