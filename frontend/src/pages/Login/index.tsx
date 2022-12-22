@@ -21,12 +21,6 @@ const Login = () => {
         email: string;
     }
 
-    // useEffect(() => {
-    //     console.log('이동?');
-    //     if (localStorage.getItem('accessToken')) {
-    //         navigate('/');
-    //     }
-    // }, []);
     const onSubmitHandler = async (data: FormData) => {
         const jsondata = {
             email: data.email,
@@ -36,13 +30,14 @@ const Login = () => {
             console.log('jsondata', jsondata);
             const res = await axios.post('/users', jsondata);
             console.log(res, '성공');
-
             const accessToken = res.data.accessToken;
             const refreshToken = res.data.refreshToken;
             const userId = res.data.userId;
+            const isAdmin = res.data.isAdmin;
             localStorage.setItem('accessToken', accessToken);
             localStorage.setItem('refreshToken', refreshToken);
             localStorage.setItem('userId', userId);
+            localStorage.setItem('isAdmin', isAdmin);
             localStorage.setItem('email', data.email);
             navigate('/');
         } catch (err: any) {

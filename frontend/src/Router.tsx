@@ -34,8 +34,8 @@ const Router = () => {
                         <Route path="/*" element={<Err404 />} />
                         <Route path="/resume" element={<Resumeform />} />
                         <Route path="/admin" element={<Admin />}>
-                            <Route path=":user" element={<AdminUser />} />
-                            <Route path=":content" element={<AdminContent />} />
+                            <Route path="user" element={<AdminUser />} />
+                            <Route path="content" element={<AdminContent />} />
                         </Route>
                         <Route path="/loading" element={<Loading />} />
                     </>
@@ -48,8 +48,8 @@ const Router = () => {
                         {/* <Route path="/myportfolio" element={<Navigate replace to="/" />} /> */}
                         <Route path="/profile" element={<Navigate replace to="/" />} />
                         <Route path="/login" element={<Login />} />
-                        <Route path="/FindPw" element={<FindPw />} />
-                        <Route path="/Join" element={<Join />} />
+                        <Route path="/find-pw" element={<FindPw />} />
+                        <Route path="/join" element={<Join />} />
                         <Route path="/*" element={<Err404 />} />
                         <Route path="/admin" element={<Admin />}>
                             <Route path="user" element={<AdminUser />} />

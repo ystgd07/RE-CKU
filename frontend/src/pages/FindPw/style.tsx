@@ -1,9 +1,6 @@
-import styled from "@emotion/styled";
-
-
+import styled from '@emotion/styled';
 
 export const MobileDiv = styled.div`
-
     display: flex;
     flex-direction: column;
     width: 100%;
@@ -17,17 +14,16 @@ export const MobileDiv = styled.div`
     opacity: 0.8;
     border-radius: 10px;
 
-
-    & h1{
+    & h1 {
         // margin: 80px 0 30px 0;
         text-align: center;
-        font-weight : bold;
+        font-weight: bold;
         font-size: 20px;
     }
 
-    & input{
+    & input {
         margin: 10px;
-        padding : 20px; 
+        padding: 20px;
         border: 1px solid #c9cacc;
         border-radius: 10px;
         height: 10px;
@@ -37,43 +33,51 @@ export const MobileDiv = styled.div`
         color: #7d7e80;
     }
 
-    & button{
+    & button {
         margin: 40px;
-        padding : 20px; 
+        padding: 20px;
         border: 1px none #c9cacc;
         border-radius: 10px;
         width: 80%;
         font-size: 14px;
         line-height: 22px;
-        background-color : rgba(0,0,0,0.08);
+        background-color: rgba(0, 0, 0, 0.08);
         font-size: 16px;
     }
-    
-    & p{
+
+    & p {
         width: 200px;
         text-align: center;
         padding: 0px 30px;
     }
+    & label {
+        color: red;
+        font-size: 10px;
+        text-align: start;
+        padding: 5px 30px;
+    }
     & div {
-        & p{
+        & p {
             width: 200px;
             text-align: start;
             padding: 0px 30px;
+            font-size: 12px;
+            font-weight: 600;
         }
-        & div{
-            & button{
+        & div {
+            & button {
                 margin: 8px;
-                padding : 10px; 
+                padding: 10px;
                 border: 1px none #c9cacc;
                 border-radius: 10px;
                 width: 30%;
                 line-height: 12px;
-                background-color : rgba(0,0,0,0.08);
+                background-color: rgba(0, 0, 0, 0.08);
                 font-size: 16px;
             }
-            & input{
+            & input {
                 margin: 10px;
-                padding : 20px; 
+                padding: 20px;
                 border: 1px solid #c9cacc;
                 border-radius: 10px;
                 width: 50%;
@@ -83,7 +87,6 @@ export const MobileDiv = styled.div`
             }
         }
     }
-
 `;
 
 export const Button = styled.button`  
@@ -99,23 +102,14 @@ export const Button = styled.button`
 }
 `;
 
-
-
-
-
 export const Div = styled.div`
-    display : flex; 
+    display: flex;
     justify-content: center;
     align-content: center;
     flex-direction: column;
 `;
 
-
-export const Image = styled.img`  
+export const Image = styled.img`
     width: 100%;
     height: 100%;
-    
 `;
-
-
-

@@ -1,7 +1,7 @@
 import express, { Request, Response, NextFunction } from "express";
 //import { CreateUserDto, CreateAuthDataDto, AuthEmailDto, LoginUserDto } from "./dto";
 import * as adminService from "../services/admin.service";
-import {findUsers} from "../services/admin.service";
+import { findUsers } from "../services/admin.service";
 //import { createIndiUser, findOneUser } from "../db/user.repo";
 //import { avatarImg, tokenValidator, validateBody } from "../middlewares";
 export const adminRoute = express();

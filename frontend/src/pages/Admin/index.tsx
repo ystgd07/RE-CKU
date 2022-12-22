@@ -25,13 +25,19 @@ const Admin: React.FC = () => {
                         height: '32px',
                         margin: '16px',
                         // background: 'rgba(255, 255, 255, 0.3)',
+                        padding: '10px',
+                        color: 'white',
+                        fontSize: '20px',
+                        fontWeight: 'bold',
                     }}
                     className="logo"
-                />
+                >
+                    관리자 페이지
+                </div>
                 <Menu
                     theme="dark"
                     mode="inline"
-                    defaultSelectedKeys={['1']}
+                    // defaultSelectedKeys={['1']}
                     items={[
                         {
                             key: '1',
@@ -41,19 +47,18 @@ const Admin: React.FC = () => {
                         {
                             key: '2',
                             icon: <BookOutlined />,
-                            label: <Link to="/admin/content">글관리</Link>,
+                            label: <Link to="/admin/content">회원신고관리</Link>,
                         },
                     ]}
                 />
             </Sider>
             <Layout className="site-layout">
-                <Header style={{ padding: 0, background: colorBgContainer }}>
+                {/* <Header style={{ padding: 0, background: colorBgContainer }}>
                     {React.createElement(collapsed ? MenuUnfoldOutlined : MenuFoldOutlined, {
                         className: 'trigger',
                         onClick: () => setCollapsed(!collapsed),
                     })}
-                </Header>
-
+                </Header> */}
                 <Outlet />
             </Layout>
         </Layout>
