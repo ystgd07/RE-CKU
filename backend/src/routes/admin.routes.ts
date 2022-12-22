@@ -1,26 +1,25 @@
-import bcrypt from "bcrypt";
 import express, { Request, Response, NextFunction } from "express";
-import * as userService from "../services/user.service";
-import { CreateUserDto, CreateAuthDataDto, AuthEmailDto, LoginUserDto } from "./dto";
-import { random } from "../config/sendMail";
-import { createIndiUser, findOneUser } from "../db/user.repo";
-import { avatarImg, tokenValidator, validateBody } from "../middlewares";
-export const userRoute = express();
+//import { CreateUserDto, CreateAuthDataDto, AuthEmailDto, LoginUserDto } from "./dto";
+import * as adminService from "../services/admin.service";
+import {findUsers} from "../services/admin.service";
+//import { createIndiUser, findOneUser } from "../db/user.repo";
+//import { avatarImg, tokenValidator, validateBody } from "../middlewares";
+export const adminRoute = express();
 
-userRoute.get("/individuals", tokenValidator, async (req, res, next) => {
-  const { id } = req.body.jwtDecoded;
-  console.log(id);
+adminRoute.get("/user-list", async (req, res, next) => {
   try {
-    const user = await userService.individualInfo(id);
+    const users = await adminService.findUsers();
+
     return res.status(200).json({
-      msg: "회원정보",
-      data: user,
+      msg: "회원 목록 조회",
+      data: users,
     });
   } catch (err) {
     next(err);
   }
 });
 
+/*
 // 개인 회원가입 라우트
 userRoute.post("/individuals", validateBody(CreateUserDto), async (req: Request, res: Response, next: NextFunction) => {
   const { username, email, phoneNumber, password } = req.body;
@@ -67,26 +66,24 @@ userRoute.post("/", validateBody(LoginUserDto), async (req, res, next) => {
 // 개인정보 수정 라우트
 userRoute.patch("/individuals", tokenValidator, avatarImg.single("image"), async (req, res, next) => {
   const id = Number(req.body.jwtDecoded.id);
-  // const currentPw = req.body.currentPw;
-  // if (!currentPw) next(new Error("400, 기존 비밀번호를 입력하세요."));
+  const currentPw = req.body.currentPw;
+  if (!currentPw) next(new Error("400, 기존 비밀번호를 입력하세요."));
   const password = req.body.password;
   const phoneNumber = req.body.phoneNumber;
-  const gitHubUrl = req.body.gitHubUrl;
   let avatarUrl = "";
-  // if (req.file) {
-  //   avatarUrl = req.file.path;
-  // }
+  if (req.file) {
+    avatarUrl = req.file.path;
+  }
   console.log("아바타 유알엘", avatarUrl);
   // const avatarUrl = req.body.avatarUrl;
   const toUpdate = {
     ...(password && { password }),
     ...(phoneNumber && { phoneNumber }),
-    ...(avatarUrl && { avatarUrl }),
-    ...(gitHubUrl && { gitHubUrl }),
+    // ...(avatarUrl && { avatarUrl }),
   };
   console.log(toUpdate);
   try {
-    const update = await userService.updateInfo(id, toUpdate);
+    const update = await userService.updateInfo(id, toUpdate, currentPw);
     return res.status(200).json({
       msg: "회원정보가 수정되었습니다.",
     });
@@ -155,3 +152,4 @@ userRoute.post("/eamil/password", validateBody(CreateAuthDataDto), async (req, r
 
 export default userRoute;
 //
+*/

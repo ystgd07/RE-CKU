@@ -1,12 +1,19 @@
-import bcrypt from "bcrypt";
-import { dataSource, updateUser } from "../db";
-import * as userRepo from "../db/user.repo";
-import * as authRepo from "../db/auth.repo";
-import { CreateUserDto } from "../routes/dto";
-import jwt from "jsonwebtoken";
-import { send } from "../config/sendMail";
+//import bcrypt from "bcrypt";
+//import { dataSource, updateUser } from "../db";
+import * as adminRepo from "../db/admin.repo";
+//import * as authRepo from "../db/auth.repo";
+//import { CreateUserDto } from "../routes/dto";
+//import jwt from "jsonwebtoken";
+//import { send } from "../config/sendMail";
 import { EmailAuth, UserProfile } from "../db/schemas";
+import {findUsersQ} from "../db/admin.repo";
 
+export const findUsers = async () => {
+  const users = await adminRepo.findUsersQ();
+
+  return users;
+};
+/*
 // 유저한명정보 불러오기 섭스
 export const individualInfo = async (userIdOrEmail: number | string): Promise<UserProfile> => {
   const user = await userRepo.findOneUser(userIdOrEmail);
@@ -78,16 +85,13 @@ export const login = async (email: string, password?: string) => {
   };
   // RT 교체
   await userRepo.updateUser(user.id, data);
+
   // 옵젝으로 묶어서 리턴
   const result = {
     accessToken,
     refreshToken,
     userId: user.id,
-    isAdmin: false,
   };
-  if (user.role === "admin") {
-    result.isAdmin = true;
-  }
   return result;
 };
 
@@ -99,9 +103,9 @@ export const updateInfo = async (id: number, data: Record<string, string>, curre
     const user = await userRepo.findOneUser(id);
     if (!user) throw new Error("404, 유저정보를 찾을 수 없습니다. 관리자에게 문의하세요.");
 
-    // const existence = user.password;
-    // const comparePw = await bcrypt.compare(currentPw, existence);
-    // if (!comparePw) throw Error(`400, 비밀번호를 확인해 주세요.`);
+    const existence = user.password;
+    const comparePw = await bcrypt.compare(currentPw, existence);
+    if (!comparePw) throw Error(`400, 비밀번호를 확인해 주세요.`);
     if (data.password) {
       data.password = await bcrypt.hash(data.password, 10);
     }
@@ -141,11 +145,11 @@ export const findPassword = async (email: string): Promise<boolean | string> => 
     from: "jinytree1403@naver.com",
     to: email,
     subject: "[헤드헌터] 비밀번호 발송 ",
-    text: `      
-    헤드헌터 ${email} 
-    
+    text: `
+    헤드헌터 ${email}
+
     임시 비밀번호 :  ${randomStr}
-    
+
     빠른 시일 내로 비밀번호를 변경하시길 바랍니다.
     `,
   };
@@ -174,9 +178,9 @@ export const sendEmail = async (toEmail: string, number?: number) => {
     from: "jinytree1403@naver.com",
     to: toEmail,
     subject: "[헤드헌터] 인증번호 발송 ",
-    text: `      
+    text: `
     헤드헌터 회원가입 인증번호
-    
+
     인증번호 입력란에 ${number} 를 입력해주세요.`,
   };
   //발송
@@ -202,3 +206,4 @@ export const authEmail = async (email: string, code: number) => {
   return;
   // 이메일의 verify 상태가 false? 그럼 에러
 };
+*/

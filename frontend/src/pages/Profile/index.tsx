@@ -12,6 +12,7 @@ const tierColors = {
     bronze: '#964b00',
     silver: '#c0c0c0',
     gold: '#ffbd1b',
+    platinum: '#A0B2C6',
 };
 
 const onChange = (key: string) => {
@@ -66,7 +67,7 @@ const Profile: React.FC = () => {
         getProfile();
     }, []);
 
-    const arr = [20, 40, 100];
+    const arr = [20, 40, 100, 300];
     let upperLimit = arr[0];
     let lowerLimit = 0;
     let tier = 'Bronze';
@@ -81,6 +82,9 @@ const Profile: React.FC = () => {
             } else if (upperLimit === 100) {
                 tier = 'Gold';
                 tierColor = tierColors.gold;
+            } else if (upperLimit === 300) {
+                tier = 'Platinum';
+                tierColor = tierColors.platinum;
             }
             if (upperLimit === arr[0]) {
                 lowerLimit = 0;
@@ -125,7 +129,7 @@ const Profile: React.FC = () => {
                         </Space>
                     </div>
                     {/* //TODO: 추후 Tabs 이부분 컴포넌트화 해야함^^ */}
-                    {tier === 'platinum' ? (
+                    {tier === 'Platinum' ? (
                         <Tabs
                             defaultActiveKey="1"
                             onChange={onChange}
