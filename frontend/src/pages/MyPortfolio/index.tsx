@@ -55,6 +55,7 @@ const ResumeMain = () => {
     }
     async function postPortfolio() {
         try {
+            const token = localStorage.getItem('accessToken');
             const mocks = await axios.post(
                 '/my-portfolio/new-resume',
                 {},
