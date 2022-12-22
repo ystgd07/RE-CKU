@@ -1,4 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, {
+  useState,
+  useEffect,
+  useMemo,
+  createContext,
+  useContext,
+} from "react";
 import * as S from "./style";
 import { SlArrowRight, SlPencil, SlHeart } from "react-icons/sl";
 import { useInView } from "react-intersection-observer";
@@ -8,6 +14,8 @@ type resultType = {
   postList: never[]; //땜빵
   isLastPage: boolean;
 };
+
+type objectType = { [key: string]: any };
 
 function fakeLoadItem(
   filter: string,
@@ -24,26 +32,68 @@ function fakeLoadItem(
 }
 
 function ResumeLounge() {
+  const FilterContext = createContext({} as objectType);
+
+  const [jobFilter, setJobFilter] = useState("All");
+  const [typeFilter, setTypeFilter] = useState("All");
+
   return (
     <div>
       {/*직군필터*/}
       {/*필터*/}
       {/*리스트*/}
-      <WriteButton />
-      <JobGroupSelector />
-      <FilterPostListContainer filter="like" />
-      <FilterPostListContainer filter="comment" />
-      <FilterPostListContainer filter="view" />
-      <FreePostListContainer />
+      <FilterContext.Provider value={{ jobFilter, typeFilter }}>
+        <WriteButton />
+        <JobGroupFilter setFilter={setJobFilter} />
+        <FilterPostListContainer filter="like" />
+        <FilterPostListContainer filter="comment" />
+        <FilterPostListContainer filter="view" />
+        <FreePostListContainer />
+      </FilterContext.Provider>
     </div>
   );
 }
 
-function JobGroupSelector() {
-  return <div></div>;
-}
+function JobGroupFilter({ setFilter }: objectType) {
+  const jobList: string[] = ["All", "FE", "BE", "FS", "PM"];
 
-type objectType = { [key: string]: any };
+  const [checkValue, setCheckValue] = useState("All");
+
+  function JobGroupInput({ jobGroup, onChange, checkValue }: objectType) {
+    return (
+      <>
+        <input
+          type="radio"
+          id={`job${jobGroup}`}
+          name="jobGroup"
+          value={jobGroup}
+          checked={jobGroup == checkValue}
+          onChange={(e) => {
+            if (e.target.checked) {
+              onChange(e.target.value);
+            }
+          }}
+        />
+        <label htmlFor={`job${jobGroup}`}>{jobGroup}</label>
+      </>
+    );
+  }
+
+  //context로 프롭 드릴링 해결할까 의존성 큼
+
+  return (
+    <div>
+      {jobList.map((i) => (
+        <JobGroupInput
+          jobGroup={i}
+          onChange={setCheckValue}
+          checkValue={checkValue}
+        />
+      ))}
+      <p>선택 테스트 : {checkValue}</p>
+    </div>
+  );
+}
 
 const FILTER_STRING: objectType = {
   like: "좋아요 많은 게시물",
