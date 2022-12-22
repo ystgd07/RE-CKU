@@ -1,6 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { Button, Modal, Form, Input } from 'antd';
 import { LockOutlined } from '@ant-design/icons';
+import axios from 'axios';
 
 export const InfoModal: React.FC = () => {
     const [form] = Form.useForm();
@@ -22,13 +23,26 @@ export const InfoModal: React.FC = () => {
     const onFinish = (values: any) => {
         console.log('Received values of form: ', values);
     };
+    const patchNewPass = async () => {
+        const token = localStorage.getItem('accessToken');
+        try {
+            const res = await axios.patch(
+                '/users/individuals',
+                { password: `${newPassRef.current.input.value}` },
+                { headers: { authorization: `Bearer ${token}` } },
+            );
+            console.log(res);
+        } catch (e) {
+            console.log(e);
+        }
+    };
     const handleOk = () => {
         setLoading(true);
         setModalText('잠시만 기다려 주세요 ^^.');
         setTimeout(() => {
             setLoading(false);
             setOpen(false);
-            setModalText('비밀번호를 변경하시겠습니까?');
+            patchNewPass();
             onFinish(1);
             setCheckPass('');
             setNewPass('');
@@ -85,6 +99,7 @@ export const InfoModal: React.FC = () => {
                 onOk={handleOk}
                 onCancel={handleCancel}
                 okButtonProps={{ disabled: valid }}
+                confirmLoading={loading}
             >
                 <Form form={form} name="control-hooks">
                     <Form.Item
