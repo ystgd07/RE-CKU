@@ -1,18 +1,98 @@
 import express, { Request, Response, NextFunction } from "express";
 //import { CreateUserDto, CreateAuthDataDto, AuthEmailDto, LoginUserDto } from "./dto";
 import * as adminService from "../services/admin.service";
-import {findUsers} from "../services/admin.service";
+import {findUsers, updateUser} from "../services/admin.service";
+import {updateProject} from "../services";
+import resumeRoute from "./resume.routes";
 //import { createIndiUser, findOneUser } from "../db/user.repo";
 //import { avatarImg, tokenValidator, validateBody } from "../middlewares";
 export const adminRoute = express();
 
-adminRoute.get("/user-list", async (req, res, next) => {
+// 2-1. 전체 회원 목록 조회
+adminRoute.get("/users", async (req, res, next) => {
   try {
     const users = await adminService.findUsers();
 
     return res.status(200).json({
-      msg: "회원 목록 조회",
+      msg: "회원 목록 조회 성공",
       data: users,
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// 2-2. 신고 TOP 20 회원 목록 조회
+adminRoute.get("/worst-users", async (req, res, next) => {
+  try {
+    const worstUsers = await adminService.findWorstUsers();
+
+    return res.status(200).json({
+      msg: "최악의 회원 목록 조회 성공",
+      data: worstUsers,
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// 2-3. 신고 내역 조회
+adminRoute.get("/worst-users/:userId", async (req, res, next) => {
+  try {
+    const worstUsers = await adminService.findWorstUsers();
+
+    return res.status(200).json({
+      msg: "최악의 회원 목록 조회 성공",
+      data: worstUsers,
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// 3-1. 포인트 수정
+adminRoute.patch("/users/:userId/point", async (req, res, next) => {
+  try {
+    const userId = Number(req.params.userId);
+    const point = req.body;
+
+    const updatedUser = await adminService.updateUser(userId, point);
+
+    return res.status(203).json({
+      msg: "포인트 변경 성공",
+      data: updatedUser,
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// 3-2. 비활성화 해제
+adminRoute.patch("/users/:userId/active", async (req, res, next) => {
+  try {
+    const userId = Number(req.params.userId);
+
+    const updatedUser = await adminService.updateUser(userId, {"active": 1});
+
+    return res.status(203).json({
+      msg: "비활성화 해제 성공",
+      data: updatedUser,
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// 3-3. 비활성화
+adminRoute.patch("/worst-users/:userId", async (req, res, next) => {
+  try {
+    const userId = Number(req.params.userId);
+
+    const updatedUser = await adminService.updateUser(userId, {"active": 0});
+
+    return res.status(203).json({
+      msg: "비활성화 성공",
+      data: updatedUser,
     });
   } catch (err) {
     next(err);

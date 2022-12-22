@@ -76,6 +76,9 @@ export class User {
   @Column({ default: true })
   active: boolean;
 
+  @Column({ default: 0 })
+  reported: number;
+
   @OneToMany((type) => Resume, (resume) => resume.usedUser, { nullable: true })
   resumes: Resume[];
 
