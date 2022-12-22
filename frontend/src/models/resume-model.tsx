@@ -23,3 +23,20 @@ export interface UserData {
     phoneNumber: string;
     username: string;
 }
+
+export interface WorkFormData {
+    companyName: string;
+    jobGroup: string;
+    startWork: string;
+    endWork: string;
+    workPerformance: string;
+}
+
+export interface ProjectFormData {
+    projectName: string;
+    year: string;
+    information: string;
+    link1: string;
+    link2: string;
+    // stacks: Stack[],
+}
