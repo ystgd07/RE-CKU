@@ -58,6 +58,9 @@ export class User {
   @Column({ nullable: true, default: null })
   RT: string;
 
+  @Column({ nullable: true, default: null })
+  gitHubUrl: string;
+
   @Column({ default: 0 })
   point: number;
 

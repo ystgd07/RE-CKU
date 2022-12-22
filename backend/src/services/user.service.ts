@@ -78,13 +78,16 @@ export const login = async (email: string, password?: string) => {
   };
   // RT 교체
   await userRepo.updateUser(user.id, data);
-
   // 옵젝으로 묶어서 리턴
   const result = {
     accessToken,
     refreshToken,
     userId: user.id,
+    isAdmin: false,
   };
+  if (user.role === "admin") {
+    result.isAdmin = true;
+  }
   return result;
 };
 
@@ -96,9 +99,9 @@ export const updateInfo = async (id: number, data: Record<string, string>, curre
     const user = await userRepo.findOneUser(id);
     if (!user) throw new Error("404, 유저정보를 찾을 수 없습니다. 관리자에게 문의하세요.");
 
-    const existence = user.password;
-    const comparePw = await bcrypt.compare(currentPw, existence);
-    if (!comparePw) throw Error(`400, 비밀번호를 확인해 주세요.`);
+    // const existence = user.password;
+    // const comparePw = await bcrypt.compare(currentPw, existence);
+    // if (!comparePw) throw Error(`400, 비밀번호를 확인해 주세요.`);
     if (data.password) {
       data.password = await bcrypt.hash(data.password, 10);
     }
