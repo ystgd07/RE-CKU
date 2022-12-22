@@ -1,11 +1,12 @@
-import { dataSource } from "./index";
+import { dataSource, db } from ".";
 import { EmailAuth } from "./schemas";
-
+import * as utils from ".";
 export const findOneAuthData = async (email: string) => {
   const data = await dataSource.getRepository(EmailAuth).findOne({ where: { email } });
   return data;
 };
 export const createAuthData = async (email: string, code: number) => {
+  // const data = await db.query(`INSERT INTO user () VALUES ()`, [])
   const forAuthDB = dataSource.getRepository(EmailAuth).create({
     email,
     code,

@@ -1,21 +1,51 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from "typeorm";
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, OneToMany } from "typeorm";
 import { User } from "./user.entity";
 import { Board } from "./board.entity";
+import { CommentLikeMaping } from "./commentLikeMaping.entity";
+import { PointFromComment } from "./point-comment.schema";
 
 @Entity()
 export class Comment {
-    @PrimaryGeneratedColumn()
-    id: number;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column()
-    content: string;
+  @Column()
+  text: string;
 
-    @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP" })
-    created: Date;
+  @Column({ default: false })
+  fixed: boolean;
 
-    @ManyToOne((type) => User, (user) => user.ownComments, { nullable: false })
-    fromUser: User[];
+  @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP" })
+  created: Date;
 
-    @ManyToOne((type) => Board, (board) => board.id, { nullable: false })
-    fromBoard: Board[];
+  @Column({ default: 0 })
+  likes: number;
+
+  @Column({ default: 0 })
+  alreadyLikes: number;
+
+  @OneToMany((type) => CommentLikeMaping, (table) => table.comment)
+  ownLikes: CommentLikeMaping;
+
+  @OneToMany((type) => PointFromComment, (point) => point.comment)
+  getPoint: PointFromComment;
+
+  @ManyToOne((type) => User, (user) => user.writeComments)
+  user: User[];
+
+  @ManyToOne((type) => Board, (board) => board.ownComments)
+  board: Board[];
 }
+
+export type AlreadyLikesComments = {
+  push(comment: AlreadyLikesComments): unknown;
+  alreadyLikes: boolean;
+  commentId: number;
+  username: string;
+  avatarUrl: string;
+  text: string;
+  commentCreated: Date;
+  likes: number;
+  fromUserId: number;
+  fixed: boolean;
+};

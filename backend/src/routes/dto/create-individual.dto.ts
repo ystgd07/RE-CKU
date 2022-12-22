@@ -12,4 +12,7 @@ export class CreateUserDto {
   @IsNotEmpty()
   @IsString()
   readonly password: string;
+
+  @IsNotEmpty()
+  readonly phoneNumber: string | undefined;
 }
