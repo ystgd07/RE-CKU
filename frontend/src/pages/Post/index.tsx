@@ -1,4 +1,4 @@
-import { useParams, useLocation } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useEffect, useState, useRef } from 'react';
 import styled from '@emotion/styled';
 import { Viewer } from '@toast-ui/react-editor';
@@ -28,27 +28,23 @@ const Container = styled.div`
     max-width: 1280px;
     box-sizing: border-box;
 `;
-
 const Wrapper = styled.div`
     display: flex;
     flex-direction: column;
     width: 100%;
 `;
-
 const Profile = styled.div`
     width: 100%;
     margin: 10px 0;
     display: flex;
     align-items: center;
 `;
-
 const ProfileImg = styled.img`
     width: 50px;
     height: 50px;
     background-color: #ea8532;
     border-radius: 50%;
 `;
-
 const ProfileInfo = styled.div`
     height: 70%;
     display: flex;
@@ -56,23 +52,19 @@ const ProfileInfo = styled.div`
     justify-content: center;
     margin-left: 15px;
 `;
-
 const ProfileInfoName = styled.p`
     font-size: 18px;
 `;
-
 const Contents = styled.div`
     padding: 20px;
     box-sizing: border-box;
 `;
-
 const PostStates = styled.div`
     display: flex;
     button {
         margin-left: 10px;
     }
 `;
-
 const CommentWrapper = styled(Wrapper)`
     display: flex;
     justify-content: space-evenly;
@@ -81,7 +73,6 @@ const CommentWrapper = styled(Wrapper)`
     border: 1px solid black;
     border-radius: 10px;
 `;
-
 const CommentHeader = styled.h1`
     width: 100%;
     display: flex;
@@ -93,7 +84,6 @@ const CommentHeader = styled.h1`
         margin-right: 20px;
     }
 `;
-
 const CommentProfile = styled.div`
     width: 100px;
 `;
@@ -101,7 +91,6 @@ const CommentLikes = styled.div`
     width: 100px;
     background-color: yellowgreen;
 `;
-
 const CommentBody = styled.div`
     width: 100%;
     font-size: 14px;
@@ -109,14 +98,39 @@ const CommentBody = styled.div`
     box-sizing: border-box;
 `;
 
-interface RouteState {
-    state: {
-        id: string;
+interface IPostData {
+    alreadyLikesThisBoard: boolean;
+    boardInfo: {
+        avatarUrl: string;
+        boardCreated: Date;
+        commentCnt: number;
+        content: string;
+        email: string;
+        fixed: number;
+        hasResumeId: string | null;
+        id: number;
+        hashTags: string;
+        likeCnt: number;
+        ownUserId: number;
         title: string;
     };
+    ownThisNotice: boolean;
+    resumeInfo: IResumeInfo | null;
+    // comments: ICommentData[];
 }
 
-interface IProjectData {
+interface IResumeInfo {
+    id: number;
+    name: string;
+    usedUserId: number;
+    projects: Array<IProjects> | null;
+    career: Array<ICareer> | null;
+    // position: string;
+    // information: null;
+    // updatedAt: Date;
+}
+
+interface IProjects {
     id: number;
     projectName: string;
     link1: string;
@@ -145,35 +159,6 @@ interface ICareer {
     updatedAt: Date;
 }
 
-interface IResumeData {
-    id: number;
-    name: string;
-    position: string;
-    usedUserId: number;
-    information: null; // ???
-    updatedAt: Date;
-    projects: Array<IProjectData>;
-    career: Array<ICareer>;
-}
-
-interface IPostData {
-    alreadyLikesThisBoard: boolean;
-    boardInfo: {
-        title: string;
-        content: string;
-        hashTags: string;
-        boardCreated: Date;
-        hasResumeId: string | null;
-        fixed: number;
-        ownUserId: number;
-        likeCnt: number;
-        commentCnt: number;
-        email: string;
-    };
-    comments: ICommentData[];
-    resumeInfo: IResumeData | null;
-}
-
 interface ICommentData {
     MARK: string;
     alreadyLikes: boolean;
@@ -190,10 +175,10 @@ interface ICommentData {
 
 const Post = () => {
     const [postData, setPostData] = useState<IPostData | null>(null);
+    const [commentData, setCommentData] = useState<ICommentData[] | []>([]);
     const [comment, setComment] = useState<string>('');
     const { postId } = useParams<{ postId: string }>();
-    const { state } = useLocation() as RouteState;
-    console.log('State =', state);
+
     const viewerRef = useRef<Viewer>(null);
 
     const updateViewerContent = (content: string) => {
@@ -203,13 +188,14 @@ const Post = () => {
     useEffect(() => {
         const fetchPostData = async () => {
             try {
-                const data = await API.get(
+                const res = await API.get(
                     `/board/${postId}`,
                     `?lifeIsGood=${localStorage.getItem('userId')}`,
                 );
-                setPostData(data);
-                const content = data.boardInfo.content;
-                updateViewerContent(content);
+                console.log(res);
+                setPostData(res);
+                // const content = data.boardInfo.content;
+                // updateViewerContent(content);
             } catch (err) {
                 console.log(err);
                 return;
@@ -247,17 +233,16 @@ const Post = () => {
     };
 
     const handleMoreComment = () => {
-        try {
-            //
-            const mark = postData?.comments.slice(-1)[0].MARK;
-            const res = API.get(
-                `/board/${postId}/comments/pagenation`,
-                `?lifeIsGood=${localStorage.getItem('userId')}&mark=${mark}&count=5`,
-            );
-            console.log(res);
-        } catch (err) {
-            console.log(err);
-        }
+        // try {
+        //     const mark = postData?.comments.slice(-1)[0].MARK;
+        //     const res = API.get(
+        //         `/board/${postId}/comments/pagenation`,
+        //         `?lifeIsGood=${localStorage.getItem('userId')}&mark=${mark}&count=5`,
+        //     );
+        //     console.log(res);
+        // } catch (err) {
+        //     console.log(err);
+        // }
     };
 
     return (
@@ -300,7 +285,7 @@ const Post = () => {
                             <Input value={comment} onChange={onChange} />
                             <Button onClick={handleSubmitComment}>작성</Button>
                         </div>
-                        {postData?.comments.map((item, index) => (
+                        {commentData.map((item, index) => (
                             <CommentWrapper key={index}>
                                 <CommentHeader>
                                     <Profile>

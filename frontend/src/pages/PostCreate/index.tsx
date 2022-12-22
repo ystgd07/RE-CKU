@@ -9,8 +9,9 @@ import '@toast-ui/editor/dist/i18n/ko-kr';
 import colorSyntax from '@toast-ui/editor-plugin-color-syntax';
 import { Button, Input, Switch, Typography } from 'antd';
 import API from 'utils/api';
+// import Layout from 'components/Layout';
 
-const { Title, Text } = Typography;
+const { Title } = Typography;
 
 const Container = styled.div`
     display: flex;
@@ -38,10 +39,15 @@ const WrapperHeader = styled.div`
     align-items: center;
 `;
 
+const WrapperTitle = styled.p`
+    font-size: 20px;
+    font-weight: 600;
+`;
+
 const ToggleDiv = styled.div`
     width: 120px;
     margin-left: 20px;
-    height: 34px;
+    height: 100%;
 `;
 
 const ButtonDiv = styled.div`
@@ -60,25 +66,24 @@ const ResumeSelectUI = styled.div`
     background-color: yellowgreen;
 `;
 
-function CreatePost() {
+function PostCreate() {
+    const navigate = useNavigate();
     // 마크다운 에디터 객체
     const editorRef = useRef<Editor>(null);
     // 이력서 첨부 여부 상태
     const [isResume, setIsResume] = useState<boolean>(false);
-    // 폼 제출 시 에러 발생한 항목에 에러 메세지 출력을 위한 상태값
-    const [error, setError] = useState({
-        resume: false,
-        title: false,
-        content: false,
-        // tags는 선택하지 않아도 됨
-    });
     // 폼 입력 데이터
     const [form, setForm] = useState({
         title: '',
         hashTags: '',
     });
     const { title, hashTags } = form;
-    const navigate = useNavigate();
+    // 폼 제출 시 에러 발생한 항목에 에러 메세지 출력을 위한 상태값
+    const [error, setError] = useState({
+        resume: false,
+        title: false,
+        content: false,
+    });
 
     const onToggleButton = () => {
         setIsResume(prev => !prev);
@@ -137,7 +142,7 @@ function CreatePost() {
 
         try {
             const res = await API.post('/board', data);
-            navigate(`/post/${res.data}`, { state: res.data });
+            navigate(`/post/${res.data}`);
         } catch (err) {
             console.log(err);
         }
@@ -168,7 +173,7 @@ function CreatePost() {
         <Container>
             <Wrapper>
                 <WrapperHeader>
-                    <Title level={4}>이력서 첨부</Title>
+                    <WrapperTitle>이력서 첨부</WrapperTitle>
                     <ToggleDiv>
                         <Switch onClick={onToggleButton} />
                     </ToggleDiv>
@@ -216,4 +221,4 @@ function CreatePost() {
     );
 }
 
-export default CreatePost;
+export default PostCreate;

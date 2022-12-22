@@ -68,6 +68,7 @@ class axiosAPI {
     async delete(endpoint: any, params = '', data = {}) {
         try {
             const apiUrl = `${endpoint}/${params}`;
+            console.log(apiUrl);
         } catch (err) {
             console.log(err);
         }
