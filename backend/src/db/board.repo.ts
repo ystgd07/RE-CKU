@@ -267,13 +267,7 @@ export const findOneBoardQ = async (boardId: number, userId?: null | number): Pr
       likeCnt: 0,
       commentCnt: 0,
     },
-    resumeInfo: {
-      id: 0,
-      usedUserId: 0,
-      name: "",
-      career: null,
-      projects: null,
-    },
+    resumeInfo: null,
   };
 
   // } = {}
@@ -470,6 +464,7 @@ export const alreadyLikesBoard = async (boardId: number, userId: number) => {
 export const likeBoardFromUser = async (data: Record<number, number>) => {
   const [keys, values, valval] = utils.insertData(data);
   const boardId = valval[1];
+  const userId = valval[0];
   await db.query(
     `
       INSERT 
@@ -487,6 +482,15 @@ export const likeBoardFromUser = async (data: Record<number, number>) => {
     WHERE id = ?
   `,
     [boardId]
+  );
+  await db.query(
+    `
+    UPDATE user
+    SET
+      clickedLikes = clickedLikes+1
+    WHERE id = ?
+  `,
+    [userId]
   );
   return true;
 };
