@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useEffect, useState, useRef } from 'react';
 import styled from '@emotion/styled';
 import { Viewer } from '@toast-ui/react-editor';
@@ -7,8 +7,10 @@ import Header from 'components/Header';
 import API from 'utils/api';
 import TestProfileImg from 'assets/images/logo-header.png';
 import { LikeOutlined, CommentOutlined, LikeFilled } from '@ant-design/icons';
-import { Button, Typography, Input } from 'antd';
+import { Button, Typography, Input, Card } from 'antd';
+import { calcElapsed } from 'utils/format';
 const { Title, Text } = Typography;
+const { TextArea } = Input;
 
 // 본인 게시물일 경우 수정/삭제 버튼 생성
 // 좋아요 누른 경우, 누르지 않은 경우 구분
@@ -66,12 +68,7 @@ const PostStates = styled.div`
     }
 `;
 const CommentWrapper = styled(Wrapper)`
-    display: flex;
-    justify-content: space-evenly;
-    align-items: center;
     margin: 10px 0;
-    border: 1px solid black;
-    border-radius: 10px;
 `;
 const CommentHeader = styled.h1`
     width: 100%;
@@ -97,26 +94,34 @@ const CommentBody = styled.div`
     padding: 10px;
     box-sizing: border-box;
 `;
+const ButtonWrapper = styled.div`
+    margin-left: auto;
+    width: 144px;
+    display: flex;
+    justify-content: space-evenly;
+`;
 
-interface IPostData {
-    alreadyLikesThisBoard: boolean;
-    boardInfo: {
-        avatarUrl: string;
-        boardCreated: Date;
-        commentCnt: number;
-        content: string;
-        email: string;
-        fixed: number;
-        hasResumeId: string | null;
-        id: number;
-        hashTags: string;
-        likeCnt: number;
-        ownUserId: number;
-        title: string;
-    };
-    ownThisNotice: boolean;
-    resumeInfo: IResumeInfo | null;
-    // comments: ICommentData[];
+const CommentForm = styled.div`
+    height: 150px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: space-around;
+`;
+
+interface IBoardInfo {
+    avatarUrl: string;
+    boardCreated: Date;
+    commentCnt: number;
+    content: string;
+    email: string;
+    fixed: number;
+    hasResumeId: string | null;
+    id: number;
+    hashTags: string;
+    likeCnt: number;
+    ownUserId: number;
+    title: string;
 }
 
 interface IResumeInfo {
@@ -171,64 +176,117 @@ interface ICommentData {
     myComment: boolean;
     text: string;
     username: string;
+    // 신고
 }
 
 const Post = () => {
-    const [postData, setPostData] = useState<IPostData | null>(null);
+    // const [postData, setPostData] = useState<IPostData | null>(null);
+    const [boardData, setBoardData] = useState<IBoardInfo | null>(null);
+    const [resumeData, setResumeData] = useState<IResumeInfo | null>(null);
     const [commentData, setCommentData] = useState<ICommentData[] | []>([]);
+    const [alreadyLike, setAlreadyLike] = useState<boolean>(false);
+    const [ownBoard, setOwnBoard] = useState<boolean>(false);
     const [comment, setComment] = useState<string>('');
     const { postId } = useParams<{ postId: string }>();
 
     const viewerRef = useRef<Viewer>(null);
 
+    const navigate = useNavigate();
+
+    // 마크다운 뷰어 내용 업데이트
     const updateViewerContent = (content: string) => {
         viewerRef.current?.getInstance().setMarkdown(content);
     };
 
-    useEffect(() => {
-        const fetchPostData = async () => {
-            try {
-                const res = await API.get(
-                    `/board/${postId}`,
-                    `?lifeIsGood=${localStorage.getItem('userId')}`,
-                );
-                console.log(res);
-                setPostData(res);
-                // const content = data.boardInfo.content;
-                // updateViewerContent(content);
-            } catch (err) {
-                console.log(err);
-                return;
-            }
-        };
-        fetchPostData();
-    }, [postId]);
-
-    const handlePostLike = async () => {
+    // 게시물 데이터 가져오기
+    const fetchBoardData = async () => {
         try {
-            const data = {
-                likesStatus: false,
-            };
-            const res = await API.patch(`/board/like/${postId}`, '', data);
-            console.log(res);
+            const res = await API.get(
+                `/board/${postId}`,
+                `?lifeIsGood=${localStorage.getItem('userId')}`,
+            );
+            setBoardData(res.boardInfo);
+            setResumeData(res.resumeInfo);
+            setAlreadyLike(res.alreadyLikesThisBoard);
+            setOwnBoard(res.ownThisNotice);
+            const content = res.boardInfo.content;
+            updateViewerContent(content);
         } catch (err) {
-            console.log('ERROR:', err);
+            console.log(err);
+            return;
         }
     };
-    const handleSubmitComment = async () => {
-        console.log(comment);
-        const data = {
-            text: comment,
-        };
+
+    // 댓글 목록 가져오기 (최초 페이지 로딩 시)
+    const fetchCommentData = async () => {
         try {
-            const res = await API.post(`/board/${postId}/comments`, data);
-            // 화면의 게시물 좋아요 상태 갱신 필요
+            const userId = localStorage.getItem('userId');
+            const res = await API.get(
+                `/board/${postId}/comments`,
+                `?mark=&firstRequest=1&count=4&lifeIsGood=${userId}`,
+            );
+            setCommentData(res);
         } catch (err) {
             console.log(err);
         }
     };
 
-    const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // 게시물 좋아요 동작
+    const handleBoardLike = async () => {
+        try {
+            const data = {
+                likesStatus: alreadyLike,
+            };
+            await API.patch(`/board/${postId}/like`, '', data);
+            // Refresh
+            fetchBoardData();
+        } catch (err) {
+            console.log('ERROR:', err);
+        }
+    };
+
+    // 댓글 작성
+    const handleCommentSubmit = async () => {
+        const data = {
+            text: comment,
+        };
+        try {
+            await API.post(`/board/${postId}/comments`, data);
+            setComment('');
+            fetchBoardData();
+            fetchCommentData();
+        } catch (err) {
+            console.log(err);
+        }
+    };
+
+    // 댓글 좋아요 동작
+    const handleCommentLike = async (id: number, likesStatus: boolean) => {
+        try {
+            const data = {
+                likesStatus,
+            };
+            await API.patch(`/comments/${id}/like`, '', data);
+
+            const newCommentData = commentData.map(item => {
+                if (item.commentId === id) {
+                    if (item.alreadyLikes) {
+                        item.likes = item.likes - 1;
+                        item.alreadyLikes = false;
+                    } else {
+                        item.likes = item.likes + 1;
+                        item.alreadyLikes = true;
+                    }
+                }
+                return item;
+            });
+            setCommentData(newCommentData);
+        } catch (err) {
+            console.log(err);
+        }
+    };
+
+    const handleOnChangeComment = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         setComment(e.target.value);
     };
 
@@ -245,72 +303,119 @@ const Post = () => {
         // }
     };
 
+    useEffect(() => {
+        fetchBoardData();
+        fetchCommentData();
+    }, []);
+
+    const handleBoardEdit = async () => {
+        const data = {
+            title: boardData?.title,
+            content: boardData?.content,
+            hashTags: boardData?.hashTags,
+        };
+        navigate(`/post/${postId}/edit`, { state: data });
+    };
+
+    const handleBoardRemove = async () => {
+        // 함 물어보고 지우자
+        try {
+            await API.delete(`/board/${postId}`);
+            navigate('/');
+        } catch (err) {
+            console.log(err);
+        }
+    };
+
     return (
         <>
             <Header />
             <Container>
                 <Wrapper>
-                    <Title level={2}>{postData?.boardInfo.title}</Title>
+                    <Title level={2}>{boardData?.title}</Title>
                     <Profile>
                         <ProfileImg src={TestProfileImg}></ProfileImg>
                         <ProfileInfo>
-                            <ProfileInfoName>{postData?.boardInfo.email}</ProfileInfoName>
-                            <Text>1일 전</Text>
+                            <ProfileInfoName>{boardData?.email}</ProfileInfoName>
+                            <Text>{calcElapsed(boardData?.boardCreated)} 전</Text>
                         </ProfileInfo>
+                        {ownBoard ? (
+                            <ButtonWrapper>
+                                <Button type="primary" size="large" onClick={handleBoardEdit}>
+                                    수정
+                                </Button>
+                                <Button danger size="large" onClick={handleBoardRemove}>
+                                    삭제
+                                </Button>
+                            </ButtonWrapper>
+                        ) : (
+                            ''
+                        )}
                     </Profile>
                     <Contents>
-                        <Viewer initialValue={postData?.boardInfo.title} ref={viewerRef} />
+                        <Viewer initialValue={boardData?.title} ref={viewerRef} />
                     </Contents>
                     <PostStates>
                         <Button
-                            type="primary"
-                            icon={
-                                postData?.alreadyLikesThisBoard ? <LikeFilled /> : <LikeOutlined />
-                            }
-                            size={'large'}
-                            onClick={handlePostLike}
+                            type={alreadyLike ? 'primary' : 'default'}
+                            icon={alreadyLike ? <LikeFilled /> : <LikeOutlined />}
+                            size="large"
+                            onClick={handleBoardLike}
                         >
-                            {String(postData?.boardInfo.likeCnt)}
+                            {String(boardData?.likeCnt)}
                         </Button>
-                        <Button icon={<CommentOutlined />} size={'large'}>
-                            {String(postData?.boardInfo.commentCnt)}
+                        <Button icon={<CommentOutlined />} size="large">
+                            {String(boardData?.commentCnt)}
                         </Button>
                     </PostStates>
                 </Wrapper>
                 <Wrapper>
-                    <>
-                        <Title level={4}>댓글</Title>
-                        <div>
-                            댓글 작성
-                            <Input value={comment} onChange={onChange} />
-                            <Button onClick={handleSubmitComment}>작성</Button>
-                        </div>
-                        {commentData.map((item, index) => (
-                            <CommentWrapper key={index}>
-                                <CommentHeader>
+                    <Title level={4}>댓글</Title>
+                    <CommentForm>
+                        <TextArea rows={3} value={comment} onChange={handleOnChangeComment} />
+                        <Button onClick={handleCommentSubmit} size="large">
+                            작성
+                        </Button>
+                    </CommentForm>
+                    {commentData.map((item, index) => (
+                        <CommentWrapper key={index}>
+                            <Card
+                                size="small"
+                                title={
                                     <Profile>
                                         <ProfileImg src={item.avatarUrl}></ProfileImg>
                                         <ProfileInfo>
                                             <ProfileInfoName>{item.username}</ProfileInfoName>
-                                            <Text>1일 전</Text>
+                                            <Text>{calcElapsed(item.commentCreated)} 전</Text>
                                         </ProfileInfo>
                                     </Profile>
-
+                                }
+                                extra={
                                     <Button
-                                        type="link"
+                                        type={item.alreadyLikes ? 'primary' : 'default'}
                                         icon={item.alreadyLikes ? <LikeFilled /> : <LikeOutlined />}
-                                        size={'large'}
+                                        size="large"
+                                        onClick={() =>
+                                            handleCommentLike(item.commentId, item.alreadyLikes)
+                                        }
                                     >
                                         {String(item.likes)}
                                     </Button>
-                                </CommentHeader>
-                                <CommentBody>{item.text}</CommentBody>
-                            </CommentWrapper>
-                        ))}
-                    </>
-                    <Button type="link" onClick={handleMoreComment}>
-                        더보기
-                    </Button>
+                                }
+                                style={{ width: '100%' }}
+                            >
+                                <Text>{item.text}</Text>
+                            </Card>
+                        </CommentWrapper>
+                    ))}
+
+                    {boardData?.commentCnt && boardData?.commentCnt > commentData.length ? (
+                        <Button type="link" onClick={handleMoreComment}>
+                            더보기
+                        </Button>
+                    ) : (
+                        ''
+                    )}
                 </Wrapper>
             </Container>
         </>
