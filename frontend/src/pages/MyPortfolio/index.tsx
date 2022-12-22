@@ -55,15 +55,12 @@ const ResumeMain = () => {
     }
     async function postPortfolio() {
         try {
-            const token = localStorage.getItem('accessToken');
-            // const res = await axios.post(
-            //   "https://reactproject-test-78fcd-default-rtdb.firebaseio.com/mock.json",
-            //   { mocksPortfolio }
-            // );
             const mocks = await axios.post(
                 '/my-portfolio/new-resume',
                 {},
-                { headers: { authorization: `Bearer ${token}` } },
+                {
+                    headers: { authorization: `Bearer ${token}` },
+                },
             );
 
             id = mocks.data.createdResumeId;

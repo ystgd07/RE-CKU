@@ -62,14 +62,11 @@ export const findOneBoard = async (id: number, userId: null | number) => {
   try {
     // 게시글이 존재하는지 확인후 없다면 에러
     const isNotice = await boardRepo.boardStatus(id, userId);
-    console.log("이즈노티스", isNotice);
     // new Error 하니깐
     if (!isNotice) throw Error("404, 게시글을 찾을 수 없습니다.");
 
     // 게시글에 대한 정보 가공하는 로직 실행
-    console.log(userId);
     let notice = await boardRepo.findOneBoardQ(id, userId);
-    console.log("에러잡기힘드네", notice);
     // 자신이 게시글의 주인인 경우
     if (notice.boardInfo.ownUserId === userId && userId !== null) {
       ownThisNotice = true;
@@ -99,7 +96,6 @@ export const postNotice = async (data: Record<string, string | boolean | number>
 export const updateNotice = async (boardId: number, userId: number, data: Record<string, string | number>) => {
   try {
     const isNotice = await boardRepo.boardStatus(boardId, userId);
-    console.log("이즈노티스", isNotice);
     // new Error 하니깐
     if (!isNotice) throw new Error("404, 게시글을 찾을 수 없습니다.");
     const ownCheck = await boardRepo.findOneBoardQ(boardId);
@@ -138,7 +134,7 @@ export const addLikes = async (userId: number, boardId: number, likesStatus: boo
     boardId,
   };
   try {
-    const alreadyLikes = await boardRepo.alreadyLikesBoard(boardId);
+    const alreadyLikes = await boardRepo.alreadyLikesBoard(boardId, userId);
     console.log("alreadyLikes : ", alreadyLikes);
     // if (alreadyLikes && alreadyLikes.userId === userId) throw new Error(`400, 이미 좋아요를 누른 게시글 입니다.`);
 

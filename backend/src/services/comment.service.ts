@@ -70,8 +70,18 @@ export const updateComment = async (userId: number, commentId: number, data: { t
   }
 };
 
-export const moreCommentsPagenation = async (boardId: number, userId: number, count: number, mark: string) => {
+export const moreCommentsPagenation = async (
+  firstRequest,
+  boardId: number,
+  userId: number,
+  count: number,
+  mark: string
+) => {
   try {
+    if (firstRequest === 1) {
+      const comments = await commentRepo.firstGetComments(boardId, userId, count);
+      return comments;
+    }
     const comments = await commentRepo.moreCommentsPagenationQ(boardId, userId, count, mark);
     return comments;
   } catch (err) {

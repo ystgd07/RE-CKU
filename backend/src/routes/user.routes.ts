@@ -47,6 +47,9 @@ userRoute.post("/individuals", validateBody(CreateUserDto), async (req: Request,
 
 // 로그인 라우트
 userRoute.post("/", validateBody(LoginUserDto), async (req, res, next) => {
+  if (req.body.password === null) {
+    next(new Error("400, 비밀번호를 입력해주세요."));
+  }
   const { email, password } = req.body;
   try {
     const success = await userService.login(email, password);

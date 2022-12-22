@@ -1,4 +1,10 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany, OneToOne } from "typeorm";
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  OneToMany,
+  OneToOne,
+} from "typeorm";
 import { Connect } from "./connect.entity";
 import { Resume } from "./resume.entity";
 import { Board } from "./board.entity";
@@ -72,7 +78,9 @@ export class User {
   @OneToMany((type) => Board, (board) => board.fromUser, { nullable: true })
   notices: Board[]; // 작성한 게시글
 
-  @OneToMany((type) => BoardLikeMaping, (board) => board.user, { nullable: true })
+  @OneToMany((type) => BoardLikeMaping, (board) => board.user, {
+    nullable: true,
+  })
   likesBoard: BoardLikeMaping[]; // 좋아하는 게시글 맵핑
 
   @OneToMany((type) => CommentLikeMaping, (comment) => comment.user)

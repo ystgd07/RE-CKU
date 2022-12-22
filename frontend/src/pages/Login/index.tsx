@@ -1,9 +1,11 @@
 import React, { useEffect } from 'react';
 import * as S from './style';
-import Logo from 'assets/images/iogo.png';
+import Logo from 'assets/images/logo.png';
+import Kakao from 'assets/images/kakao_login_medium_wide.png';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useForm } from 'react-hook-form';
+import dotenv from 'dotenv';
 
 const Login = () => {
     const navigate = useNavigate();
@@ -49,6 +51,18 @@ const Login = () => {
         }
     };
 
+    const kakao = async () => {
+        try {
+            const baseUrl = 'https://kauth.kakao.com/oauth/authorize?';
+
+            const zz = `client_id=${process.env.REACT_APP_KAKAO_KEY}&redirect_uri=${process.env.REACT_APP_REDIRECT_URI}&response_type=code&scope=profile_nickname,profile_image,account_email`;
+            const finalUrl = `${baseUrl}${zz}`;
+            console.log('🔥 동의항목 얻었다');
+            window.location.href = finalUrl;
+        } catch (err: any) {
+            console.error(err.stack);
+        }
+    };
     return (
         <S.Div>
             <S.MobileDiv>
@@ -90,6 +104,10 @@ const Login = () => {
                             autoComplete="new-password"
                         />
                         <button type="submit">로그인</button>
+                        <div onClick={kakao}>
+                            <img src={Kakao}></img>
+                        </div>
+
                         <Link
                             to="/join"
                             style={{

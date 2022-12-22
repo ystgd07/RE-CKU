@@ -43,7 +43,7 @@ export const login = async (email: string, password?: string) => {
   const user = await userRepo.findOneUser(email);
   if (!user) throw Error(`404, ${email}로 가입한 회원이 없습니다.`);
   // 비밀번호 일치하는지 확인
-  if (password) {
+  if (password && user.password !== null) {
     const existence = user.password;
     const comparePw = await bcrypt.compare(password, existence);
     if (!comparePw) throw Error(`400, 비밀번호가 일치하지 않습니다.`);
