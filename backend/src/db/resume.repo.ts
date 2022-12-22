@@ -4,6 +4,8 @@ import { updateData, insertData } from "./utils/transData";
 import { deleteBoard } from "./board.repo";
 import {convertToArray} from "class-validator/types/utils";
 
+// TODO] 프로젝트 생성, 프로젝트 수정, 이력서 삭제
+
 // 1-1. 이력서 (틀) 생성
 export const createResumeQ = async (userId: number, newResumeName: string) => {
   const newResume = await db.query(
@@ -82,9 +84,6 @@ export const createProjectQ = async (resumeId: number, newProjectInfos: Record<s
   }
 };
 
-const createStack = async (skills: Object) => {
-
-}
 // 2-2. 내 이력서 목록 조회
 export const findMyResumesQ = async (userId: number) => {
   const [myResumes] = await db.query(
@@ -102,7 +101,7 @@ export const findMyResumesQ = async (userId: number) => {
   return myResumes;
 };
 
-// 2-3. 이력서 상세 조회
+// 2-3. 이력서 기본정보 상세 조회
 export const findResumeQ = async (resumeId: number) => {
   const [resumeInfo] = await db.query(
     `SELECT id          AS resumeId,
@@ -148,6 +147,8 @@ export const findProjectsQ = async (resumeId: number) => {
                                       WHERE usedResumeId = ?`,
     resumeId
   );
+
+  console.log(projects)
 
   return projects;
 };
@@ -221,27 +222,67 @@ export const updateCareerQ = async (careerId: number, updateCareerInfo: Record<s
 
 // 3-3. 프로젝트 수정
 // TODO] for문 수정
-export const updateProjectQ = async (projectId: number, updateProjectInfo: Record<string, string | number>) => {
-  const [key, value] = updateData(updateProjectInfo);
+export const updateProjectQ = async (projectId: number, updateProjectInfos: Record<string, string | number>) => {
+  let conn = null;
 
-  const updatedProject = await db.query(
-    `UPDATE project
-                                         SET ${key.join(", ")}
-                                         WHERE id = ?`,
-    [...value, projectId]
-  );
+  try {
+    const {skills, ...updateProjectInfo} = updateProjectInfos;
 
-  return updatedProject;
+    const [key, value] = updateData(updateProjectInfo);
+
+    if (skills) {
+      const skillsList = Object.values(skills);
+
+      conn = await db.getConnection();
+      await conn.beginTransaction();
+
+      /* project Table 수정*/
+      const updatedProject = await conn.query(`UPDATE project SET ${key.join(", ")} WHERE id = ?`, [...value, projectId]);
+
+      /* stack Table 수정 (delete 후 insert) */
+      await deleteSkillQ(projectId);
+
+      const [ids, ] = await conn.query(`SELECT id AS skillId FROM skill WHERE name IN ("${skillsList.join('", "')}")`)
+
+      const skillsIds = Object.values(ids);
+
+      for (let i=0; i<skillsIds.length; i++) {
+        await conn.query(`INSERT INTO stack (projectId, skillId) VALUES (?, ?)`, [projectId, Object.values(skillsIds[i])])
+      }
+
+      conn.commit();
+
+      return updatedProject;
+    } else {
+      const updatedProject = await db.query(`UPDATE project SET ${key.join(", ")} WHERE id = ?`, [...value, projectId]);
+
+      return updatedProject;
+    }
+  } catch {
+    console.log('프로젝트 생성 실패')
+    conn.rollback();
+  } finally {
+    if (conn) {
+      await conn.release();
+      console.log("✅ Transaction Finish");
+    }
+  }
 };
 
 // 4-1. 이력서 삭제
-// TODO] ON DELETE CASCADE 사용하기
+// TODO] ON DELETE CASCADE 사용하기, for문
 export const deleteResumeQ = async (resumeId: number) => {
   let conn = null;
 
   try {
     conn = await db.getConnection();
     await conn.beginTransaction();
+
+    const [projectIds, ] = await db.query(`SELECT id AS projectId FROM project WHERE usedResumeId = ?`, resumeId);
+
+    for(let i=0; i<Object.values(projectIds).length; i++){
+      const deletedSkill = await conn.query(`DELETE FROM stack WHERE projectId = ${projectIds[i].projectId}`);
+    }
 
     const deletedCareer = await conn.query(`DELETE FROM career WHERE usedResumeId = ?`, resumeId);
     const deletedProject = await conn.query(`DELETE FROM project WHERE usedResumeId = ?`, resumeId);
@@ -274,14 +315,23 @@ export const deleteCareerQ = async (careerId: number) => {
 
 // 4-3. 프로젝트 삭제
 export const deleteProjectQ = async (projectId: number) => {
-  const deletedProject = await db.query(
-    `DELETE
-                                         FROM project
-                                         WHERE id = ?`,
-    projectId
-  );
+  const conn = await db.getConnection();
+  await conn.beginTransaction();
 
-  return deletedProject;
+  try {
+    const deletedSkill = await conn.query(`DELETE FROM stack WHERE projectId = ${projectId}`);
+    const deletedProject = await conn.query(`DELETE FROM project WHERE id = ?`, projectId);
+
+    conn.commit();
+
+    return deletedProject;
+  } catch {
+    console.log('프로젝트 삭제 실패')
+    conn.rollback();
+  } finally {
+    conn.release();
+  }
+
 };
 
 // skill list 불러오기
@@ -297,3 +347,10 @@ export const createSkillQ = async (newSkillName: string) => {
 
   return newSkill;
 };
+
+// skill 삭제
+export const deleteSkillQ = async (projectId: number) => {
+  const deletedSkill = await db.query(`DELETE FROM stack WHERE projectId = ${projectId}`);
+
+  return deletedSkill;
+}
