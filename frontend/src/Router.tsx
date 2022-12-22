@@ -51,6 +51,15 @@ const Router = () => {
                         <Route path="/loading" element={<Loading />} />
                     </>
                 )}
+                <Route path="/" element={<Main />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/resume/:id" element={<Resume />} />
+                {/* <Route path="/create-post" element={<CreatePost />} /> */}
+
+                <Route path="/Join" element={<Join />} />
+                <Route path="/FindPw" element={<FindPw />} />
+                <Route path="/my-portfolio" element={<MyPortfolio />} />
+                <Route path="/profile" element={<Profile />} />
             </Routes>
         </BrowserRouter>
     );

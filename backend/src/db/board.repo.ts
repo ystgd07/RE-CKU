@@ -267,13 +267,7 @@ export const findOneBoardQ = async (boardId: number, userId?: null | number): Pr
       likeCnt: 0,
       commentCnt: 0,
     },
-    resumeInfo: {
-      id: 0,
-      usedUserId: 0,
-      name: "",
-      career: null,
-      projects: null,
-    },
+    resumeInfo: null,
   };
 
   // } = {}
