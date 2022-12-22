@@ -3,7 +3,6 @@ import { useEffect, useState, useRef } from 'react';
 import styled from '@emotion/styled';
 import { Viewer } from '@toast-ui/react-editor';
 import '@toast-ui/editor/dist/toastui-editor-viewer.css';
-<<<<<<< HEAD
 import Header from 'components/Header';
 import API from 'utils/api';
 import TestProfileImg from 'assets/images/logo-header.png';
@@ -14,9 +13,6 @@ const { Title, Text } = Typography;
 // 본인 게시물일 경우 수정/삭제 버튼 생성
 // 좋아요 누른 경우, 누르지 않은 경우 구분
 // 댓글 좋아요도 마찬가지
-=======
-import axios from 'axios';
->>>>>>> dev
 
 const Container = styled.div`
     display: flex;
@@ -161,7 +157,7 @@ interface IResumeData {
 }
 
 interface IPostData {
-    alreadyLikes: boolean;
+    alreadyLikesThisBoard: boolean;
     boardInfo: {
         title: string;
         content: string;
@@ -222,6 +218,17 @@ const Post = () => {
         fetchPostData();
     }, [postId]);
 
+    const handlePostLike = async () => {
+        try {
+            const data = {
+                likesStatus: false,
+            };
+            const res = await API.patch(`/board/like/${postId}`, '', data);
+            console.log(res);
+        } catch (err) {
+            console.log('ERROR:', err);
+        }
+    };
     const handleSubmitComment = async () => {
         console.log(comment);
         const data = {
@@ -229,15 +236,28 @@ const Post = () => {
         };
         try {
             const res = await API.post(`/board/${postId}/comments`, data);
-            console.log(res);
+            // 화면의 게시물 좋아요 상태 갱신 필요
         } catch (err) {
             console.log(err);
         }
     };
 
     const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        e.preventDefault();
         setComment(e.target.value);
+    };
+
+    const handleMoreComment = () => {
+        try {
+            //
+            const mark = postData?.comments.slice(-1)[0].MARK;
+            const res = API.get(
+                `/board/${postId}/comments/pagenation`,
+                `?lifeIsGood=${localStorage.getItem('userId')}&mark=${mark}&count=5`,
+            );
+            console.log(res);
+        } catch (err) {
+            console.log(err);
+        }
     };
 
     return (
@@ -257,8 +277,14 @@ const Post = () => {
                         <Viewer initialValue={postData?.boardInfo.title} ref={viewerRef} />
                     </Contents>
                     <PostStates>
-                        {/* <LikeFilled /> 좋아요 누른 상태일 경우 채워진 아이콘으로 */}
-                        <Button type="primary" icon={<LikeOutlined />} size={'large'}>
+                        <Button
+                            type="primary"
+                            icon={
+                                postData?.alreadyLikesThisBoard ? <LikeFilled /> : <LikeOutlined />
+                            }
+                            size={'large'}
+                            onClick={handlePostLike}
+                        >
                             {String(postData?.boardInfo.likeCnt)}
                         </Button>
                         <Button icon={<CommentOutlined />} size={'large'}>
@@ -297,7 +323,9 @@ const Post = () => {
                             </CommentWrapper>
                         ))}
                     </>
-                    <Button type="link">더보기</Button>
+                    <Button type="link" onClick={handleMoreComment}>
+                        더보기
+                    </Button>
                 </Wrapper>
             </Container>
         </>

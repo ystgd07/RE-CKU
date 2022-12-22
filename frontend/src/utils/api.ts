@@ -54,9 +54,11 @@ class axiosAPI {
     }
 
     // 미완성
-    async put(endpoint: any, params = '', data: any) {
+    async patch(endpoint: any, params = '', data: any) {
         try {
             const apiUrl = `${endpoint}/${params}`;
+            const res = await axios.patch(this.BASE_URL + apiUrl, data);
+            return res.data;
         } catch (err) {
             console.log(err);
         }

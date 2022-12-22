@@ -7,10 +7,9 @@ import Join from 'pages/Join';
 import FindPw from 'pages/FindPw';
 import MyPortfolio from 'pages/MyPortfolio';
 import Profile from 'pages/Profile';
-// import Post from 'pages/Post';
 import Err404 from 'pages/Err404';
 import Admin from 'pages/Admin';
-import Post from 'pages/Post';
+// import Post from 'pages/Post';
 import Resumeform from 'pages/Resume';
 import Loading from 'pages/Loading';
 const Router = () => {
@@ -23,7 +22,8 @@ const Router = () => {
                     <>
                         <Route path="/" element={<Main />} />
                         <Route path="/resume/:id" element={<Resume />} />
-                        <Route path="/post/:postId" element={<Post />} />
+                        {/* <Route path="/post/:postId" element={<Post />} /> */}
+                        {/* <Route path="/create-post" element={<CreatePost />} /> */}
                         <Route path="/myportfolio" element={<MyPortfolio />} />
                         <Route path="/profile" element={<Profile />} />
                         <Route path="/login" element={<Navigate replace to="/" />} />
@@ -38,8 +38,8 @@ const Router = () => {
                     <>
                         <Route path="/" element={<Main />} />
                         <Route path="/resume/:id" element={<Navigate replace to="/" />} />
-                        <Route path="/create-post" element={<Navigate replace to="/" />} />
-                        <Route path="/post/:postId" element={<Navigate replace to="/" />} />
+                        {/* <Route path="/create-post" element={<CreatePost />} /> */}
+                        {/* <Route path="/post/:postId" element={<Navigate replace to="/" />} /> */}
                         <Route path="/myportfolio" element={<Navigate replace to="/" />} />
                         <Route path="/profile" element={<Navigate replace to="/" />} />
                         <Route path="/login" element={<Login />} />
