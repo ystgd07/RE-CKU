@@ -30,4 +30,5 @@ export const dataSource = new DataSource({
 
 export * from "./auth.repo";
 export * from "./user.repo";
+export * from "./admin.repo";
 export * from "./resume.repo";
