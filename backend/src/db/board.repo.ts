@@ -364,13 +364,14 @@ export const create = async (data: Record<string, string | number | boolean>): P
 // 게시글 수정
 export const updateBoard = async (boardId: number, data: Record<string, string | number>) => {
   console.log("게시글 업데이트 내역 : ", data);
+  console.log("boardID 값 : ", boardId);
   const [keys, values] = utils.updateData(data);
   await db.query(
     `
     UPDATE board 
     SET ${keys.join(", ")}, 
       fixed=true,
-      updated=now(),
+      updated=now()
     WHERE id = ?`,
     [...values, boardId]
   );
