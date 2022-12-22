@@ -1,35 +1,105 @@
-import bcrypt from "bcrypt";
 import express, { Request, Response, NextFunction } from "express";
-import * as userService from "../services/user.service";
-import { CreateUserDto, CreateAuthDataDto, AuthEmailDto, LoginUserDto } from "./dto";
-import { random } from "../config/sendMail";
-import { createIndiUser, findOneUser } from "../db/user.repo";
-import { avatarImg, tokenValidator, validateBody } from "../middlewares";
-import { CreateReportDto } from "./dto/create-report.dto";
-export const userRoute = express();
+//import { CreateUserDto, CreateAuthDataDto, AuthEmailDto, LoginUserDto } from "./dto";
+import * as adminService from "../services/admin.service";
+import {findUsers, updateUser} from "../services/admin.service";
+import {updateProject} from "../services";
+import resumeRoute from "./resume.routes";
+//import { createIndiUser, findOneUser } from "../db/user.repo";
+//import { avatarImg, tokenValidator, validateBody } from "../middlewares";
+export const adminRoute = express();
 
-userRoute.get("/", tokenValidator, async (req, res, next) => {
-  const userRole = req.body.jwtDecoded.role;
+// 2-1. 전체 회원 목록 조회
+adminRoute.get("/users", async (req, res, next) => {
   try {
-  } catch (err) {
-    next(err);
-  }
-});
+    const users = await adminService.findUsers();
 
-userRoute.get("/individuals", tokenValidator, async (req, res, next) => {
-  const { id } = req.body.jwtDecoded;
-  console.log(id);
-  try {
-    const user = await userService.unIncludePasswordUserInfo(id);
     return res.status(200).json({
-      msg: "회원정보",
-      data: user,
+      msg: "회원 목록 조회 성공",
+      data: users,
     });
   } catch (err) {
     next(err);
   }
 });
 
+// 2-2. 신고 TOP 20 회원 목록 조회
+adminRoute.get("/worst-users", async (req, res, next) => {
+  try {
+    const worstUsers = await adminService.findWorstUsers();
+
+    return res.status(200).json({
+      msg: "최악의 회원 목록 조회 성공",
+      data: worstUsers,
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// 2-3. 신고 내역 조회
+adminRoute.get("/worst-users/:userId", async (req, res, next) => {
+  try {
+    const worstUsers = await adminService.findWorstUsers();
+
+    return res.status(200).json({
+      msg: "최악의 회원 목록 조회 성공",
+      data: worstUsers,
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// 3-1. 포인트 수정
+adminRoute.patch("/users/:userId/point", async (req, res, next) => {
+  try {
+    const userId = Number(req.params.userId);
+    const point = req.body;
+
+    const updatedUser = await adminService.updateUser(userId, point);
+
+    return res.status(203).json({
+      msg: "포인트 변경 성공",
+      data: updatedUser,
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// 3-2. 비활성화 해제
+adminRoute.patch("/users/:userId/active", async (req, res, next) => {
+  try {
+    const userId = Number(req.params.userId);
+
+    const updatedUser = await adminService.updateUser(userId, {"active": 1});
+
+    return res.status(203).json({
+      msg: "비활성화 해제 성공",
+      data: updatedUser,
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// 3-3. 비활성화
+adminRoute.patch("/worst-users/:userId", async (req, res, next) => {
+  try {
+    const userId = Number(req.params.userId);
+
+    const updatedUser = await adminService.updateUser(userId, {"active": 0});
+
+    return res.status(203).json({
+      msg: "비활성화 성공",
+      data: updatedUser,
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+/*
 // 개인 회원가입 라우트
 userRoute.post("/individuals", validateBody(CreateUserDto), async (req: Request, res: Response, next: NextFunction) => {
   const { username, email, phoneNumber, password } = req.body;
@@ -76,26 +146,24 @@ userRoute.post("/", validateBody(LoginUserDto), async (req, res, next) => {
 // 개인정보 수정 라우트
 userRoute.patch("/individuals", tokenValidator, avatarImg.single("image"), async (req, res, next) => {
   const id = Number(req.body.jwtDecoded.id);
-  // const currentPw = req.body.currentPw;
-  // if (!currentPw) next(new Error("400, 기존 비밀번호를 입력하세요."));
+  const currentPw = req.body.currentPw;
+  if (!currentPw) next(new Error("400, 기존 비밀번호를 입력하세요."));
   const password = req.body.password;
   const phoneNumber = req.body.phoneNumber;
-  const gitHubUrl = req.body.gitHubUrl;
   let avatarUrl = "";
-  // if (req.file) {
-  //   avatarUrl = req.file.path;
-  // }
+  if (req.file) {
+    avatarUrl = req.file.path;
+  }
   console.log("아바타 유알엘", avatarUrl);
   // const avatarUrl = req.body.avatarUrl;
   const toUpdate = {
     ...(password && { password }),
     ...(phoneNumber && { phoneNumber }),
-    ...(avatarUrl && { avatarUrl }),
-    ...(gitHubUrl && { gitHubUrl }),
+    // ...(avatarUrl && { avatarUrl }),
   };
   console.log(toUpdate);
   try {
-    const update = await userService.updateInfo(id, toUpdate);
+    const update = await userService.updateInfo(id, toUpdate, currentPw);
     return res.status(200).json({
       msg: "회원정보가 수정되었습니다.",
     });
@@ -162,70 +230,6 @@ userRoute.post("/eamil/password", validateBody(CreateAuthDataDto), async (req, r
   }
 });
 
-userRoute.get("/report", tokenValidator, async (req, res, next) => {
-  const reporterUserId = Number(req.body.jwtDecoded.id);
-  const defendantUserId = Number(req.query.defendantUserId);
-  try {
-    const result = await userService.checkReported(reporterUserId, defendantUserId);
-    return res.status(200).json({
-      msg: "해당 유저에 대한 신고접수 존재여부",
-      data: { reported: result },
-    });
-  } catch (err) {
-    next(err);
-  }
-});
-userRoute.post("/report", validateBody(CreateReportDto), tokenValidator, async (req, res, next) => {
-  const reporterUserId = Number(req.body.jwtDecoded.id);
-  const { defendantUserId, reason } = req.body;
-  const data = {
-    reporterUserId,
-    defendantUserId,
-    reason,
-  };
-  console.log(data);
-  try {
-    const result = await userService.report(data);
-    return res.status(201).json({
-      msg: "정상적으로 신고접수가 되었습니다.",
-      data: { reported: result },
-    });
-  } catch (err) {
-    next(err);
-  }
-});
-
-userRoute.patch("/report", tokenValidator, async (req, res, next) => {
-  const reporterUserId = Number(req.body.jwtDecoded.id);
-  const defendantUserId = req.body.defendantUserId;
-  try {
-    await userService.cancelReport(reporterUserId, defendantUserId);
-    return res.status(200).json({
-      msg: "신고접수가 취소됐읍니다.",
-      data: { reported: false },
-    });
-  } catch (err) {
-    next(err);
-  }
-});
-
-userRoute.patch("/ban", async (req, res, next) => {
-  const type = req.body.type.toUpperCase();
-  const targetId = req.body.targetId;
-  const typeEnum = ["BAN", "RECOVERY"];
-  if (typeEnum.includes(type) === false) {
-    next(new Error(`400, 제대로된 타입입력 부탁합니다.`));
-  }
-  try {
-    const date = await userService.banUser(targetId, type);
-    return res.status(200).json({
-      msg: "회원 벤",
-      data: { expire: date },
-    });
-  } catch (err) {
-    next(err);
-  }
-});
-
 export default userRoute;
 //
+*/

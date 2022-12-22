@@ -1,22 +1,35 @@
-import bcrypt from "bcrypt";
-import { dataSource, db, updateUser } from "../db";
-import * as userRepo from "../db/user.repo";
-import * as authRepo from "../db/auth.repo";
-import { CreateUserDto } from "../routes/dto";
-import jwt from "jsonwebtoken";
-import { send } from "../config/sendMail";
+//import bcrypt from "bcrypt";
+//import { dataSource, updateUser } from "../db";
+import * as adminRepo from "../db/admin.repo";
+//import * as authRepo from "../db/auth.repo";
+//import { CreateUserDto } from "../routes/dto";
+//import jwt from "jsonwebtoken";
+//import { send } from "../config/sendMail";
 import { EmailAuth, UserProfile } from "../db/schemas";
+import {findUsersQ, updateUserQ} from "../db/admin.repo";
 
-export const getUserList = async () => {
-  try {
-    // 일반사용자가 회원조회하는 경우는 이력서 첨삭요청할때 고인물들 목록 보는것 뿐임
-    const rot = await userRepo.getUsersWhereRot();
-    return rot;
-  } catch (err) {
-    throw new Error(`500, 서버오류`);
-  }
+// 2-1. 전체 회원 목록 조회
+export const findUsers = async () => {
+  const users = await adminRepo.findUsersQ();
+
+  return users;
 };
 
+// 2-2. 최악의 전체 회원 목록 조회
+export const findWorstUsers = async () => {
+  const worstUsers = await adminRepo.findWorstUsersQ();
+
+  return worstUsers;
+};
+
+// 3. 포인트 변경 / 회원 밴
+export const updateUser = async (userId: number, updateInfo: Record<string, string | number>) => {
+  const updatedUser = updateUserQ(userId, updateInfo);
+
+  return updatedUser;
+}
+
+/*
 // 유저한명정보 불러오기 섭스
 export const individualInfo = async (userIdOrEmail: number | string): Promise<UserProfile> => {
   const user = await userRepo.findOneUser(userIdOrEmail);
@@ -59,15 +72,12 @@ export const login = async (email: string, password?: string) => {
   const user = await userRepo.findOneUser(email);
   if (!user) throw Error(`404, ${email}로 가입한 회원이 없습니다.`);
   // 비밀번호 일치하는지 확인
-  if (user.howToLogin === "local" && password && user.password !== null) {
+  if (password && user.password !== null) {
     const existence = user.password;
     const comparePw = await bcrypt.compare(password, existence);
     if (!comparePw) throw Error(`400, 비밀번호가 일치하지 않습니다.`);
   }
-  console.log(user.ban - Date.now());
-  if (user.ban && user.ban - Date.now() >= 0) {
-    throw new Error(`400, 당신의 정지기간은 ${new Date(user.ban)} 까지입니다.`);
-  }
+
   // 로그인시작 - JWT 발급해야함
   // accessToken 은 10분, refreshToken 은 하루동안 유효
   const accessToken = jwt.sign(
@@ -81,8 +91,6 @@ export const login = async (email: string, password?: string) => {
   );
   const refreshToken = jwt.sign(
     {
-      id: user.id,
-      role: user.role,
       type: "RT",
     },
     process.env.JWT_SECRET_KEY || "secret",
@@ -90,20 +98,16 @@ export const login = async (email: string, password?: string) => {
   );
   const data = {
     RT: refreshToken,
-    ban: 0,
   };
   // RT 교체
   await userRepo.updateUser(user.id, data);
+
   // 옵젝으로 묶어서 리턴
   const result = {
     accessToken,
     refreshToken,
     userId: user.id,
-    isAdmin: false,
   };
-  if (user.role === "admin") {
-    result.isAdmin = true;
-  }
   return result;
 };
 
@@ -115,9 +119,9 @@ export const updateInfo = async (id: number, data: Record<string, string>, curre
     const user = await userRepo.findOneUser(id);
     if (!user) throw new Error("404, 유저정보를 찾을 수 없습니다. 관리자에게 문의하세요.");
 
-    // const existence = user.password;
-    // const comparePw = await bcrypt.compare(currentPw, existence);
-    // if (!comparePw) throw Error(`400, 비밀번호를 확인해 주세요.`);
+    const existence = user.password;
+    const comparePw = await bcrypt.compare(currentPw, existence);
+    if (!comparePw) throw Error(`400, 비밀번호를 확인해 주세요.`);
     if (data.password) {
       data.password = await bcrypt.hash(data.password, 10);
     }
@@ -157,11 +161,11 @@ export const findPassword = async (email: string): Promise<boolean | string> => 
     from: "jinytree1403@naver.com",
     to: email,
     subject: "[헤드헌터] 비밀번호 발송 ",
-    text: `      
-    헤드헌터 ${email} 
-    
+    text: `
+    헤드헌터 ${email}
+
     임시 비밀번호 :  ${randomStr}
-    
+
     빠른 시일 내로 비밀번호를 변경하시길 바랍니다.
     `,
   };
@@ -190,9 +194,9 @@ export const sendEmail = async (toEmail: string, number?: number) => {
     from: "jinytree1403@naver.com",
     to: toEmail,
     subject: "[헤드헌터] 인증번호 발송 ",
-    text: `      
+    text: `
     헤드헌터 회원가입 인증번호
-    
+
     인증번호 입력란에 ${number} 를 입력해주세요.`,
   };
   //발송
@@ -218,70 +222,4 @@ export const authEmail = async (email: string, code: number) => {
   return;
   // 이메일의 verify 상태가 false? 그럼 에러
 };
-
-// 신고여부
-export const checkReported = async (reporter: number, defendant: number): Promise<boolean> => {
-  try {
-    const checked = await userRepo.checkReportedQ(reporter, defendant);
-    if (checked) return true;
-    return false;
-  } catch (err) {
-    console.log(err.message);
-    throw new Error(`500 , 서버 오류`);
-  }
-};
-
-// 신고하기
-export const report = async (data: {
-  reporterUserId: number;
-  defendantUserId: number;
-  reason: string;
-}): Promise<boolean> => {
-  try {
-    console.log("신고하기 ");
-    const alreadyReport = await userRepo.checkReportedQ(data.reporterUserId, data.defendantUserId);
-    if (alreadyReport) throw new Error(`이미 신고한 게시글입니다.`);
-    await userRepo.reportQ(data);
-    return true;
-  } catch (err) {
-    console.log(err.message);
-    if (err.message === "이미 신고한 게시글입니다.") throw new Error(`400, 이미 신고한 게시글입니다.`);
-    throw new Error(`500 , 서버 오류`);
-  }
-};
-
-// 신고취소
-export const cancelReport = async (reportId: number, defendantId: number) => {
-  try {
-    const alreadyReport = await userRepo.checkReportedQ(reportId, defendantId);
-    if (!alreadyReport) throw new Error(`신고하려는 사람이 없는디요`);
-    console.log("취소하기 ");
-    const cancel = await userRepo.cancelReportQ(reportId, defendantId);
-    return cancel;
-  } catch (err) {
-    console.log(err.message);
-    if (err.message === "신고하려는 사람이 없는디요") throw new Error(`400, 신고하려는 사람이 없는디요`);
-    throw new Error(`500, 서버오류`);
-  }
-};
-
-// admin 유저 벤하기 / 회생시키기
-export const banUser = async (targetId: number, type: string): Promise<Date> => {
-  const data = {
-    // 14일간 정지
-    ban: Date.now() + 1209600000,
-  };
-  console.log(data.ban);
-  try {
-    if (type === "BAN") {
-      await userRepo.banUserQ(targetId, data);
-      return new Date(Date.now() + 1209600000);
-    }
-    data.ban = Date.now();
-    await userRepo.updateUser(targetId, data);
-    return new Date(Date.now());
-  } catch (err) {
-    console.log(err.message);
-    throw new Error(`500, 서버오류`);
-  }
-};
+*/
