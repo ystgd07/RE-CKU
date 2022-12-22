@@ -67,15 +67,15 @@ function JobGroupSelector({ setFilter }: objectType) {
 
   function JobGroupInput({ jobGroup, jobText }: objectType) {
     return (
-      <div
+      <S.FilterButton
         key={jobGroup}
-        data-active={jobGroup == jobValue}
+        active={jobGroup === jobValue}
         onClick={() => {
           setFilter(jobGroup);
         }}
       >
         {jobText}
-      </div>
+      </S.FilterButton>
     );
   }
 
@@ -101,15 +101,15 @@ function TypeGroupSelector({ setFilter }: objectType) {
 
   function JobGroupInput({ typeGroup, typeText }: objectType) {
     return (
-      <div
+      <S.FilterButton
         key={typeGroup}
-        data-active={typeGroup == typeValue}
+        active={typeGroup === typeValue}
         onClick={() => {
           setFilter(typeGroup);
         }}
       >
         {typeText}
-      </div>
+      </S.FilterButton>
     );
   }
 

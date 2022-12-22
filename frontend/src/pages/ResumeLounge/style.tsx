@@ -1,5 +1,28 @@
 import styled from "@emotion/styled";
 
+export const FilterContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+
+  & * + * {
+    margin-left: 10px;
+  }
+`;
+
+export const FilterButton = styled.button<{ active: boolean }>`
+  height: 40px;
+  border: 1px solid;
+  border-radius: 20px;
+  text-align: center;
+  justify-content: center;
+  margin-left: 5px;
+
+  &:hover {
+    background-color: gray;
+  }
+  ${(props) => props.active && { "background-color": "blue" }}
+`;
+
 export const PostLI = styled.li`
   width: 500px;
   height: 200px;
