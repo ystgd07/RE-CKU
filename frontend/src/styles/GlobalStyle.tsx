@@ -8,37 +8,20 @@ const style = css`
     span,
     h1,
     h2,
-    h3,
-    h4,
-    h5,
-    h6,
     p,
-    blockquote,
-    pre,
     a,
     address,
     img,
     small,
     strong,
-    b,
-    u,
     i,
     dl,
     dt,
     dd,
-    ol,
     ul,
     li,
-    fieldset,
     form,
     label,
-    legend,
-    table,
-    tbody,
-    thead,
-    tr,
-    th,
-    td,
     article,
     figure,
     footer,
@@ -47,8 +30,6 @@ const style = css`
         margin: 0;
         padding: 0;
         border: 0;
-        font-size: 62.5%;
-        font: inherit;
         vertical-align: baseline;
     }
 
@@ -88,6 +69,18 @@ const style = css`
     a:active {
         color: #000;
         text-decoration: none;
+    }
+
+    html {
+        font-size: 62.5%;
+        box-sizing: border-box;
+        font-family: 'arial', 'sans-serif';
+    }
+
+    .Container {
+        height: 100%;
+        max-width: 128rem;
+        margin: 0 auto;
     }
 `;
 
