@@ -464,6 +464,7 @@ export const alreadyLikesBoard = async (boardId: number, userId: number) => {
 export const likeBoardFromUser = async (data: Record<number, number>) => {
   const [keys, values, valval] = utils.insertData(data);
   const boardId = valval[1];
+  const userId = valval[0];
   await db.query(
     `
       INSERT 
@@ -481,6 +482,15 @@ export const likeBoardFromUser = async (data: Record<number, number>) => {
     WHERE id = ?
   `,
     [boardId]
+  );
+  await db.query(
+    `
+    UPDATE user
+    SET
+      clickedLikes = clickedLikes+1
+    WHERE id = ?
+  `,
+    [userId]
   );
   return true;
 };

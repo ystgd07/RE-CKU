@@ -24,6 +24,10 @@ export enum sosialEnum {
   local = "local",
   sosial = "sosial",
 }
+enum roleEnum {
+  user = "user",
+  admin = "admin",
+}
 
 @Entity()
 export class User {
@@ -47,6 +51,9 @@ export class User {
 
   @Column({ type: "enum", enum: sosialEnum, default: sosialEnum.local })
   howToLogin: string;
+
+  @Column({ type: "enum", enum: roleEnum, default: roleEnum.user })
+  role: roleEnum;
 
   @Column({ nullable: true, default: null })
   RT: string;

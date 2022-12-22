@@ -13,6 +13,12 @@ export const individualInfo = async (userIdOrEmail: number | string): Promise<Us
   return user;
 };
 
+// 클라에서 쓸 서비스
+export const unIncludePasswordUserInfo = async (userIdOrEmail: number | string): Promise<UserProfile> => {
+  const user = await userRepo.unIncludePasswordUserInfoQ(userIdOrEmail);
+  return user;
+};
+
 // 회원가입 서비스
 export const join = async (data: CreateUserDto): Promise<{ insertId: number }> => {
   // 우선 인증을 완료했는지 검증,
