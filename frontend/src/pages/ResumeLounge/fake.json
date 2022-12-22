@@ -1,28 +1,34 @@
 [{
-        "post_id": 1,
-        "post_title": "테스트1",
-        "post_description": "20자 이내",
-        "user_id": 1,
-        "user_profile_src": "https://cdn.discordapp.com/attachments/1019105021905879104/1053115513452109824/viewimage.png",
-        "like_count": 0,
-        "comment_count": 0
-    },
-    {
-        "post_id": 2,
-        "post_title": "테스트2",
-        "post_description": "20자 이내",
-        "user_id": 1,
-        "user_profile_src": "https://cdn.discordapp.com/attachments/1019105021905879104/1053115513452109824/viewimage.png",
-        "like_count": 0,
-        "comment_count": 0
-    },
-    {
-        "post_id": 3,
-        "post_title": "테스트3",
-        "post_description": "20자 이내",
-        "user_id": 1,
-        "user_profile_src": "https://cdn.discordapp.com/attachments/1019105021905879104/1053115513452109824/viewimage.png",
-        "like_count": 0,
-        "comment_count": 0
-    }
-]
+    "postId": 1,
+    "userName": "우디르",
+    "hasResume": "null",
+    "postTitle": "탈론 정글",
+    "postDescription": "20자 이내",
+    "userId": 1,
+    "userProfileSrc": "https://cdn.discordapp.com/attachments/1019105021905879104/1053115513452109824/viewimage.png",
+    "likeCount": 0,
+    "commentCount": 0,
+    "createAt": "2022-12-21"
+}, {
+    "postId": 2,
+    "userName": "우디르",
+    "hasResume": "null",
+    "postTitle": "탈론 정글2",
+    "postDescription": "20자 이내",
+    "userId": 1,
+    "userProfileSrc": "https://cdn.discordapp.com/attachments/1019105021905879104/1053115513452109824/viewimage.png",
+    "likeCount": 0,
+    "commentCount": 0,
+    "createAt": "2022-12-21"
+}, {
+    "postId": 3,
+    "userName": "우디르",
+    "hasResume": "null",
+    "postTitle": "탈론 정글3",
+    "postDescription": "20자 이내",
+    "userId": 1,
+    "userProfileSrc": "https://cdn.discordapp.com/attachments/1019105021905879104/1053115513452109824/viewimage.png",
+    "likeCount": 0,
+    "commentCount": 0,
+    "createAt": "2022-12-21"
+}]

@@ -11,149 +11,148 @@ import { useInView } from "react-intersection-observer";
 
 type resultType = {
   isConnect: boolean;
-  postList: never[]; //땜빵
-  isLastPage: boolean;
+  postList: objectType[]; //땜빵
+  mark: string;
 };
 
 type objectType = { [key: string]: any };
 
+const FilterContext = createContext({} as objectType);
+
 function fakeLoadItem(
-  filter: string,
+  firstRequest: number,
+  type: string,
   count: number,
-  pageNum: number = 1
+  position: string,
+  mark: string = ""
 ): resultType {
   const jsonData = require("./fake.json");
 
   return {
     isConnect: true,
     postList: jsonData.slice(0, count),
-    isLastPage: false,
+    mark: "",
   };
 }
 
 function ResumeLounge() {
-  const FilterContext = createContext({} as objectType);
+  const [jobFilter, setJobFilter] = useState("ALL");
+  const [typeFilter, setTypeFilter] = useState("new");
 
-  const [jobFilter, setJobFilter] = useState("All");
-  const [typeFilter, setTypeFilter] = useState("All");
+  const filterContextValue = useMemo(
+    () => ({ jobFilter, typeFilter }),
+    [jobFilter, typeFilter]
+  );
 
   return (
-    <div>
-      {/*직군필터*/}
-      {/*필터*/}
-      {/*리스트*/}
-      <FilterContext.Provider value={{ jobFilter, typeFilter }}>
-        <WriteButton />
-        <JobGroupFilter setFilter={setJobFilter} />
-        <FilterPostListContainer filter="like" />
-        <FilterPostListContainer filter="comment" />
-        <FilterPostListContainer filter="view" />
-        <FreePostListContainer />
-      </FilterContext.Provider>
-    </div>
+    <FilterContext.Provider value={filterContextValue}>
+      <WriteButton />
+      <JobGroupSelector setFilter={setJobFilter} />
+      <TypeGroupSelector setFilter={setTypeFilter} />
+      <FreePostListContainer />
+    </FilterContext.Provider>
   );
 }
 
-function JobGroupFilter({ setFilter }: objectType) {
-  const jobList: string[] = ["All", "FE", "BE", "FS", "PM"];
+function JobGroupSelector({ setFilter }: objectType) {
+  const jobMap = [
+    ["ALL", "전체보기"],
+    ["FE", "프론트엔드"],
+    ["BE", "백엔드"],
+    ["FS", "풀스텍"],
+    ["PM", "pm?"],
+  ];
 
-  const [checkValue, setCheckValue] = useState("All");
+  const jobValue = useContext(FilterContext).jobFilter;
 
-  function JobGroupInput({ jobGroup, onChange, checkValue }: objectType) {
+  function JobGroupInput({ jobGroup, jobText }: objectType) {
     return (
-      <>
-        <input
-          type="radio"
-          id={`job${jobGroup}`}
-          name="jobGroup"
-          value={jobGroup}
-          checked={jobGroup == checkValue}
-          onChange={(e) => {
-            if (e.target.checked) {
-              onChange(e.target.value);
-            }
-          }}
-        />
-        <label htmlFor={`job${jobGroup}`}>{jobGroup}</label>
-      </>
+      <div
+        key={jobGroup}
+        data-active={jobGroup == jobValue}
+        onClick={() => {
+          setFilter(jobGroup);
+        }}
+      >
+        {jobText}
+      </div>
     );
   }
 
-  //context로 프롭 드릴링 해결할까 의존성 큼
-
   return (
     <div>
-      {jobList.map((i) => (
-        <JobGroupInput
-          jobGroup={i}
-          onChange={setCheckValue}
-          checkValue={checkValue}
-        />
+      {jobMap.map(([jobGroup, jobText]) => (
+        <JobGroupInput jobGroup={jobGroup} jobText={jobText} />
       ))}
-      <p>선택 테스트 : {checkValue}</p>
+      <p>선택 테스트 : {jobValue}</p>
     </div>
   );
 }
 
-const FILTER_STRING: objectType = {
-  like: "좋아요 많은 게시물",
-  comment: "댓글 많은 게시물",
-  view: "조회수 많은 게시물",
-  new: "자유 주제 게시물",
-};
+function TypeGroupSelector({ setFilter }: objectType) {
+  const typeMap = [
+    ["new", "최신순"],
+    ["like", "좋아요순"],
+    ["comment", "댓글순"],
+    ["view", "조회수순"],
+  ];
 
-function FilterPostListContainer({ filter }: objectType) {
-  const { isConnect, postList, isLastPage } = fakeLoadItem(filter, 1);
+  const typeValue = useContext(FilterContext).typeFilter;
+
+  function JobGroupInput({ typeGroup, typeText }: objectType) {
+    return (
+      <div
+        key={typeGroup}
+        data-active={typeGroup == typeValue}
+        onClick={() => {
+          setFilter(typeGroup);
+        }}
+      >
+        {typeText}
+      </div>
+    );
+  }
+
   return (
     <div>
-      <S.TitleDiv>
-        <h2>{FILTER_STRING[filter]}</h2>
-        <button type="button">
-          더 보기
-          <SlArrowRight />
-        </button>
-      </S.TitleDiv>
-      <ul>
-        {postList.map((i: objectType) => (
-          <PostItem post={i} key={i["post_id"]} />
-        ))}
-      </ul>
+      {typeMap.map(([typeGroup, typeText]) => (
+        <JobGroupInput typeGroup={typeGroup} typeText={typeText} />
+      ))}
+      <p>선택 테스트 : {typeValue}</p>
     </div>
   );
 }
 
 function FreePostListContainer() {
-  const [postListState, setPostListState] = useState([]);
-  const [pageNum, setPageNum] = useState(1);
-  const [isLastPageState, setIsLastPageState] = useState(true);
+  const jobValue = useContext(FilterContext).jobFilter;
+  const typeValue = useContext(FilterContext).typeFilter;
+
+  const [postListState, setPostListState] = useState([] as objectType[]);
+  const [lastMark, setLastMark] = useState("");
 
   const [ref, inView] = useInView();
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    setLoading(true);
-
-    const { isConnect, postList, isLastPage } = fakeLoadItem(
-      "new",
-      12,
-      pageNum
-    );
-    setPostListState([...postListState, ...postList]);
-    setIsLastPageState(isLastPage);
-
-    setLoading(false);
-  }, [pageNum]);
-
-  useEffect(() => {
     if (inView && !loading) {
-      setPageNum((prev) => prev + 1);
+      setLoading(true);
+
+      const { isConnect, postList, mark } = fakeLoadItem(
+        1,
+        "likeCnt",
+        6,
+        "ALL"
+      );
+      setPostListState([...postListState, ...postList]);
+      setLastMark(mark);
+
+      setLoading(false);
     }
   }, [inView, loading]);
 
   return (
     <div>
       <S.TitleDiv>
-        <h2>{FILTER_STRING["new"]}</h2>
         <button type="button">
           더 보기
           <SlArrowRight />
@@ -161,19 +160,13 @@ function FreePostListContainer() {
       </S.TitleDiv>
 
       <ul>
-        페이지 넘버 테스트 : {pageNum}
         {postListState.map((i: objectType) => (
           <PostItem post={i} key={i["post_id"]} />
         ))}
       </ul>
-      {isLastPageState ? (
-        ""
-      ) : (
-        <button type="button" ref={ref}>
-          {/* onClick={() => setPageNum(pageNum + 1)} */}
-          더보기
-        </button>
-      )}
+      <button type="button" ref={ref}>
+        더보기
+      </button>
     </div>
   );
 }
@@ -191,21 +184,21 @@ function PostItem({ post }: objectType) {
     <S.PostLI>
       <div className="post">
         <div className="main">
-          <h3>{post["post_title"]}</h3>
+          <h3>{post["postTitle"]}</h3>
           <hr />
-          <p>{post["post_description"]}</p>
+          <p>{post["postDescription"]}</p>
         </div>
         <div className="user">
-          <img src={post["user_profile_src"]} />
-          <span>{post["user_id"]}</span>
+          <img src={post["userProfileSrc"]} />
+          <span>{post["username"]}</span>
         </div>
       </div>
       <div className="data">
         <div>
-          <SlPencil /> {post["like_count"]}
+          <SlPencil /> {post["likeCount"]}
         </div>
         <div>
-          <SlHeart /> {post["comment_count"]}
+          <SlHeart /> {post["commentCount"]}
         </div>
       </div>
     </S.PostLI>
