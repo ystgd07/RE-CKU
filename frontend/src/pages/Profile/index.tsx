@@ -112,7 +112,12 @@ const Profile: React.FC = () => {
                     <div>
                         <Space direction="vertical">
                             <div>
-                                <Avatar size={120} icon={<UserOutlined />} />
+                                <Avatar
+                                    size={120}
+                                    icon={<UserOutlined />}
+                                    src={`${res.avatarUrl}`}
+                                    style={{ cursor: 'pointer' }}
+                                />
                             </div>
                             <div style={{ height: '38px' }}>
                                 <span style={{ fontSize: '35px' }}>{res.username}</span>
