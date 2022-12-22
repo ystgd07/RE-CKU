@@ -1,27 +1,61 @@
-import { Layout } from './style';
+import { Layout, Alert } from './style';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-type Mock = { name: string; address: string; date: string; id: any };
-
+type Mock = { resumeName: string; address: string; updatedAt: string; resumeId: any };
+let id: any;
 const ResumeMain = () => {
     const [res, setRes] = useState<Mock[]>([]);
     const navigate = useNavigate();
-    const token = localStorage.getItem('accessToken');
+    // /my-portfolio/resumes/:resumeId
+    async function deletePortfolio(e: any) {
+        e.stopPropagation();
+        console.log(e.target.value);
+        try {
+            const res = await axios.delete(`/my-portfolio/resumes/${e.target.value}`);
 
+            if (res.status === 200) {
+                getPortfolio();
+            }
+        } catch (e) {
+            console.log(e);
+        }
+    }
+    const gotoModify = (e: any) => {
+        e.stopPropagation();
+        navigate(`/resume/${id}`);
+    };
+    const gotoPost = (e: any) => {
+        navigate(`/`);
+    };
     async function getPortfolio() {
         try {
-            const mocks = await axios.get('/my-portfolio/resumes', {
-                headers: { authorization: `Bearer ${token}` },
-            });
+            const token = localStorage.getItem('accessToken');
+            // const res = await axios.post(
+            //   "https://reactproject-test-78fcd-default-rtdb.firebaseio.com/mock.json",
+            //   { mocksPortfolio }
+            // );
+            const mocks = await axios
+                .get('/my-portfolio/resumes', {
+                    headers: { authorization: `Bearer ${token}` },
+                })
+                .then(res => res.data)
+                .then(res => res.data);
             console.log(mocks, 'SUCCCCCCCCCess');
+
+            await setRes(mocks);
+
+            // console.log(mocks.data["-NJJR5a9003Z0Qw6WOzB"]);
+            // const mock = mocks.data["-NJJR5a9003Z0Qw6WOzB"].mocksPortfolio;
+            // setRes(mock);
         } catch (e) {
             console.log(e);
         }
     }
     async function postPortfolio() {
         try {
+            const token = localStorage.getItem('accessToken');
             const mocks = await axios.post(
                 '/my-portfolio/new-resume',
                 {},
@@ -30,9 +64,12 @@ const ResumeMain = () => {
                 },
             );
 
-            const ids = mocks.data.createdResumeId;
-            console.log(mocks, 'success');
-            if (mocks.status === 200) navigate(`/resume/${ids}`);
+            id = mocks.data.createdResumeId;
+            console.log(id);
+            if (mocks.status === 200) {
+                navigate(`/resume/${id}`);
+            }
+            console.log(mocks);
         } catch (e) {
             console.log(e);
         }
@@ -45,11 +82,6 @@ const ResumeMain = () => {
     return (
         <>
             <h1>My Portfolio</h1>
-            {res.length === 0 ? (
-                <p>작성된 이력서가 없습니다.</p>
-            ) : (
-                <p>작성된 이력서가 {res.length}개 있습니다.</p>
-            )}
             <Layout>
                 <div onClick={postPortfolio}>
                     <div>
@@ -60,13 +92,20 @@ const ResumeMain = () => {
                     </div>
                 </div>
 
-                {res.map((e: any) => (
-                    <div key={e.id}>
-                        <h3>{e.name}</h3>
-                        <p>{e.date}</p>
+                {res.map((e: Mock) => (
+                    <div onClick={gotoPost} key={e.resumeId}>
+                        <h3>{e.resumeName}</h3>
+                        <p>{e.updatedAt.split('T')[0]}</p>
+                        <button value={e.resumeId} onClick={deletePortfolio}>
+                            삭제
+                        </button>
+                        <button value={e.resumeId} onClick={gotoModify}>
+                            수정
+                        </button>
                     </div>
                 ))}
             </Layout>
+            <Alert>{res.length === 0 && <p>작성된 이력서가 없습니다.</p>}</Alert>
         </>
     );
 };
