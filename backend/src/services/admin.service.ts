@@ -6,13 +6,29 @@ import * as adminRepo from "../db/admin.repo";
 //import jwt from "jsonwebtoken";
 //import { send } from "../config/sendMail";
 import { EmailAuth, UserProfile } from "../db/schemas";
-import {findUsersQ} from "../db/admin.repo";
+import {findUsersQ, updateUserQ} from "../db/admin.repo";
 
+// 2-1. 전체 회원 목록 조회
 export const findUsers = async () => {
   const users = await adminRepo.findUsersQ();
 
   return users;
 };
+
+// 2-2. 최악의 전체 회원 목록 조회
+export const findWorstUsers = async () => {
+  const worstUsers = await adminRepo.findWorstUsersQ();
+
+  return worstUsers;
+};
+
+// 3. 포인트 변경 / 회원 밴
+export const updateUser = async (userId: number, updateInfo: Record<string, string | number>) => {
+  const updatedUser = updateUserQ(userId, updateInfo);
+
+  return updatedUser;
+}
+
 /*
 // 유저한명정보 불러오기 섭스
 export const individualInfo = async (userIdOrEmail: number | string): Promise<UserProfile> => {

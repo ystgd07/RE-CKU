@@ -71,7 +71,7 @@ export const updateComment = async (userId: number, commentId: number, data: { t
 };
 
 export const moreCommentsPagenation = async (
-  firstRequest,
+  firstRequest: number,
   boardId: number,
   userId: number,
   count: number,

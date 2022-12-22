@@ -55,6 +55,8 @@ export class Board {
 
   @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP" })
   created: Date;
+  @Column({ type: "datetime", default: null, nullable: true })
+  updated: Date;
 
   @OneToMany((type) => PointFromBoard, (point) => point.board)
   getPoint: PointFromBoard[];

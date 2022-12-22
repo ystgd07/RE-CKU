@@ -15,7 +15,7 @@ const Main = () => {
                     <div>This is Main</div>
                     <Link to="/resume">이력서 페이지 가기</Link>
                     <div>
-                        <Link to={`/create-post`} state={post}>
+                        <Link to={`/post/create`} state={post}>
                             게시물 생성하기
                         </Link>
                     </div>
