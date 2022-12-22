@@ -13,12 +13,15 @@ import axios, { AxiosResponse } from 'axios';
 import Header from 'components/Header';
 import { useParams } from 'react-router-dom';
 import { Moment } from 'moment';
-import { UserData, ResumeData, WorkFormData } from 'models/resume-model';
+import { UserData, ResumeData, WorkFormData, ProjectFormData } from 'models/resume-model';
 
 const Resume = () => {
     const [isStilWork, setIsStilWork] = useState<boolean>(true);
     const [isWorkFormToggle, setIsWorkFormToggle] = useState<boolean>(false);
     const [projectFormToggle, setProjectFormToggle] = useState<boolean>(false);
+    const [projectFromDataState, setProjectFromDataState] = useState<ProjectFormData[]>([]);
+    const [userInfo, setUserInfo] = useState<UserData>({} as UserData);
+    const [resumeTitle, setResumeTitle] = useState<ResumeData>({} as ResumeData);
     const [workFormDataState, setWorkFormDataState] = useState<WorkFormData>({
         companyName: '',
         jobGroup: '',
@@ -26,16 +29,12 @@ const Resume = () => {
         endWork: '',
         workPerformance: '',
     });
-    // const [projectFromDataState, setProjectFromDataState] = useState<>({});
-
-    // const [value, setValue] = useState<string>('');
-    const [userInfo, setUserInfo] = useState<UserData>({} as UserData);
-    const [resumeTitle, setResumeTitle] = useState<ResumeData>({} as ResumeData);
+    const [stacks, setStacks] = useState([]);
+    const [searchStackToggle, setSearchStackToggle] = useState<boolean>(false);
 
     const params = useParams();
     const resumeIds = params.id;
     const token = localStorage.getItem('accessToken');
-    console.log('id ======================================', resumeIds);
 
     useEffect(() => {
         async function fetchResume() {
@@ -105,6 +104,22 @@ const Resume = () => {
         }
     };
 
+    const getStack = async () => {
+        try {
+            const res = await axios.get<AxiosResponse>(`/my-portfolio/skills`);
+            const data = res.data.data;
+            setStacks(data);
+            console.log(res, '123123- stack');
+        } catch (err: unknown) {
+            console.log(err);
+        }
+    };
+    console.log(stacks, '123123123- data');
+
+    useEffect(() => {
+        getStack();
+    }, []);
+
     // const patchPo = async () => {
     //     console.log(
     //         '========================================================================',
@@ -132,7 +147,7 @@ const Resume = () => {
             console.log(err);
         }
     };
-
+    // console.log(stacks.map(e => e));
     // const JobEx: FunctionComponent = () => {
     //     return (
     //         <form>
@@ -504,7 +519,35 @@ const Resume = () => {
                                                     <label>사용 기술 스택</label>
                                                 </li>
                                                 <li>
-                                                    <input type="text" placeholder="스택 입력" />
+                                                    <input
+                                                        type="text"
+                                                        placeholder="스택 입력"
+                                                        onClick={(): void =>
+                                                            setSearchStackToggle(!searchStackToggle)
+                                                        }
+                                                    />
+                                                    <article
+                                                        className={
+                                                            searchStackToggle ? 'block' : 'none'
+                                                        }
+                                                    >
+                                                        {stacks.map(
+                                                            (
+                                                                stack: {
+                                                                    name: string;
+                                                                    skillId: number;
+                                                                },
+                                                                idx: number,
+                                                            ) => {
+                                                                return (
+                                                                    <dl key={idx}>
+                                                                        <dt>{stack.name}</dt>
+                                                                        <dd>{stack.skillId}</dd>
+                                                                    </dl>
+                                                                );
+                                                            },
+                                                        )}
+                                                    </article>
                                                 </li>
                                             </ul>
 
@@ -520,12 +563,12 @@ const Resume = () => {
                                                 </li>
                                             </ul>
 
-                                            <section style={{ paddingTop: '2rem' }}>
+                                            <section style={{ paddingTop: '3.2rem' }}>
                                                 <ul>
                                                     <li>
                                                         <label>저장소</label>
                                                     </li>
-                                                    <li style={{ paddingBottom: '1rem' }}>
+                                                    <li style={{ paddingBottom: '1.6rem' }}>
                                                         <input type="url" placeholder="URL" />
                                                     </li>
                                                     <li>

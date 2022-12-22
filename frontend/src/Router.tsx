@@ -9,7 +9,7 @@ import MyPortfolio from 'pages/MyPortfolio';
 import Profile from 'pages/Profile';
 // import Post from 'pages/Post';
 import Err404 from 'pages/Err404';
-// import Admin from 'pages/Admin';
+import Admin from 'pages/Admin';
 import Resumeform from 'pages/Resume';
 import Loading from 'pages/Loading';
 const Router = () => {
@@ -40,7 +40,7 @@ const Router = () => {
                         <Route path="/resume/:id" element={<Navigate replace to="/" />} />
                         <Route path="/create-post" element={<Navigate replace to="/" />} />
                         <Route path="/post/:postId" element={<Navigate replace to="/" />} />
-                        <Route path="/myportfolio" element={<Navigate replace to="/" />} />
+                        {/* <Route path="/myportfolio" element={<Navigate replace to="/" />} /> */}
                         <Route path="/profile" element={<Navigate replace to="/" />} />
                         <Route path="/login" element={<Login />} />
                         <Route path="/FindPw" element={<FindPw />} />

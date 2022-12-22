@@ -10,6 +10,14 @@ export const ResumeContainer = styled.section`
         transform: rotate(45deg);
         transition: transform 0.4s;
     }
+
+    .block {
+        display: block;
+    }
+
+    .none {
+        display: none;
+    }
 `;
 
 export const ResumeFrame = styled.section`
@@ -161,6 +169,10 @@ export const InputForm = styled.div`
                         & li {
                             display: flex;
 
+                            & label {
+                                font-size: 1.76rem;
+                            }
+
                             & input {
                                 padding: 1.6rem;
                                 border: 1px solid #b0e0e6;
@@ -297,6 +309,21 @@ export const InputForm = styled.div`
                                         font-size: 1.76rem;
                                     }
                                 }
+                            }
+                        }
+                    }
+
+                    & ul:nth-of-type(2) {
+                        & li:last-of-type {
+                            position: relative;
+
+                            & article {
+                                position: absolute;
+                                width: calc(100% - 2px);
+                                height: 200px;
+                                background-color: white;
+                                border: 1px solid #b0e0e6;
+                                top: 110%;
                             }
                         }
                     }
