@@ -137,7 +137,10 @@ boardRoute.patch("/:boardId", tokenValidator, async (req, res, next) => {
     ...(hashTags && { hashTags }),
     ...(complate && { complate }),
   };
-
+  console.log(
+    "프론트에서 받은 데이터",
+    `boardId = ${boardId} fromUserId = ${fromUserId} content = ${content} title = ${title} hashTags = ${hashTags} complate = ${complate}`
+  );
   try {
     const udated = await boardService.updateNotice(boardId, fromUserId, toUpdate);
     return res.status(200).json({
