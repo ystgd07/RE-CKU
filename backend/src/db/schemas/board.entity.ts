@@ -53,6 +53,9 @@ export class Board {
   @Column({ default: null, nullable: true })
   complate: boolean;
 
+  @Column({ default: 1 })
+  status: number;
+
   @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP" })
   created: Date;
   @Column({ type: "datetime", default: null, nullable: true })

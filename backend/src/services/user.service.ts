@@ -65,7 +65,7 @@ export const login = async (email: string, password?: string) => {
     if (!comparePw) throw Error(`400, 비밀번호가 일치하지 않습니다.`);
   }
   console.log(user.ban - Date.now());
-  if (user.ban && user.ban - Date.now() >= 0) {
+  if ((user.ban && user.ban - Date.now() >= 0) || user.active) {
     throw new Error(`400, 당신의 정지기간은 ${new Date(user.ban)} 까지입니다.`);
   }
   // 로그인시작 - JWT 발급해야함
