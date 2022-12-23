@@ -75,22 +75,14 @@ interface userDataRes {
     howToLogin: string;
 }
 interface userReportData {
-    avatarUrl: string;
-    created: string;
-    userId: number;
-    email: string;
-    phoneNumber: string;
-    username: string;
-    password: string;
-    point: number;
-    active: number;
-    clickedLikes: number;
-    howToLogin: string;
+    avatarUrl: number;
+    reason: string;
+    reporterUserId: number;
 }
 
 const AdminContent: React.FC = () => {
     const [userData, setUserData] = useState<userDataRes[]>([]);
-    const [userReportData, setUserReportData] = useState<AxiosResponse | null>(null);
+    const [userReportData, setUserReportData] = useState<userReportData[]>([]);
 
     const {
         token: { colorBgContainer },
@@ -109,20 +101,17 @@ const AdminContent: React.FC = () => {
 
     async function getReport(userId: number) {
         try {
-            // const res = await axios.get(`/worst-users/`);
             const res = await axios.get(`/admin/worst-users/${userId}`);
             console.log('😫');
-            console.log(res);
-            setUserReportData(res.data);
+            console.log(res.data.data);
+            setUserReportData(res.data.data);
         } catch (e) {
             console.log(e);
         }
     }
     useEffect(() => {
         getId();
-        // getReport();
     }, []);
-
     const onChangeActive = async (e: React.MouseEvent<HTMLButtonElement>) => {
         try {
             const res = await axios.get(``);
@@ -156,7 +145,7 @@ const AdminContent: React.FC = () => {
                     renderItem={item => (
                         <List.Item>
                             <List.Item.Meta
-                                avatar={<Avatar src={'https://joeschmoe.io/api/v1/random'} />}
+                                avatar={<Avatar src={item.avatarUrl} />}
                                 title={
                                     <>
                                         {item.email}/{item.username}
@@ -189,16 +178,18 @@ const AdminContent: React.FC = () => {
                                             <Collapse
                                                 bordered={false}
                                                 onChange={() => getReport(item.userId)}
+                                                // activeKey={userReportData}
                                             >
-                                                {/* {userReportData.map((data: any) => (
-                                                    <Panel
-                                                        header=" 신고내역펼치기"
-                                                        key={data.userId}
-                                                    >
-                                                        {data.userId}님 밴
-                                                    </Panel>
-                                                ))} */}
-                                                {/* //여기에 신고내역 */}
+                                                <Panel header=" 신고내역펼치기" key={item.userId}>
+                                                    {userReportData.map((data: any) => (
+                                                        <p>
+                                                            신고유저Id :&nbsp;
+                                                            {data.defendantUserId}
+                                                            &nbsp;&nbsp;&nbsp; 사유 :&nbsp;
+                                                            {data.reason}
+                                                        </p>
+                                                    ))}
+                                                </Panel>
                                             </Collapse>
                                         </div>
                                     </>

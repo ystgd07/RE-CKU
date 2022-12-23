@@ -10,7 +10,7 @@ import MyPortfolio from 'pages/MyPortfolio';
 import Profile from 'pages/Profile';
 import Err404 from 'pages/Err404';
 import Admin from 'pages/Admin';
-import Resumeform from 'pages/Resume';
+import ResumeTemplate from 'pages/Resume';
 import Loading from 'pages/Loading';
 import AdminUser from 'components/Admin/AdminUser';
 import AdminContent from 'components/Admin/AdminContent';
@@ -32,7 +32,7 @@ const Router = () => {
                         <Route path="/find-pw" element={<Navigate replace to="/" />} />
                         <Route path="/join" element={<Navigate replace to="/" />} />
                         <Route path="/*" element={<Err404 />} />
-                        <Route path="/resume" element={<Resumeform />} />
+                        <Route path="/resume" element={<ResumeTemplate />} />
                         <Route path="/admin" element={<Admin />}>
                             <Route path="user" element={<AdminUser />} />
                             <Route path="content" element={<AdminContent />} />
