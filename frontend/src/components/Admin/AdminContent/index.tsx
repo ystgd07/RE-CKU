@@ -73,6 +73,7 @@ interface userDataRes {
     active: number;
     clickedLikes: number;
     howToLogin: string;
+    ban: number;
 }
 interface userReportData {
     avatarUrl: number;
@@ -112,12 +113,13 @@ const AdminContent: React.FC = () => {
     useEffect(() => {
         getId();
     }, []);
-    const onChangeActive = async (e: React.MouseEvent<HTMLButtonElement>) => {
+
+    const onChangeBan = async (userId: number) => {
         try {
-            const res = await axios.get(``);
-            console.log('😈');
+            console.log('userId', userId);
+            const res = await axios.patch(`/admin/worst-users/${userId}/ban`);
+            console.log('🥶✋');
             console.log(res);
-            // setUserReportData(res);
         } catch (e) {
             console.log(e);
         }
@@ -168,9 +170,11 @@ const AdminContent: React.FC = () => {
                                             <div>
                                                 <Button
                                                     type="primary"
-                                                    // onClick={onChangeActive}
+                                                    onClick={() => {
+                                                        onChangeBan(item.userId);
+                                                    }}
                                                 >
-                                                    2주 밴
+                                                    {item.ban === 0 ? '2주 밴' : '밴 취소'}
                                                 </Button>
                                             </div>
                                         </div>

@@ -196,6 +196,7 @@ const Join = () => {
                                 required: '비밀번호를 입력해주세요 ',
                             })}
                             placeholder="- 빼고 입력해주세요"
+                            maxLength={13}
                         />
                         <button formAction="">회원가입</button>
                         <Link

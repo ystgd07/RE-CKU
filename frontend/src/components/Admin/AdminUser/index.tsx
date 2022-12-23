@@ -117,11 +117,23 @@ const AdminContent: React.FC = () => {
         setUserData(searchUser);
     }
 
-    const onChangeActive = async (item: any) => {
+    const onChangeActivetrue = async (userId: any) => {
         try {
-            console.log(item.userId);
-            const res = await axios.patch(`/admin/users/${item.userId}`, item.active);
-            console.log('😀');
+            console.log(userId);
+            const res = await axios.patch(`/admin/users/${userId}`, { active: 0 });
+            console.log('0');
+            console.log(res);
+            setUserData(res.data.data);
+        } catch (e) {
+            console.log(e);
+        }
+    };
+    const onChangeActivefalse = async (userId: any) => {
+        try {
+            console.log(userId);
+            const res = await axios.patch(`/admin/users/${userId}`, { active: 1 });
+            console.log('1');
+            setUserData(res.data.data);
         } catch (e) {
             console.log(e);
         }
@@ -223,7 +235,11 @@ const AdminContent: React.FC = () => {
                                             <Switch
                                                 checked={item.active == 1 ? true : false}
                                                 // onChange={() => onChangeActive}
-                                                onClick={() => onChangeActive(item)}
+                                                onClick={() => {
+                                                    item.active === 1
+                                                        ? onChangeActivetrue(item.userId)
+                                                        : onChangeActivefalse(item.userId);
+                                                }}
                                                 size="small"
                                             />
                                         </div>
