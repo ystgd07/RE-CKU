@@ -1,10 +1,4 @@
-import React, {
-    FunctionComponent,
-    MouseEventHandler,
-    SetStateAction,
-    useEffect,
-    useState,
-} from 'react';
+import React, { SetStateAction, useEffect, useState } from 'react';
 import { ResumeContainer, ResumeFrame, UserInfo, FormTitle, InputForm, Title } from './style';
 import { BiPlus } from '@react-icons/all-files/bi/BiPlus';
 import { BiEdit } from '@react-icons/all-files/bi/BiEdit';
@@ -13,7 +7,6 @@ import { DatePicker } from 'antd';
 import axios, { AxiosResponse } from 'axios';
 import Header from 'components/Header';
 import { useParams } from 'react-router-dom';
-import { Moment } from 'moment';
 import { UserData, ResumeData, WorkFormData, ProjectFormData, Stack } from 'models/resume-model';
 
 const Resume = () => {
@@ -166,16 +159,12 @@ const Resume = () => {
             ...projectFormDataState,
             stacks: [...tagListItem],
         });
-        console.log(projectFormDataState.stacks);
     }, [tagListItem]);
-
-    console.log(projectFormDataState, 'propropropropropropropropropropropro', tagListItem);
 
     const choiceJob = async (e: React.ChangeEvent<HTMLSelectElement>) => {
         const posionValue = e.target.value;
-
         try {
-            const res = await axios.patch(`/my-portfolio/resumes/${resumeIds}`, {
+            await axios.patch(`/my-portfolio/resumes/${resumeIds}`, {
                 position: posionValue,
             });
         } catch (err: unknown) {
@@ -198,6 +187,10 @@ const Resume = () => {
         } catch (err: unknown) {
             console.log(err);
         }
+    };
+
+    const resumeNameChange = () => {
+        axios.patch(`/my-portfolio/resumes/${resumeIds}`);
     };
 
     // const JobEx: FunctionComponent = () => {
@@ -308,7 +301,7 @@ const Resume = () => {
                 <ResumeFrame>
                     <UserInfo>
                         <Title>
-                            <input type="text" readOnly value={`${resumeTitle.resumeName}`} />
+                            <input type="text" value={`${resumeTitle.resumeName}`} />
                             <span>
                                 <button type="button">
                                     <BiEdit />

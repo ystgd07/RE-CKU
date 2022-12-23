@@ -41,6 +41,7 @@ export const Title = styled.div`
     flex-direction: row;
     padding: 1.6rem;
     align-items: center;
+    gap: 1rem;
 
     & input {
         font-size: 4.8rem;
