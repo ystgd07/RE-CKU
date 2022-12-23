@@ -4,7 +4,6 @@ import * as resumeRepo from "./resume.repo";
 import { Board, BoardInfo } from "./schemas/board.entity";
 import * as utils from "./utils";
 import { TypeCareer, TypeProject } from "./schemas";
-import { AlreadyLikesComments } from "./schemas/comment.entity";
 
 // type에 따라 자유게시판 목록
 export const firstGetCommunityNoticesQ = async (type: string, count: number) => {
@@ -245,7 +244,6 @@ type OneBoardInfo = {
     career: Array<TypeCareer>;
     projects: Array<TypeProject>;
   };
-  comments: null | Array<AlreadyLikesComments>;
 } | null;
 // 상세 게시글 보기
 export const findOneBoardQ = async (boardId: number, userId?: null | number): Promise<OneBoardInfo> => {
@@ -269,14 +267,7 @@ export const findOneBoardQ = async (boardId: number, userId?: null | number): Pr
       likeCnt: 0,
       commentCnt: 0,
     },
-    resumeInfo: {
-      id: 0,
-      usedUserId: 0,
-      name: "",
-      career: null,
-      projects: null,
-    },
-    comments: [],
+    resumeInfo: null,
   };
 
   // } = {}
@@ -302,16 +293,15 @@ export const findOneBoardQ = async (boardId: number, userId?: null | number): Pr
   );
   // 쿼리로 받아온 배열의 length 를 사용하기 위해서 jsonParse 유틸함수를 사용함.
   const boardInfo = utils.jsonParse(boardInfoRows)[0];
-  console.log(boardInfo);
   if (!boardInfo || boardInfo === undefined) return null;
 
   // 게시물의 오너ID로 유저검색후, 이메일과 프사정보를 넣어줌
   // 현재 보고있는 게시물에 좋아요를 눌렀는지 확인함. 받아온 userId 가 있다면
   const [userInfo, checkLikes] = await Promise.all([
     userRepo.findOneUser(boardInfo.ownUserId),
-    alreadyLikesBoard(boardInfo.id),
+    alreadyLikesBoard(boardInfo.id, userId),
   ]);
-
+  console.log("해당 사람이 게시글 좋아요 누름?", checkLikes);
   result.boardInfo = boardInfo;
   result.boardInfo.email = userInfo.email;
   result.boardInfo.avatarUrl = userInfo.avatarUrl;
@@ -319,8 +309,9 @@ export const findOneBoardQ = async (boardId: number, userId?: null | number): Pr
   // 이미 게시물에 좋아요 눌렀는지 확인
   if (checkLikes) {
     result.alreadyLikesThisBoard = true;
+  } else {
+    result.alreadyLikesThisBoard = false;
   }
-  result.alreadyLikesThisBoard = false;
 
   // 게시물이 가지고 있는 이력서Id 가 있다면
   if (boardInfo.hasResumeId > 0 || boardInfo.hasResumeId !== null) {
@@ -344,43 +335,6 @@ export const findOneBoardQ = async (boardId: number, userId?: null | number): Pr
     resume.career = utils.jsonParse(career);
     result.resumeInfo = resume;
   }
-
-  // 좋아요 한 댓글을 찾는다.
-  const comments = await findComments(boardId);
-  // 좋아요 한 댓글이 없을 경우에는 그냥 넣는다.
-
-  if (comments.length !== 0) {
-    result.comments = comments;
-  }
-
-  // console.log("파싱값 ", parsing);
-  const extendedComments = await Promise.all(
-    comments.map(async (comment) => {
-      const [mappingTable] = await db.query(
-        `
-        SELECT id 
-        FROM comment_like_maping 
-        WHERE 
-            userId = ? 
-          AND 
-            commentId = ?`,
-
-        [userInfo.id, comment.commentId]
-      );
-      // 현재 사용자의 좋아요 여부
-      let parseMappingTable = utils.jsonParse(mappingTable);
-      if (parseMappingTable.length <= 0) {
-        parseMappingTable = null;
-      }
-      return {
-        ...comment,
-        alreadyLikes: parseMappingTable !== null ? true : false,
-        // 현재 댓글의 주인인경우
-        myComment: comment.fromUserId === userId ? true : false,
-      };
-    })
-  );
-  result.comments = extendedComments;
 
   return result;
 };
@@ -416,7 +370,7 @@ export const updateBoard = async (boardId: number, data: Record<string, string |
     UPDATE board 
     SET ${keys.join(", ")}, 
       fixed=true,
-      created=now(),
+      updated=now(),
     WHERE id = ?`,
     [...values, boardId]
   );
@@ -489,47 +443,17 @@ export const deleteBoard = async (userId: number, boardId: number) => {
 };
 
 // 게시물ID 로 댓글 찾기
-export const findComments = async (boardId: number): Promise<AlreadyLikesComments[]> => {
-  const [comments] = await db.query(
-    `SELECT 
-      s.alreadyLikes,
-      s.id as commentId, 
-      u.username, 
-      u.avatarUrl,
-      s.text,
-      s.created as commentCreated,
-      s.likes,
-      s.userId as fromUserId,
-      s.fixed,
-      concat(
-        lpad ((s.likes),12,0),
-        lpad (s.id,8,0)
-      ) as MARK
-    From board a 
-    JOIN comment s 
-    ON s.boardId=a.id 
-    Join user u 
-    On s.userId=u.id 
-    WHERE a.id=? 
-    Order BY  s.likes DESC , s.id DESC
-    limit 2
-    `,
-    [boardId]
-  );
-  const result = utils.jsonParse(comments);
-  return result;
-};
 
 /** 해당 id의 게시물에 등록된 좋아요의  userId 배열을 반환하는 REPO */
-export const alreadyLikesBoard = async (boardId: number) => {
+export const alreadyLikesBoard = async (boardId: number, userId: number) => {
   const [resultRows] = await db.query(
     `
       SELECT 
         userId 
       FROM board_like_maping 
-      WHERE(boardId=?)
+      WHERE(boardId=? AND userId=?)
     `,
-    [boardId]
+    [boardId, userId]
   );
   // 리턴값이 복수이기 떄문에 배열로 반환
   const result = utils.jsonParse(resultRows)[0];
@@ -540,6 +464,7 @@ export const alreadyLikesBoard = async (boardId: number) => {
 export const likeBoardFromUser = async (data: Record<number, number>) => {
   const [keys, values, valval] = utils.insertData(data);
   const boardId = valval[1];
+  const userId = valval[0];
   await db.query(
     `
       INSERT 
@@ -557,6 +482,15 @@ export const likeBoardFromUser = async (data: Record<number, number>) => {
     WHERE id = ?
   `,
     [boardId]
+  );
+  await db.query(
+    `
+    UPDATE user
+    SET
+      clickedLikes = clickedLikes+1
+    WHERE id = ?
+  `,
+    [userId]
   );
   return true;
 };
