@@ -8,7 +8,7 @@ import FindPw from 'pages/FindPw';
 import MyPortfolio from 'pages/MyPortfolio';
 import Profile from 'pages/Profile';
 // import Post from 'pages/Post';
-import Err404 from 'pages/Err404';
+import Err404 from 'pages/NotFound';
 import Admin from 'pages/Admin';
 import Resumeform from 'pages/Resume';
 import Loading from 'pages/Loading';

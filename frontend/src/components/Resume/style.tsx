@@ -316,6 +316,31 @@ export const InputForm = styled.div`
                     & ul:nth-of-type(2) {
                         & li:last-of-type {
                             position: relative;
+                            flex-wrap: wrap;
+
+                            & div {
+                                margin: 0.4rem;
+                                padding: 0.4rem;
+                                background-color: #00bfff;
+                                border-radius: 0.5rem;
+                                color: white;
+                                font-size: 1.2rem;
+                                font-weight: 600;
+
+                                & button[type='button'] {
+                                    background: transparent;
+                                    border: 0;
+                                    vertical-align: middle;
+                                    color: #fff;
+
+                                    & svg {
+                                        &:hover {
+                                            color: #000;
+                                            cursor: pointer;
+                                        }
+                                    }
+                                }
+                            }
 
                             & article {
                                 position: absolute;
@@ -324,6 +349,22 @@ export const InputForm = styled.div`
                                 background-color: white;
                                 border: 1px solid #b0e0e6;
                                 top: 110%;
+                                z-index: 99;
+                                overflow-y: scroll;
+
+                                & dl {
+                                    width: 100%;
+
+                                    &:hover {
+                                        background-color: rgb(240, 241, 243);
+                                        cursor: pointer;
+                                    }
+
+                                    & dt {
+                                        font-size: 1.4rem;
+                                        padding: 0.4rem 1.4rem;
+                                    }
+                                }
                             }
                         }
                     }
