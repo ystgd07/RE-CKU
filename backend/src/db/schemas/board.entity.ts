@@ -54,7 +54,7 @@ export class Board {
   complate: boolean;
 
   @Column({ default: 1 })
-  status: number;
+  active: number;
 
   @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP" })
   created: Date;
