@@ -39,7 +39,6 @@ adminRoute.get("/worst-users", async (req, res, next) => {
 });
 
 // 2-3. 신고 내역 조회
-// TODO]
 adminRoute.get("/worst-users/:userId", async (req, res, next) => {
   const userId = Number(req.params.userId);
   try {

@@ -82,13 +82,11 @@ export const updateUserQ = async (userId: number, updateInfo: Record<string, str
 export const banUserQ = async (userId: number, data: Record<string, number | string>) => {
   const [keys, values] = utils.updateData(data);
 
-  await db.query(
-    `
-    UPDATE user
-    SET ${keys}, RT = ""
-    WHERE id = ?
-  `,
-    [...values, userId]
-  );
+  const [user, board, comment] = await Promise.all([
+    await db.query(`UPDATE user SET ${keys}, RT = "" WHERE id = ? `, [...values, userId]),
+    await db.query(`UPDATE board SET active = 0 WHERE fromUserId = ? `, userId),
+    await db.query(`UPDATE comment SET active = 0 WHERE userId = ? `, [...values, userId])
+  ]);
+
   return true;
 };
