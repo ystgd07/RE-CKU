@@ -1,6 +1,6 @@
 import styled from '@emotion/styled';
 import { useState, useRef, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { Editor } from '@toast-ui/react-editor';
 import 'tui-color-picker/dist/tui-color-picker.css';
 import '@toast-ui/editor/dist/toastui-editor.css';
@@ -66,8 +66,23 @@ const ResumeSelectUI = styled.div`
     background-color: yellowgreen;
 `;
 
+interface RouteState {
+    state: IBoardInfo;
+}
+
+interface IBoardInfo {
+    content: string;
+    hashTags: string;
+    title: string;
+}
+
 function PostCreate() {
     const navigate = useNavigate();
+
+    // undefined: 게시물 생성, postId: 해당 게시물 수정
+    const { postId } = useParams<{ postId: string }>();
+    const { state } = useLocation() as RouteState;
+
     // 마크다운 에디터 객체
     const editorRef = useRef<Editor>(null);
     // 이력서 첨부 여부 상태
@@ -78,6 +93,7 @@ function PostCreate() {
         hashTags: '',
     });
     const { title, hashTags } = form;
+
     // 폼 제출 시 에러 발생한 항목에 에러 메세지 출력을 위한 상태값
     const [error, setError] = useState({
         resume: false,
@@ -141,11 +157,20 @@ function PostCreate() {
         };
 
         try {
-            const res = await API.post('/board', data);
-            navigate(`/post/${res.data}`);
+            if (!postId) {
+                const res = await API.post('/board', data);
+                navigate(`/post/${String(res.data)}`);
+            } else {
+                await API.patch(`/board/${postId}`, '', data);
+                navigate(`/post/${postId}`);
+            }
         } catch (err) {
             console.log(err);
         }
+    };
+
+    const updateEditorContent = (content: string) => {
+        editorRef.current?.getInstance().setMarkdown(content);
     };
 
     useEffect(() => {
@@ -166,8 +191,46 @@ function PostCreate() {
                     return false;
                 });
         }
+
+        // 게시물 수정일 경우 기존 내용 채우기
+        if (postId) {
+            updateOriginBoardData();
+        }
+
         return () => {};
     }, []);
+
+    const updateOriginBoardData = async () => {
+        // 게시물 페이지 수정 버튼으로 접근한 경우
+        if (state) {
+            setForm({
+                title: state.title,
+                hashTags: state.hashTags,
+            });
+            updateEditorContent(state.content);
+            return;
+        }
+
+        // url을 임의로 입력해서 접근한 경우
+        const res = await API.get(
+            `/board/${postId}`,
+            `?lifeIsGood=${localStorage.getItem('userId')}`,
+        );
+
+        const data = res.boardInfo;
+
+        const result = {
+            title: data.title,
+            content: data.content,
+            hashTags: data.hashTags,
+        };
+
+        setForm({
+            title: result?.title,
+            hashTags: result.hashTags,
+        });
+        updateEditorContent(result.content);
+    };
 
     return (
         <Container>
@@ -214,7 +277,7 @@ function PostCreate() {
                     취소
                 </Button>
                 <Button type="primary" size="large" onClick={handleSubmit}>
-                    등록
+                    {postId ? '수정' : '등록'}
                 </Button>
             </ButtonDiv>
         </Container>

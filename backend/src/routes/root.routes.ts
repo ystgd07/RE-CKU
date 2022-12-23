@@ -27,4 +27,20 @@ rootRoute.post(
   }
 );
 
+// 게시물이 생성되기전 취소되거나 갑작스러운 종료시 요청
+rootRoute.post("/file/cancel", async (req, res, next) => {
+  //
+  const { pathArr } = req.body;
+  try {
+    for (let i = 0; i < pathArr.length; i++) {
+      console.log(`${i + 1}번째 이미지파일 삭제중`);
+      fs.unlink(`${pathArr[i]}`, (err) => {
+        if (err) throw new Error(`500, 파일 삭제중 오류`);
+        console.log(err);
+      });
+    }
+  } catch (err) {
+    next(err);
+  }
+});
 export default rootRoute;

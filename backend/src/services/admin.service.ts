@@ -31,9 +31,10 @@ export const findReport = async (userId: number) => {
 
 // 3-1. 포인트 / 비활성화
 export const updateUser = async (userId: number, updateInfo: Record<string, string | number>) => {
-  const updatedUser = updateUserQ(userId, updateInfo);
+  const updatedUser = await adminRepo.updateUserQ(userId, updateInfo);
+  const updatedUsers = await adminRepo.findUsersQ();
 
-  return updatedUser;
+  return updatedUsers;
 }
 
 // 3-2. 2주 밴
@@ -44,14 +45,14 @@ export const banUser = async (userId: number, type: string): Promise<Date> => {
 
   try {
     if (type === "BAN") {
-      await adminRepo.banUserQ(userId, data);
+      await adminRepo.banUserQ(userId, data, type);
 
       return new Date(Date.now() + 1209600000);
     }
 
     data.ban = Date.now();
 
-    await adminRepo.updateUserQ(userId, data);
+    await adminRepo.banUserQ(userId, data, type);
 
     return new Date(Date.now());
   } catch (err) {

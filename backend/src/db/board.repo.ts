@@ -266,6 +266,7 @@ export const findOneBoardQ = async (boardId: number, userId?: null | number): Pr
       avatarUrl: "",
       likeCnt: 0,
       commentCnt: 0,
+      active: 1,
     },
     resumeInfo: null,
   };
@@ -288,7 +289,7 @@ export const findOneBoardQ = async (boardId: number, userId?: null | number): Pr
     commentCnt,
     fromUserId as ownUserId 
     From board 
-    WHERE id=?`,
+    WHERE id=? AND active = 1`,
     [boardId]
   );
   // 쿼리로 받아온 배열의 length 를 사용하기 위해서 jsonParse 유틸함수를 사용함.

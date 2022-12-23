@@ -99,7 +99,7 @@ const AdminContent: React.FC = () => {
 
             console.log('😀');
             console.log(res);
-            // setUserData(res.data.data);
+            setUserData(res.data.data);
         } catch (e) {
             console.log(e);
         }
@@ -110,7 +110,9 @@ const AdminContent: React.FC = () => {
     }, []);
 
     function onSearchUser(searchEmail: string) {
-        // getId();
+        if (searchEmail === '') {
+            getId();
+        }
         const searchUser = userData.filter((data: any) => data.email.includes(searchEmail));
         setUserData(searchUser);
     }
@@ -144,13 +146,13 @@ const AdminContent: React.FC = () => {
                         <Col span={50}>
                             <Search
                                 placeholder="검색할 이메일을 입력해주세요"
-                                onSearch={() => onSearchUser(searchEmail)}
+                                // onSearch={() => onSearchUser(searchEmail)}
                                 enterButton
-                                onChange={e => {
-                                    setSearchEmail(e.target.value);
-                                }}
-                                // onChange={e => onSearchUser(e.target.value)}
-                                value={searchEmail}
+                                // onChange={e => {
+                                //     setSearchEmail(e.target.value);
+                                // }}
+                                onChange={e => onSearchUser(e.target.value)}
+                                // value={searchEmail}
                             />
                         </Col>
                     </Row>
