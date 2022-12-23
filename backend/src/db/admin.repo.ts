@@ -1,8 +1,6 @@
 import * as utils from "./utils";
 import { db } from ".";
 import { UserProfile } from "./schemas";
-import { updateData } from "./utils/transData";
-
 
 // 2-1. 전체 회원 목록 조회
 export const findUsersQ = async () => {
@@ -53,44 +51,29 @@ export const findWorstUsersQ = async () => {
       return users;
 };
 
-// 3.
+// 3-1. 회원 정보 수정
 export const updateUserQ = async (userId: number, updateInfo: Record<string, string | number>) => {
-  const [key, value] = updateData(updateInfo);
+  const [key, value] = utils.updateData(updateInfo);
 
   const updatedUser = await db.query(
-    `UPDATE user SET ${key.join(", ")},updated=now() WHERE id = ?`,
+    `UPDATE user SET ${key.join(", ")}, updated = now() WHERE id = ?`,
     [...value, userId]
   );
 
   return updatedUser;
 }
 
-export const banUserQ = async (targerId: number, data: Record<string, number | string>) => {
+// 3-2. 2주 밴
+export const banUserQ = async (userId: number, data: Record<string, number | string>) => {
   const [keys, values] = utils.updateData(data);
-  console.log("레포", keys, values);
+
   await db.query(
     `
     UPDATE user
     SET ${keys}, RT = ""
     WHERE id = ?
   `,
-    [...values, targerId]
+    [...values, userId]
   );
   return true;
 };
-/*
-export const updateUser = async (id: number, data: Record<string, string | boolean | number>): Promise<string> => {
-  const [keys, values] = updateData(data);
-  await db.query(
-    `
-    UPDATE user
-    SET ${keys.join(", ")}
-    WHERE id = ?
-    `,
-    [...values, id]
-  );
-  // typeORM 코드
-  // await dataSource.getRepository(User).update(id, toUpdate);
-  return "ok";
-};
-*/
