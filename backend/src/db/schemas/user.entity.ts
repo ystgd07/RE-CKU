@@ -20,6 +20,7 @@ export type UserProfile = {
   password?: string;
   ban?: number;
   howToLogin?: string;
+  active: number;
 };
 
 export enum sosialEnum {

@@ -65,7 +65,7 @@ export const login = async (email: string, password?: string) => {
     if (!comparePw) throw Error(`400, 비밀번호가 일치하지 않습니다.`);
   }
   console.log(user.ban - Date.now());
-  if (user.ban && user.ban - Date.now() >= 0) {
+  if ((user.ban && user.ban - Date.now() >= 0) || user.active) {
     throw new Error(`400, 당신의 정지기간은 ${new Date(user.ban)} 까지입니다.`);
   }
   // 로그인시작 - JWT 발급해야함
@@ -261,27 +261,6 @@ export const cancelReport = async (reportId: number, defendantId: number) => {
   } catch (err) {
     console.log(err.message);
     if (err.message === "신고하려는 사람이 없는디요") throw new Error(`400, 신고하려는 사람이 없는디요`);
-    throw new Error(`500, 서버오류`);
-  }
-};
-
-// admin 유저 벤하기 / 회생시키기
-export const banUser = async (targetId: number, type: string): Promise<Date> => {
-  const data = {
-    // 14일간 정지
-    ban: Date.now() + 1209600000,
-  };
-  console.log(data.ban);
-  try {
-    if (type === "BAN") {
-      await userRepo.banUserQ(targetId, data);
-      return new Date(Date.now() + 1209600000);
-    }
-    data.ban = Date.now();
-    await userRepo.updateUser(targetId, data);
-    return new Date(Date.now());
-  } catch (err) {
-    console.log(err.message);
     throw new Error(`500, 서버오류`);
   }
 };
