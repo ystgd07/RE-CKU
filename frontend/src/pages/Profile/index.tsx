@@ -1,6 +1,18 @@
 import { Bar } from './style';
-import { useEffect, useState } from 'react';
-import { Breadcrumb, Layout, Menu, theme, Avatar, Divider, Space, Progress, Tabs } from 'antd';
+import { useEffect, useRef, useState } from 'react';
+import {
+    Breadcrumb,
+    Layout,
+    Menu,
+    theme,
+    Avatar,
+    Divider,
+    Space,
+    Progress,
+    Tabs,
+    Upload,
+    Modal,
+} from 'antd';
 import { UserOutlined } from '@ant-design/icons';
 import { UserInfo } from 'components/User/UserInfo';
 import { Like } from 'components/User/Like';
@@ -29,6 +41,44 @@ type Mock = {
     avatarUrl: string;
 };
 const Profile: React.FC = () => {
+    const [open, setOpen] = useState(false);
+    const [confirmLoading, setConfirmLoading] = useState(false);
+    const [modalText, setModalText] = useState('Content of the modal');
+    const imgLoadRef: any = useRef();
+    const imgFileSend = async (body: any) => {
+        try {
+            const res = await axios.post('/root/file/url', body);
+            console.log(res);
+        } catch (e) {
+            console.log(e);
+        }
+    };
+    const showModal = () => {
+        setOpen(true);
+    };
+
+    const handleOk = () => {
+        const formData1: any = new FormData();
+        const blob = new Blob(imgLoadRef.current.files[0]);
+        formData1.append('image', blob);
+        setModalText('The modal will be closed after two seconds');
+        setConfirmLoading(true);
+        setTimeout(() => {
+            setOpen(false);
+            setConfirmLoading(false);
+            imgFileSend(formData1);
+            console.log(imgLoadRef.current.files[0]);
+        }, 2000);
+    };
+
+    const handleCancel = (e: any) => {
+        // console.log(
+        //     e.target.parentElement.parentElement.parentElement.children[1].children[0].value,
+        // );
+        e.target.parentElement.parentElement.parentElement.children[1].children[0].value = '';
+        console.log('Clicked cancel button');
+        setOpen(false);
+    };
     const {
         token: { colorBgContainer },
     } = theme.useToken();
@@ -112,11 +162,24 @@ const Profile: React.FC = () => {
                     <div>
                         <Space direction="vertical">
                             <div>
+                                <Modal
+                                    title="Title"
+                                    open={open}
+                                    onOk={handleOk}
+                                    confirmLoading={confirmLoading}
+                                    onCancel={handleCancel}
+                                    maskClosable={false}
+                                    keyboard={false}
+                                    closable={false}
+                                >
+                                    <input type="file" ref={imgLoadRef}></input>
+                                </Modal>
                                 <Avatar
                                     size={120}
                                     icon={<UserOutlined />}
                                     src={`${res.avatarUrl}`}
                                     style={{ cursor: 'pointer' }}
+                                    onClick={showModal}
                                 />
                             </div>
                             <div style={{ height: '38px' }}>
@@ -126,13 +189,13 @@ const Profile: React.FC = () => {
                                 <div style={{ width: `${testWidth}%` }}></div>
                             </div>
                             <p style={{ color: `${tierColor}`, fontWeight: 'bold' }}>{tier}</p>
-                            <Progress
-                                percent={testWidth}
-                                status="active"
-                                strokeColor={{ '0%': `${tierColor}`, '100%': `${tierColor}` }}
-                            />
                         </Space>
                     </div>
+                    <Progress
+                        percent={testWidth}
+                        status="active"
+                        strokeColor={{ '0%': `${tierColor}`, '100%': `${tierColor}` }}
+                    />
                     {/* //TODO: 추후 Tabs 이부분 컴포넌트화 해야함^^ */}
                     {tier === 'Platinum' ? (
                         <Tabs

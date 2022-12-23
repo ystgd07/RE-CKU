@@ -7,7 +7,7 @@ export const Bar = styled.div`
     background: rgb(255, 255, 255);
     border-top: 1px solid rgb(221, 223, 224);
     border-bottom: 1px solid rgb(221, 223, 224);
-
+    /* 이것이 바로 이 박스의 헤더이다! */
     & > div {
         max-width: 1200px;
         padding: 0 16px;
@@ -23,6 +23,7 @@ export const Bar = styled.div`
             filter: drop-shadow(rgba(157, 73, 0, 0.6) 0px 4px 8px);
         }
     }
+    /* 이것 바로 이 박스의 메인이다 허허ㅏ허허허헣 */
     & > div {
         margin: 0;
         padding: 0;

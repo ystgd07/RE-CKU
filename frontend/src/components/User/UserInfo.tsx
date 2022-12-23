@@ -8,6 +8,7 @@ import {
 } from '@ant-design/icons';
 import { Descriptions, Tag } from 'antd';
 import { InfoModal } from './InfoModal';
+
 type Mock = {
     // id: string;
     email: string;
