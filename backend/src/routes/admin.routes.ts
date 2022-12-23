@@ -4,6 +4,7 @@ import * as adminService from "../services/admin.service";
 import {findUsers, updateUser} from "../services/admin.service";
 import {updateProject} from "../services";
 import resumeRoute from "./resume.routes";
+import userRoute from "./user.routes";
 //import { createIndiUser, findOneUser } from "../db/user.repo";
 //import { avatarImg, tokenValidator, validateBody } from "../middlewares";
 export const adminRoute = express();
@@ -93,6 +94,25 @@ adminRoute.patch("/worst-users/:userId", async (req, res, next) => {
     return res.status(203).json({
       msg: "비활성화 성공",
       data: updatedUser,
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// 밴
+adminRoute.patch("/ban", async (req, res, next) => {
+  const type = req.body.type.toUpperCase();
+  const targetId = req.body.targetId;
+  const typeEnum = ["BAN", "RECOVERY"];
+  if (typeEnum.includes(type) === false) {
+    next(new Error(`400, 제대로된 타입입력 부탁합니다.`));
+  }
+  try {
+    const date = await adminService.banUser(targetId, type);
+    return res.status(200).json({
+      msg: "회원 벤",
+      data: { expire: date },
     });
   } catch (err) {
     next(err);

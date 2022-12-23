@@ -264,24 +264,3 @@ export const cancelReport = async (reportId: number, defendantId: number) => {
     throw new Error(`500, 서버오류`);
   }
 };
-
-// admin 유저 벤하기 / 회생시키기
-export const banUser = async (targetId: number, type: string): Promise<Date> => {
-  const data = {
-    // 14일간 정지
-    ban: Date.now() + 1209600000,
-  };
-  console.log(data.ban);
-  try {
-    if (type === "BAN") {
-      await userRepo.banUserQ(targetId, data);
-      return new Date(Date.now() + 1209600000);
-    }
-    data.ban = Date.now();
-    await userRepo.updateUser(targetId, data);
-    return new Date(Date.now());
-  } catch (err) {
-    console.log(err.message);
-    throw new Error(`500, 서버오류`);
-  }
-};

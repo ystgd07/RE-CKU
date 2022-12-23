@@ -58,12 +58,26 @@ export const updateUserQ = async (userId: number, updateInfo: Record<string, str
   const [key, value] = updateData(updateInfo);
 
   const updatedUser = await db.query(
-    `UPDATE user SET ${key.join(", ")} WHERE id = ?`,
+    `UPDATE user SET ${key.join(", ")},updated=now() WHERE id = ?`,
     [...value, userId]
   );
 
   return updatedUser;
 }
+
+export const banUserQ = async (targerId: number, data: Record<string, number | string>) => {
+  const [keys, values] = utils.updateData(data);
+  console.log("레포", keys, values);
+  await db.query(
+    `
+    UPDATE user
+    SET ${keys}, RT = ""
+    WHERE id = ?
+  `,
+    [...values, targerId]
+  );
+  return true;
+};
 /*
 export const updateUser = async (id: number, data: Record<string, string | boolean | number>): Promise<string> => {
   const [keys, values] = updateData(data);

@@ -209,23 +209,5 @@ userRoute.patch("/report", tokenValidator, async (req, res, next) => {
   }
 });
 
-userRoute.patch("/ban", async (req, res, next) => {
-  const type = req.body.type.toUpperCase();
-  const targetId = req.body.targetId;
-  const typeEnum = ["BAN", "RECOVERY"];
-  if (typeEnum.includes(type) === false) {
-    next(new Error(`400, 제대로된 타입입력 부탁합니다.`));
-  }
-  try {
-    const date = await userService.banUser(targetId, type);
-    return res.status(200).json({
-      msg: "회원 벤",
-      data: { expire: date },
-    });
-  } catch (err) {
-    next(err);
-  }
-});
-
 export default userRoute;
 //
