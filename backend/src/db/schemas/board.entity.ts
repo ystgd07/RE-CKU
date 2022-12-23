@@ -18,6 +18,7 @@ export type BoardInfo = {
   avatarUrl: string;
   likeCnt: number;
   commentCnt: number;
+  active: number;
 };
 export type CreateBoardInFo = {
   fieldCount: null | number;
@@ -53,8 +54,13 @@ export class Board {
   @Column({ default: null, nullable: true })
   complate: boolean;
 
+  @Column({ default: 1 })
+  active: number;
+
   @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP" })
   created: Date;
+  @Column({ type: "datetime", default: null, nullable: true })
+  updated: Date;
 
   @OneToMany((type) => PointFromBoard, (point) => point.board)
   getPoint: PointFromBoard[];

@@ -1,11 +1,21 @@
 import bcrypt from "bcrypt";
-import { dataSource, updateUser } from "../db";
+import { dataSource, db, updateUser } from "../db";
 import * as userRepo from "../db/user.repo";
 import * as authRepo from "../db/auth.repo";
 import { CreateUserDto } from "../routes/dto";
 import jwt from "jsonwebtoken";
 import { send } from "../config/sendMail";
 import { EmailAuth, UserProfile } from "../db/schemas";
+
+export const getUserList = async () => {
+  try {
+    // 일반사용자가 회원조회하는 경우는 이력서 첨삭요청할때 고인물들 목록 보는것 뿐임
+    const rot = await userRepo.getUsersWhereRot();
+    return rot;
+  } catch (err) {
+    throw new Error(`500, 서버오류`);
+  }
+};
 
 // 유저한명정보 불러오기 섭스
 export const individualInfo = async (userIdOrEmail: number | string): Promise<UserProfile> => {
@@ -49,12 +59,15 @@ export const login = async (email: string, password?: string) => {
   const user = await userRepo.findOneUser(email);
   if (!user) throw Error(`404, ${email}로 가입한 회원이 없습니다.`);
   // 비밀번호 일치하는지 확인
-  if (password && user.password !== null) {
+  if (user.howToLogin === "local" && password && user.password !== null) {
     const existence = user.password;
     const comparePw = await bcrypt.compare(password, existence);
     if (!comparePw) throw Error(`400, 비밀번호가 일치하지 않습니다.`);
   }
-
+  console.log(user.ban - Date.now());
+  if ((user.ban && user.ban - Date.now() >= 0) || user.active) {
+    throw new Error(`400, 당신의 정지기간은 ${new Date(user.ban)} 까지입니다.`);
+  }
   // 로그인시작 - JWT 발급해야함
   // accessToken 은 10분, refreshToken 은 하루동안 유효
   const accessToken = jwt.sign(
@@ -68,6 +81,8 @@ export const login = async (email: string, password?: string) => {
   );
   const refreshToken = jwt.sign(
     {
+      id: user.id,
+      role: user.role,
       type: "RT",
     },
     process.env.JWT_SECRET_KEY || "secret",
@@ -75,6 +90,7 @@ export const login = async (email: string, password?: string) => {
   );
   const data = {
     RT: refreshToken,
+    ban: 0,
   };
   // RT 교체
   await userRepo.updateUser(user.id, data);
@@ -201,4 +217,50 @@ export const authEmail = async (email: string, code: number) => {
   await dataSource.getRepository(EmailAuth).save(statusVerify);
   return;
   // 이메일의 verify 상태가 false? 그럼 에러
+};
+
+// 신고여부
+export const checkReported = async (reporter: number, defendant: number): Promise<boolean> => {
+  try {
+    const checked = await userRepo.checkReportedQ(reporter, defendant);
+    if (checked) return true;
+    return false;
+  } catch (err) {
+    console.log(err.message);
+    throw new Error(`500 , 서버 오류`);
+  }
+};
+
+// 신고하기
+export const report = async (data: {
+  reporterUserId: number;
+  defendantUserId: number;
+  reason: string;
+}): Promise<boolean> => {
+  try {
+    console.log("신고하기 ");
+    const alreadyReport = await userRepo.checkReportedQ(data.reporterUserId, data.defendantUserId);
+    if (alreadyReport) throw new Error(`이미 신고한 게시글입니다.`);
+    await userRepo.reportQ(data);
+    return true;
+  } catch (err) {
+    console.log(err.message);
+    if (err.message === "이미 신고한 게시글입니다.") throw new Error(`400, 이미 신고한 게시글입니다.`);
+    throw new Error(`500 , 서버 오류`);
+  }
+};
+
+// 신고취소
+export const cancelReport = async (reportId: number, defendantId: number) => {
+  try {
+    const alreadyReport = await userRepo.checkReportedQ(reportId, defendantId);
+    if (!alreadyReport) throw new Error(`신고하려는 사람이 없는디요`);
+    console.log("취소하기 ");
+    const cancel = await userRepo.cancelReportQ(reportId, defendantId);
+    return cancel;
+  } catch (err) {
+    console.log(err.message);
+    if (err.message === "신고하려는 사람이 없는디요") throw new Error(`400, 신고하려는 사람이 없는디요`);
+    throw new Error(`500, 서버오류`);
+  }
 };

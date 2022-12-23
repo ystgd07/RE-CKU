@@ -223,12 +223,13 @@ export const deleteCommentQ = async (userId: number, boardId: number, commentId:
   return result;
 };
 
+// 댓글 수정
 export const updateCommentQ = async (commentId: number, data: { text: string }): Promise<boolean> => {
   const [keys, values] = utils.updateData(data);
   await db.query(
     `
     UPDATE comment 
-    SET ${keys.join(", ")},created=now() 
+    SET ${keys.join(", ")},updated=now() 
     WHERE id = ?
     `,
     [...values, commentId]
@@ -258,7 +259,7 @@ export const findComments = async (boardId: number, count: number): Promise<Alre
     ON s.boardId=a.id 
     Join user u 
     On s.userId=u.id 
-    WHERE a.id=? 
+    WHERE a.id=? AND a.active = 1
     Order BY  s.likes DESC , s.created DESC
     limit ?
     `,

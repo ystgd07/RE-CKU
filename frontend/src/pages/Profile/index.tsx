@@ -17,7 +17,7 @@ import { UserOutlined } from '@ant-design/icons';
 import { UserInfo } from 'components/User/UserInfo';
 import { Like } from 'components/User/Like';
 import axios from 'axios';
-
+const test = 'It is just test for git_hub ';
 //TODO:코드라인이 심각하게 많아지고 있다 컴포넌트의 필요성을 절실하게 느끼는 중..
 const { Header, Content, Footer } = Layout;
 const tierColors = {
@@ -59,7 +59,7 @@ const Profile: React.FC = () => {
 
     const handleOk = () => {
         const formData1: any = new FormData();
-        const blob = new Blob(imgLoadRef.current.files[0]);
+        const blob = new Blob(imgLoadRef.current.files[0], { type: 'image/png' });
         formData1.append('image', blob);
         setModalText('The modal will be closed after two seconds');
         setConfirmLoading(true);

@@ -13,6 +13,7 @@ export interface ResumeData {
     position?: string;
     updatedAt: string;
     resumeId: number;
+    title: string;
 }
 
 export interface UserData {
@@ -38,5 +39,9 @@ export interface ProjectFormData {
     information: string;
     link1: string;
     link2: string;
-    // stacks: Stack[],
+    stacks: string[];
+}
+
+export interface Stack {
+    stack: string;
 }
