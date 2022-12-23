@@ -29,6 +29,27 @@ export const updateUser = async (userId: number, updateInfo: Record<string, stri
   return updatedUser;
 }
 
+// admin 유저 벤하기 / 회생시키기
+export const banUser = async (targetId: number, type: string): Promise<Date> => {
+  const data = {
+    // 14일간 정지
+    ban: Date.now() + 1209600000,
+  };
+  console.log(data.ban);
+  try {
+    if (type === "BAN") { // 밴하기
+      await adminRepo.banUserQ(targetId, data);
+      return new Date(Date.now() + 1209600000);
+    }
+    data.ban = Date.now();
+    await adminRepo.updateUserQ(targetId, data);
+    return new Date(Date.now());
+  } catch (err) {
+    console.log(err.message);
+    throw new Error(`500, 서버오류`);
+  }
+};
+
 /*
 // 유저한명정보 불러오기 섭스
 export const individualInfo = async (userIdOrEmail: number | string): Promise<UserProfile> => {
