@@ -1,13 +1,9 @@
 import express, { Request, Response, NextFunction } from "express";
 //import { CreateUserDto, CreateAuthDataDto, AuthEmailDto, LoginUserDto } from "./dto";
 import * as adminService from "../services/admin.service";
-<<<<<<< HEAD
-import { findUsers } from "../services/admin.service";
-=======
-import {findUsers, updateUser} from "../services/admin.service";
-import {updateProject} from "../services";
+import { findUsers, updateUser } from "../services/admin.service";
+import { updateProject } from "../services";
 import resumeRoute from "./resume.routes";
->>>>>>> 54e6693e67d7f68cd45c60e8585b6b211d31cc43
 //import { createIndiUser, findOneUser } from "../db/user.repo";
 //import { avatarImg, tokenValidator, validateBody } from "../middlewares";
 export const adminRoute = express();
@@ -76,7 +72,7 @@ adminRoute.patch("/users/:userId/active", async (req, res, next) => {
   try {
     const userId = Number(req.params.userId);
 
-    const updatedUser = await adminService.updateUser(userId, {"active": 1});
+    const updatedUser = await adminService.updateUser(userId, { active: 1 });
 
     return res.status(203).json({
       msg: "비활성화 해제 성공",
@@ -92,7 +88,7 @@ adminRoute.patch("/worst-users/:userId", async (req, res, next) => {
   try {
     const userId = Number(req.params.userId);
 
-    const updatedUser = await adminService.updateUser(userId, {"active": 0});
+    const updatedUser = await adminService.updateUser(userId, { active: 0 });
 
     return res.status(203).json({
       msg: "비활성화 성공",

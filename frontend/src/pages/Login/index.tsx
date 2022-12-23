@@ -1,11 +1,10 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import * as S from './style';
 import Logo from 'assets/images/logo.png';
 import Kakao from 'assets/images/kakao_login_medium_wide.png';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useForm } from 'react-hook-form';
-import dotenv from 'dotenv';
 
 const Login = () => {
     const navigate = useNavigate();
@@ -100,7 +99,7 @@ const Login = () => {
                         />
                         <button type="submit">로그인</button>
                         <div onClick={kakao}>
-                            <img src={Kakao}></img>
+                            <img src={Kakao} alt={'카카오로그인'}></img>
                         </div>
 
                         <Link

@@ -62,7 +62,7 @@ const BorderDiv = styled.div`
 interface userDataRes {
     avatarUrl: string;
     created: string;
-    id: number;
+    userId: number;
     email: string;
     phoneNumber: string;
     username: string;
@@ -76,14 +76,14 @@ interface userDataRes {
 const AdminContent: React.FC = () => {
     const [userData, setUserData] = useState<userDataRes[]>([]);
     const [searchEmail, setSearchEmail] = useState('');
-
+    const [point, setPoint] = useState();
     const {
         token: { colorBgContainer },
     } = theme.useToken();
 
     async function getId() {
         try {
-            const res = await axios.get(`/admin/user-list`);
+            const res = await axios.get(`/admin/users`);
             console.log('😀');
             console.log(res.data.data);
             setUserData(res.data.data);
@@ -91,13 +91,26 @@ const AdminContent: React.FC = () => {
             console.log(e);
         }
     }
+    async function updatePoint(userId: any) {
+        try {
+            console.log(point);
+            // console.log(e.item.userId);
+            const res = await axios.patch(`/users/${userId}/point`, point);
+
+            console.log('😀');
+            console.log(res.data.data);
+            setUserData(res.data.data);
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
     useEffect(() => {
         getId();
     }, []);
 
     // const onSearchUser = userData.filter((userData: any) => {
     //     console.log(userData.email.toLowerCase().includes(searchEmail.toLowerCase()));
-    //     // return userData.email.toLowerCase().includes(searchEmail.toLowerCase());
     //     return userData.email.includes('a');
     // });
 
@@ -105,6 +118,25 @@ const AdminContent: React.FC = () => {
     //     const searchUser = userData.filter(userData => userData.email.includes('ap'));
     //     return searchUser;
     // }
+
+    function onSearchUser(searchEmail: string) {
+        const searchUser = userData.filter((data: any) => data.email.includes(searchEmail));
+        setUserData(searchUser);
+    }
+
+    const onChangeActive = async (e: any) => {
+        try {
+            console.log(e.userData.active);
+            if (e.userData.active) {
+                const res = await axios.get(`/admin/user-list`);
+            } else if (!e.userData.active) {
+                const res = await axios.get(`/admin/user-list`);
+            }
+            console.log('😀');
+        } catch (e) {
+            console.log(e);
+        }
+    };
     return (
         <>
             <Content
@@ -125,7 +157,7 @@ const AdminContent: React.FC = () => {
                         <Col span={50}>
                             <Search
                                 placeholder="검색할 이메일을 입력해주세요"
-                                // onSearch={onSearchUser()}
+                                onSearch={() => onSearchUser(searchEmail)}
                                 enterButton
                                 onChange={e => {
                                     setSearchEmail(e.target.value);
@@ -151,7 +183,8 @@ const AdminContent: React.FC = () => {
                     renderItem={item => (
                         <List.Item>
                             <List.Item.Meta
-                                avatar={<Avatar src={'https://joeschmoe.io/api/v1/random'} />}
+                                key={item.userId}
+                                avatar={<Avatar src={item.avatarUrl} />}
                                 title={
                                     <>
                                         {item.email}/{item.username}
@@ -183,7 +216,13 @@ const AdminContent: React.FC = () => {
                                                             allowClear
                                                             enterButton="change"
                                                             size="small"
-                                                            // onSearch={onSearch}
+                                                            onSearch={() =>
+                                                                updatePoint(item.userId)
+                                                            }
+                                                            // value={point}
+                                                            onChange={(e: any) => {
+                                                                setPoint(e.target.value);
+                                                            }}
                                                         />
                                                     </Col>
                                                 </Row>
@@ -193,7 +232,7 @@ const AdminContent: React.FC = () => {
                                             활동 :
                                             <Switch
                                                 checked={item.active == 1 ? true : false}
-                                                // onChange={onChangeActive}
+                                                onChange={onChangeActive}
                                                 size="small"
                                             />
                                         </div>

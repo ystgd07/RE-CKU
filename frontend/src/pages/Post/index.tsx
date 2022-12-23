@@ -3,9 +3,7 @@ import { useEffect, useState, useRef } from 'react';
 import styled from '@emotion/styled';
 import { Viewer } from '@toast-ui/react-editor';
 import '@toast-ui/editor/dist/toastui-editor-viewer.css';
-<<<<<<< HEAD
 import axios from 'axios';
-=======
 import Header from 'components/Header';
 import API from 'utils/api';
 import TestProfileImg from 'assets/images/logo-header.png';
@@ -16,7 +14,6 @@ const { Title, Text } = Typography;
 // 본인 게시물일 경우 수정/삭제 버튼 생성
 // 좋아요 누른 경우, 누르지 않은 경우 구분
 // 댓글 좋아요도 마찬가지
->>>>>>> 54e6693e67d7f68cd45c60e8585b6b211d31cc43
 
 const Container = styled.div`
     display: flex;

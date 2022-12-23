@@ -33,7 +33,7 @@ export const MobileDiv = styled.div`
     }
     & img {
         margin: 0 10px 0 80px;
-        width: 150px;
+        width: 100px;
         height: 100px;
     }
 
@@ -64,6 +64,9 @@ export const BorderDiv = styled.div`
         flex-direction: row;
         & div {
             flex-direction: column;
+            & div {
+                flex-direction: row;
+            }
         }
     }
 

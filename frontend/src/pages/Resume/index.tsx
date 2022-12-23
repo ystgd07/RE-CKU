@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+
 import axios from 'axios';
 import * as S from './style';
-import Logo from 'assets/images/logo.png';
 import Header from 'components/Header';
+import { Typography, Avatar } from 'antd';
+
+const { Title, Paragraph, Text } = Typography;
 
 interface careerDataRes {
     company: string;
@@ -46,7 +48,6 @@ interface userDataRes {
 
 const resumeId = 1;
 const Resume = () => {
-    const navigate = useNavigate();
     const [careerData, setCareerData] = useState<careerDataRes[]>([]);
     const [projectData, setProjectData] = useState<projectDataRes[]>([]);
     const [resumeData, setResumeData] = useState<resumeDataRes>();
@@ -79,67 +80,81 @@ const Resume = () => {
         <div>
             <Header />
             <S.MobileDiv>
-                <div>
-                    {/* {resumeData.map((data: any) => ( */}
-                    <h1 key={resumeData?.resumeId}>{resumeData?.resumeName}</h1>
-                    {/* ))} */}
-                </div>
+                <Typography>
+                    <Title key={resumeData?.resumeId}>{resumeData?.resumeName}</Title>
+                </Typography>
                 <S.LineDiv>
-                    <S.H2>Info</S.H2>
+                    <Title level={3}>Info</Title>
                 </S.LineDiv>
                 {/* {resumeData.map((data: any) => ( */}
                 <S.BorderDiv key={resumeData?.resumeId}>
-                    <h2>{userData?.username}</h2>
+                    <Title level={2}>{userData?.username}</Title>
                     <div>
-                        <img src={Logo}></img>
+                        {/* <Avatar src={userData?.avatarUrl} /> */}
+                        <img src={userData?.avatarUrl} alt={'프로필사진'}></img>
                         <div>
-                            <p>
-                                information <br /> {resumeData?.intro}
-                            </p>
-                            <br />
-                            <p>
-                                포지션 <br /> {resumeData?.position}
-                            </p>
-                            <p>
-                                이메일 <br /> {userData?.email}
-                            </p>
+                            <Paragraph strong>소개 : {resumeData?.intro}</Paragraph>
+                            <Paragraph strong>포지션 : {resumeData?.position}</Paragraph>
+                            <Paragraph strong>이메일 : {userData?.email}</Paragraph>
                         </div>
                     </div>
                 </S.BorderDiv>
                 {/* ))} */}
                 <S.LineDiv>
-                    <S.H2>Project</S.H2>
+                    <Title level={2}>Project</Title>
                 </S.LineDiv>
 
                 {projectData.map((data: any) => (
                     <S.BorderDiv key={data.id}>
-                        <h2>{data.projectName}</h2>
+                        <Title level={2}>{data.projectName}</Title>
                         <div>
-                            {/* <img src={Logo}></img> */}
                             <div>
-                                <p>{data.information}</p>
-                                <p>{data.year}</p>
-                                <p>{data.link1}</p>
-                                <p>{data.link2}</p>
+                                <div>
+                                    <Paragraph>
+                                        <Text strong>소개 :</Text>
+                                        &nbsp;{data.information}
+                                    </Paragraph>
+                                </div>
+                                <div>
+                                    <Paragraph>
+                                        <Text strong>제작년도 :</Text>
+                                        &nbsp;{data.year}
+                                    </Paragraph>
+                                </div>
+                                <div>
+                                    <Paragraph>
+                                        <Text strong>링크 :</Text>
+                                        &nbsp;{data.link1}
+                                    </Paragraph>
+                                </div>
+                                <div>
+                                    <Paragraph>
+                                        <Text strong>링크 :</Text>
+                                        &nbsp;{data.link2}
+                                    </Paragraph>
+                                </div>
                             </div>
                         </div>
                     </S.BorderDiv>
                 ))}
                 <S.LineDiv>
-                    <S.H2>Career</S.H2>
+                    <Title level={2}>Career</Title>
                 </S.LineDiv>
                 {careerData.map((data: any) => (
                     <S.BorderDiv key={data.id}>
                         <h2>{data.company}</h2>
                         <h4>{data.notDevlop ? '개발자' : '비개발자'}</h4>
                         <div>
-                            <div>
-                                <p>
-                                    {data.startDate}~{data.endDate}
-                                </p>
-                                <p>{data.position}</p>
-                                <p>{data.reward}</p>
-                            </div>
+                            {/* <div> */}
+                            <Paragraph strong>기간:</Paragraph>
+                            <Paragraph>
+                                {data.startDate}~{data.endDate}&nbsp;&nbsp;&nbsp;
+                            </Paragraph>
+                            <Paragraph strong>포지션:</Paragraph>
+                            <Paragraph> {data.position}&nbsp;&nbsp;&nbsp;</Paragraph>
+                            <Paragraph strong>리워드가뭐야?: </Paragraph>
+                            <Paragraph>{data.reward}&nbsp;&nbsp;&nbsp;</Paragraph>
+                            {/* </div> */}
                         </div>
                     </S.BorderDiv>
                 ))}

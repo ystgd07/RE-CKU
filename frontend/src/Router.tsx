@@ -12,12 +12,8 @@ import Err404 from 'pages/Err404';
 import Admin from 'pages/Admin';
 import Resumeform from 'pages/Resume';
 import Loading from 'pages/Loading';
-<<<<<<< HEAD
 import AdminUser from 'components/Admin/AdminUser';
 import AdminContent from 'components/Admin/AdminContent';
-=======
-
->>>>>>> 54e6693e67d7f68cd45c60e8585b6b211d31cc43
 const Router = () => {
     const isLogined = localStorage.getItem('accessToken') ? true : false;
     // <Route> => <BasicRouter>, <AdminRouter>, <AuthRouter>

@@ -12,9 +12,10 @@ import {
     Button,
     Collapse,
 } from 'antd';
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 
 import styled from '@emotion/styled';
+import e from 'express';
 const { Panel } = Collapse;
 const { Content } = Layout;
 const { Search } = Input;
@@ -73,9 +74,23 @@ interface userDataRes {
     clickedLikes: number;
     howToLogin: string;
 }
+interface userReportData {
+    avatarUrl: string;
+    created: string;
+    userId: number;
+    email: string;
+    phoneNumber: string;
+    username: string;
+    password: string;
+    point: number;
+    active: number;
+    clickedLikes: number;
+    howToLogin: string;
+}
 
 const AdminContent: React.FC = () => {
     const [userData, setUserData] = useState<userDataRes[]>([]);
+    const [userReportData, setUserReportData] = useState<AxiosResponse | null>(null);
 
     const {
         token: { colorBgContainer },
@@ -83,21 +98,40 @@ const AdminContent: React.FC = () => {
 
     async function getId() {
         try {
-            const res = await axios.get(`/admin/user-list`);
-            console.log('😀');
+            const res = await axios.get(`/admin/worst-users`);
+            console.log('😈');
             console.log(res.data.data);
             setUserData(res.data.data);
         } catch (e) {
             console.log(e);
         }
     }
+
+    async function getReport(userId: number) {
+        try {
+            // const res = await axios.get(`/worst-users/`);
+            const res = await axios.get(`/admin/worst-users/${userId}`);
+            console.log('😫');
+            console.log(res);
+            setUserReportData(res.data);
+        } catch (e) {
+            console.log(e);
+        }
+    }
     useEffect(() => {
         getId();
+        // getReport();
     }, []);
 
-    const onChangeActive = (item: any) => {
-        console.log(item);
-        //이거 누르면 밴
+    const onChangeActive = async (e: React.MouseEvent<HTMLButtonElement>) => {
+        try {
+            const res = await axios.get(``);
+            console.log('😈');
+            console.log(res);
+            // setUserReportData(res);
+        } catch (e) {
+            console.log(e);
+        }
     };
 
     return (
@@ -152,13 +186,16 @@ const AdminContent: React.FC = () => {
                                             </div>
                                         </div>
                                         <div>
-                                            <Collapse bordered={false}>
-                                                {/* {userData.map((data: any) => (
+                                            <Collapse
+                                                bordered={false}
+                                                onChange={() => getReport(item.userId)}
+                                            >
+                                                {/* {userReportData.map((data: any) => (
                                                     <Panel
                                                         header=" 신고내역펼치기"
-                                                        key={item.userId}
+                                                        key={data.userId}
                                                     >
-                                                        님 밴
+                                                        {data.userId}님 밴
                                                     </Panel>
                                                 ))} */}
                                                 {/* //여기에 신고내역 */}

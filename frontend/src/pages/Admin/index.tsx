@@ -1,11 +1,5 @@
 import React, { useState } from 'react';
-import {
-    MenuFoldOutlined,
-    MenuUnfoldOutlined,
-    UploadOutlined,
-    UserOutlined,
-    BookOutlined,
-} from '@ant-design/icons';
+import { UserOutlined, BookOutlined } from '@ant-design/icons';
 import { Layout, Menu, theme } from 'antd';
 import { Link, Outlet } from 'react-router-dom';
 
