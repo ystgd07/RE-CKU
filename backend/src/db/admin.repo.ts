@@ -40,6 +40,7 @@ export const findWorstUsersQ = async () => {
         point,
         clickedLikes,
         reported,
+        ban,
         working,
         created
         FROM user
