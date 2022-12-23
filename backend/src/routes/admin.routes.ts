@@ -1,7 +1,7 @@
 import express, { Request, Response, NextFunction } from "express";
 //import { CreateUserDto, CreateAuthDataDto, AuthEmailDto, LoginUserDto } from "./dto";
 import * as adminService from "../services/admin.service";
-import {findUsers, updateUser} from "../services/admin.service";
+import {findReport, findUsers, updateUser} from "../services/admin.service";
 import {updateProject} from "../services";
 import resumeRoute from "./resume.routes";
 import userRoute from "./user.routes";
@@ -41,11 +41,12 @@ adminRoute.get("/worst-users", async (req, res, next) => {
 // 2-3. 신고 내역 조회
 // TODO]
 adminRoute.get("/worst-users/:userId", async (req, res, next) => {
+  const userId = Number(req.params.userId);
   try {
-    const worstUsers = await adminService.findWorstUsers();
+    const worstUsers = await adminService.findReport(userId);
 
     return res.status(200).json({
-      msg: "최악의 회원 목록 조회 성공",
+      msg: "신고 내역 조회 성공",
       data: worstUsers,
     });
   } catch (err) {

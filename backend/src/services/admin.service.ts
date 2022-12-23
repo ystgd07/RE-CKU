@@ -22,14 +22,21 @@ export const findWorstUsers = async () => {
   return worstUsers;
 };
 
-// 3. 포인트 / 비활성화
+// 2-3. 신고 내역 조회
+export const findReport = async (userId: number) => {
+  const reportInfo = await adminRepo.findReportQ(userId);
+
+  return reportInfo;
+};
+
+// 3-1. 포인트 / 비활성화
 export const updateUser = async (userId: number, updateInfo: Record<string, string | number>) => {
   const updatedUser = updateUserQ(userId, updateInfo);
 
   return updatedUser;
 }
 
-// admin 유저 벤하기 / 회생시키기
+// 3-2. 2주 밴
 export const banUser = async (userId: number, type: string): Promise<Date> => {
   const data = {
     ban: Date.now() + 1209600000,

@@ -51,6 +51,21 @@ export const findWorstUsersQ = async () => {
       return users;
 };
 
+// 2-3. 신고 내역 조회
+export const findReportQ = async (userId: number) => {
+  const [reportInfo, ] = await db.query(
+    `SELECT
+        reporterUserId,
+        defendantUserId,
+        reason
+        FROM user_report_table
+        WHERE defendantUserId = ?
+        `, userId);
+
+  const reportInfos = reportInfo;
+  return reportInfos;
+};
+
 // 3-1. 회원 정보 수정
 export const updateUserQ = async (userId: number, updateInfo: Record<string, string | number>) => {
   const [key, value] = utils.updateData(updateInfo);
