@@ -7,6 +7,7 @@ import { DatePicker } from 'antd';
 import axios, { AxiosResponse } from 'axios';
 import Header from 'components/Header';
 import { useParams } from 'react-router-dom';
+// import Job from './Job';
 import { UserData, ResumeData, WorkFormData, ProjectFormData, Stack } from 'models/resume-model';
 
 const Resume = () => {
@@ -62,6 +63,7 @@ const Resume = () => {
             const resumeTitle = res.data.data.resumeData;
             setResumeTitle(resumeTitle);
             setUserInfo(userInfoData);
+            console.log(res);
         } catch (err) {
             console.log(err);
         }
@@ -189,110 +191,24 @@ const Resume = () => {
         }
     };
 
-    const resumeNameChange = () => {
-        axios.patch(`/my-portfolio/resumes/${resumeIds}`);
+    const resumeNameValue = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setResumeTitle({
+            ...resumeTitle,
+            title: e.target.value,
+        });
     };
 
-    // const JobEx: FunctionComponent = () => {
-    //     return (
-    //         <form>
-    //             <div className="formWrap">
-    //                 <ul>
-    //                     <li>
-    //                         <dl>
-    //                             <dt>회사명</dt>
-    //                             <dd>
-    //                                 <input
-    //                                     type="text"
-    //                                     name="companyName"
-    //                                     placeholder="회사 이름"
-    //                                     value={workFormDataState.companyName}
-    //                                     onChange={workFormHandler}
-    //                                 />
-    //                             </dd>
-    //                         </dl>
-    //                         <dl>
-    //                             <dt>직무</dt>
-    //                             <dd>
-    //                                 <input
-    //                                     type="text"
-    //                                     name="jobGroup"
-    //                                     placeholder="프론트엔드"
-    //                                     value={workFormDataState.jobGroup}
-    //                                     onChange={workFormHandler}
-    //                                 />
-    //                             </dd>
-    //                         </dl>
-    //                         <dl className="noneDevelop">
-    //                             <dt>
-    //                                 <input type="checkbox" name="noneDevelop" />
-    //                             </dt>
-    //                             <dd>
-    //                                 <label>비개발 경력</label>
-    //                             </dd>
-    //                         </dl>
-    //                     </li>
-    //                 </ul>
+    const resumeNameChange = async () => {
+        try {
+            const res = await axios.patch(`/my-portfolio/resumes/${resumeIds}`, {
+                name: resumeTitle.title,
+            });
 
-    //                 <ul>
-    //                     <li>
-    //                         <dl>
-    //                             <dt>
-    //                                 <label>입사</label>
-    //                                 <small>재직 중 </small>
-    //                                 <label className="switch">
-    //                                     <input
-    //                                         type="checkbox"
-    //                                         checked={isStilWork ? true : false}
-    //                                         onChange={(): void => setIsStilWork(!isStilWork)}
-    //                                     />
-    //                                     <span className="slider"></span>
-    //                                 </label>
-    //                             </dt>
-
-    //                             <dd>
-    //                                 <DatePicker
-    //                                     placeholder="YYYY-MM"
-    //                                     picker="month"
-    //                                     onChange={(date, dateString): void =>
-    //                                         console.log('asd', dateString)
-    //                                     }
-    //                                 />
-    //                             </dd>
-    //                         </dl>
-    //                         {!isStilWork && (
-    //                             <dl>
-    //                                 <dt>퇴사</dt>
-    //                                 <dd>
-    //                                     <DatePicker placeholder="YYYY-MM" picker="month" />
-    //                                 </dd>
-    //                             </dl>
-    //                         )}
-    //                     </li>
-    //                 </ul>
-
-    //                 <ul>
-    //                     <li>
-    //                         <label>업무 성과</label>
-    //                     </li>
-    //                     <li>
-    //                         <textarea
-    //                             maxLength={500}
-    //                             placeholder={`구체적인 역할과 성과 위주의 글을 작성해보세요. \n수치와 함께 표현되면 경험이 잘 전달될 수 있습니다.`}
-    //                         ></textarea>
-    //                     </li>
-    //                 </ul>
-    //             </div>
-
-    //             <div className="formBtn">
-    //                 <button type="button" onClick={() => setIsWorkFormToggle(!isWorkFormToggle)}>
-    //                     취소
-    //                 </button>
-    //                 <button type="submit">저장</button>
-    //             </div>
-    //         </form>
-    //     );
-    // };
+            console.log(res);
+        } catch (err: unknown) {
+            console.log(err);
+        }
+    };
 
     return (
         <>
@@ -301,9 +217,13 @@ const Resume = () => {
                 <ResumeFrame>
                     <UserInfo>
                         <Title>
-                            <input type="text" value={`${resumeTitle.resumeName}`} />
+                            <input
+                                type="text"
+                                defaultValue={resumeTitle.resumeName}
+                                onChange={resumeNameValue}
+                            />
                             <span>
-                                <button type="button">
+                                <button type="button" onClick={resumeNameChange}>
                                     <BiEdit />
                                 </button>
                             </span>
@@ -336,14 +256,14 @@ const Resume = () => {
                                         value={`${userInfo.phoneNumber}`}
                                     />
                                 </li>
-                                <li>
+                                {/* <li>
                                     <textarea
                                         placeholder="채용자에게 지원자님을 소개해주세요. (최대 200자)"
                                         maxLength={200}
                                         rows={3}
                                         autoComplete="off"
                                     ></textarea>
-                                </li>
+                                </li> */}
                             </ul>
                         </div>
                     </UserInfo>
@@ -376,124 +296,13 @@ const Resume = () => {
                                 </FormTitle>
 
                                 {isWorkFormToggle && (
-                                    <form>
-                                        <div className="formWrap">
-                                            <ul>
-                                                <li>
-                                                    <dl>
-                                                        <dt>회사명</dt>
-                                                        <dd>
-                                                            <input
-                                                                type="text"
-                                                                name="companyName"
-                                                                placeholder="회사 이름"
-                                                                value={
-                                                                    workFormDataState.companyName
-                                                                }
-                                                                onChange={workFormHandler}
-                                                            />
-                                                        </dd>
-                                                    </dl>
-                                                    <dl>
-                                                        <dt>직무</dt>
-                                                        <dd>
-                                                            <input
-                                                                type="text"
-                                                                name="jobGroup"
-                                                                placeholder="프론트엔드"
-                                                                value={workFormDataState.jobGroup}
-                                                                onChange={workFormHandler}
-                                                            />
-                                                        </dd>
-                                                    </dl>
-                                                    <dl className="noneDevelop">
-                                                        <dt>
-                                                            <input
-                                                                type="checkbox"
-                                                                name="noneDevelop"
-                                                            />
-                                                        </dt>
-                                                        <dd>
-                                                            <label>비개발 경력</label>
-                                                        </dd>
-                                                    </dl>
-                                                </li>
-                                            </ul>
-
-                                            <ul>
-                                                <li>
-                                                    <dl>
-                                                        <dt>
-                                                            <label>입사</label>
-                                                            <small>재직 중 </small>
-                                                            <label className="switch">
-                                                                <input
-                                                                    type="checkbox"
-                                                                    checked={
-                                                                        isStilWork ? true : false
-                                                                    }
-                                                                    onChange={(): void =>
-                                                                        setIsStilWork(!isStilWork)
-                                                                    }
-                                                                />
-                                                                <span className="slider"></span>
-                                                            </label>
-                                                        </dt>
-
-                                                        <dd>
-                                                            <DatePicker
-                                                                placeholder="YYYY-MM"
-                                                                picker="month"
-                                                                name="startWork"
-                                                                onChange={workStartTimeHandler}
-                                                            />
-                                                        </dd>
-                                                    </dl>
-                                                    {!isStilWork && (
-                                                        <dl>
-                                                            <dt>퇴사</dt>
-                                                            <dd>
-                                                                <DatePicker
-                                                                    placeholder="YYYY-MM"
-                                                                    picker="month"
-                                                                    name="endWork"
-                                                                    onChange={workEndTimeHandler}
-                                                                />
-                                                            </dd>
-                                                        </dl>
-                                                    )}
-                                                </li>
-                                            </ul>
-
-                                            <ul>
-                                                <li>
-                                                    <label>업무 성과</label>
-                                                </li>
-                                                <li>
-                                                    <textarea
-                                                        maxLength={500}
-                                                        placeholder={`구체적인 역할과 성과 위주의 글을 작성해보세요. \n수치와 함께 표현되면 경험이 잘 전달될 수 있습니다.`}
-                                                        name="workPerformance"
-                                                        onChange={workFormHandler}
-                                                    ></textarea>
-                                                </li>
-                                            </ul>
-                                        </div>
-
-                                        <div className="formBtn">
-                                            <button
-                                                type="button"
-                                                onClick={() =>
-                                                    setIsWorkFormToggle(!isWorkFormToggle)
-                                                }
-                                            >
-                                                취소
-                                            </button>
-                                            <button type="submit" onClick={createWorkForm}>
-                                                저장
-                                            </button>
-                                        </div>
-                                    </form>
+                                    // <Job
+                                    //     workStartTimeHandler={workStartTimeHandler}
+                                    //     workFormHandler={workFormHandler}
+                                    //     workEndTimeHandler={workEndTimeHandler}
+                                    //     createWorkForm={createWorkForm}
+                                    // />
+                                    <></>
                                 )}
                             </section>
 
@@ -572,7 +381,7 @@ const Resume = () => {
                                                 <li>
                                                     {tagListItem.map((tem, idx) => {
                                                         return (
-                                                            <div key={idx}>
+                                                            <div key={idx} className="stackList">
                                                                 <span>{tem}</span>
                                                                 <button
                                                                     type="button"

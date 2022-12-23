@@ -319,7 +319,7 @@ export const InputForm = styled.div`
                             position: relative;
                             flex-wrap: wrap;
 
-                            & div {
+                            & .stackList {
                                 margin: 0.4rem;
                                 padding: 0.4rem;
                                 background-color: #00bfff;

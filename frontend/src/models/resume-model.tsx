@@ -13,6 +13,7 @@ export interface ResumeData {
     position?: string;
     updatedAt: string;
     resumeId: number;
+    title: string;
 }
 
 export interface UserData {
