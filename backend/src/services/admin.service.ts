@@ -44,14 +44,14 @@ export const banUser = async (userId: number, type: string): Promise<Date> => {
 
   try {
     if (type === "BAN") {
-      await adminRepo.banUserQ(userId, data);
+      await adminRepo.banUserQ(userId, data, type);
 
       return new Date(Date.now() + 1209600000);
     }
 
     data.ban = Date.now();
 
-    await adminRepo.updateUserQ(userId, data);
+    await adminRepo.banUserQ(userId, data, type);
 
     return new Date(Date.now());
   } catch (err) {

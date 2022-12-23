@@ -79,13 +79,14 @@ export const updateUserQ = async (userId: number, updateInfo: Record<string, str
 }
 
 // 3-2. 2주 밴
-export const banUserQ = async (userId: number, data: Record<string, number | string>) => {
+export const banUserQ = async (userId: number, data: Record<string, number | string>, type: string) => {
   const [keys, values] = utils.updateData(data);
+  const active = type === "BAN" ? 0 : 1;
 
   const [user, board, comment] = await Promise.all([
     await db.query(`UPDATE user SET ${keys}, RT = "" WHERE id = ? `, [...values, userId]),
-    await db.query(`UPDATE board SET active = 0 WHERE fromUserId = ? `, userId),
-    await db.query(`UPDATE comment SET active = 0 WHERE userId = ? `, [...values, userId])
+    await db.query(`UPDATE board SET active = ? WHERE fromUserId = ? `, [active, userId]),
+    await db.query(`UPDATE comment SET active = ? WHERE userId = ? `, [active, userId])
   ]);
 
   return true;
