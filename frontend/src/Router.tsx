@@ -24,16 +24,17 @@ const Router = () => {
                         <Route path="/" element={<Main />} />
                         <Route path="/resume/:id" element={<Resume />} />
                         <Route path="/post/:postId" element={<Post />} />
+                        <Route path="/post/:postId/edit" element={<PostCreate />} />
                         <Route path="/post/create" element={<PostCreate />} />
                         <Route path="/myportfolio" element={<MyPortfolio />} />
                         <Route path="/profile" element={<Profile />} />
                         <Route path="/login" element={<Navigate replace to="/" />} />
                         <Route path="/find-pw" element={<Navigate replace to="/" />} />
                         <Route path="/join" element={<Navigate replace to="/" />} />
-                        <Route path="/*" element={<Err404 />} />
                         <Route path="/resume" element={<Resumeform />} />
                         <Route path="/admin" element={<Admin />} />
                         <Route path="/loading" element={<Loading />} />
+                        <Route path="/*" element={<Err404 />} />
                     </>
                 ) : (
                     <>
@@ -44,22 +45,13 @@ const Router = () => {
                         <Route path="/myportfolio" element={<Navigate replace to="/" />} />
                         <Route path="/profile" element={<Navigate replace to="/" />} />
                         <Route path="/login" element={<Login />} />
-                        <Route path="/FindPw" element={<FindPw />} />
-                        <Route path="/Join" element={<Join />} />
-                        <Route path="/*" element={<Err404 />} />
+                        <Route path="/find-pw" element={<FindPw />} />
+                        <Route path="/join" element={<Join />} />
                         <Route path="/admin" element={<Admin />} />
                         <Route path="/loading" element={<Loading />} />
+                        <Route path="/*" element={<Err404 />} />
                     </>
                 )}
-                <Route path="/" element={<Main />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/resume/:id" element={<Resume />} />
-                {/* <Route path="/create-post" element={<CreatePost />} /> */}
-
-                <Route path="/Join" element={<Join />} />
-                <Route path="/FindPw" element={<FindPw />} />
-                <Route path="/my-portfolio" element={<MyPortfolio />} />
-                <Route path="/profile" element={<Profile />} />
             </Routes>
         </BrowserRouter>
     );
