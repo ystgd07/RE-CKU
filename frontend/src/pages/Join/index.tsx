@@ -26,13 +26,6 @@ const Join = () => {
         passwordCheck: string;
     }
 
-    // useEffect(() => {
-    //     console.log('이동?');
-    //     if (localStorage.getItem('accessToken')) {
-    //         navigate('/');
-    //     }
-    // }, []);
-
     const onValid = async (data: FormData) => {
         if (data.password !== data.passwordCheck) {
             setError('passwordCheck', { message: '비밀번호가 일치하지 않습니다.' });

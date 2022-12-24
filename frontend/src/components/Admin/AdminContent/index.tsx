@@ -117,9 +117,21 @@ const AdminContent: React.FC = () => {
     const onChangeBan = async (userId: number) => {
         try {
             console.log('userId', userId);
-            const res = await axios.patch(`/admin/worst-users/${userId}/ban`);
+            const res = await axios.patch(`/admin/worst-users/${userId}/ban`, { type: 'BAN' });
             console.log('🥶✋');
             console.log(res);
+            getId();
+        } catch (e) {
+            console.log(e);
+        }
+    };
+    const onChangeBanCancel = async (userId: number) => {
+        try {
+            console.log('userId', userId);
+            const res = await axios.patch(`/admin/worst-users/${userId}/ban`, { type: 'RECOVERY' });
+            console.log('😊✋');
+            console.log(res);
+            getId();
         } catch (e) {
             console.log(e);
         }
@@ -168,14 +180,25 @@ const AdminContent: React.FC = () => {
                                                 신고당한 횟수 : {item.howToLogin}
                                             </Typography.Title>
                                             <div>
-                                                <Button
-                                                    type="primary"
-                                                    onClick={() => {
-                                                        onChangeBan(item.userId);
-                                                    }}
-                                                >
-                                                    {item.ban === 0 ? '2주 밴' : '밴 취소'}
-                                                </Button>
+                                                {item.ban !== 0 ? (
+                                                    <Button
+                                                        type="primary"
+                                                        onClick={() => {
+                                                            onChangeBanCancel(item.userId);
+                                                        }}
+                                                    >
+                                                        밴취소
+                                                    </Button>
+                                                ) : (
+                                                    <Button
+                                                        type="primary"
+                                                        onClick={() => {
+                                                            onChangeBan(item.userId);
+                                                        }}
+                                                    >
+                                                        2주밴
+                                                    </Button>
+                                                )}
                                             </div>
                                         </div>
                                         <div>
