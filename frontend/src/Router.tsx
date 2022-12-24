@@ -12,7 +12,8 @@ import Err404 from 'pages/NotFound';
 import Admin from 'pages/Admin';
 import Resume from 'pages/Resume';
 import Loading from 'pages/Loading';
-
+import AdminUser from 'components/Admin/AdminUser';
+import AdminContent from 'components/Admin/AdminContent';
 const Router = () => {
     const isLogined = localStorage.getItem('accessToken') ? true : false;
     // <Route> => <BasicRouter>, <AdminRouter>, <AuthRouter>
@@ -32,7 +33,10 @@ const Router = () => {
                         <Route path="/login" element={<Navigate replace to="/" />} />
                         <Route path="/find-pw" element={<Navigate replace to="/" />} />
                         <Route path="/join" element={<Navigate replace to="/" />} />
-                        <Route path="/admin" element={<Admin />} />
+                        <Route path="/admin" element={<Admin />}>
+                            <Route path="user" element={<AdminUser />} />
+                            <Route path="content" element={<AdminContent />} />
+                        </Route>
                         <Route path="/loading" element={<Loading />} />
                         <Route path="/*" element={<Err404 />} />
                     </>
@@ -47,7 +51,11 @@ const Router = () => {
                         <Route path="/login" element={<Login />} />
                         <Route path="/find-pw" element={<FindPw />} />
                         <Route path="/join" element={<Join />} />
-                        <Route path="/admin" element={<Admin />} />
+                        <Route path="/*" element={<Err404 />} />
+                        <Route path="/admin" element={<Admin />}>
+                            <Route path="user" element={<AdminUser />} />
+                            <Route path="content" element={<AdminContent />} />
+                        </Route>
                         <Route path="/loading" element={<Loading />} />
                         <Route path="/*" element={<Err404 />} />
                     </>

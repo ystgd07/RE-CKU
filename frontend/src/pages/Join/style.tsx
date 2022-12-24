@@ -56,13 +56,15 @@ export const MobileDiv = styled.div`
         color: red;
         font-size: 10px;
         text-align: start;
-        padding: 0px 30px;
+        padding: 5px 30px;
     }
     & div {
         & p {
             width: 200px;
             text-align: start;
             padding: 0px 30px;
+            font-size: 12px;
+            font-weight: 600;
         }
         & div {
             & button {
@@ -89,17 +91,16 @@ export const MobileDiv = styled.div`
     }
 `;
 
-export const Button = styled.button`  
+export const Button = styled.button`
     margin: 20px;
-    padding : 20px; 
+    padding: 20px;
     border: 1px none #c9cacc;
     border-radius: 10px;
     width: 20%;
     font-size: 14px;
     line-height: 22px;
-    background-color : rgba(0,0,0,0.08);
+    background-color: rgba(0, 0, 0, 0.08);
     font-size: 16px;
-}
 `;
 
 export const Div = styled.div`
