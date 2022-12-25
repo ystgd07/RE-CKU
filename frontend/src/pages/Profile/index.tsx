@@ -1,17 +1,30 @@
 import { Bar } from './style';
-import { useEffect, useState } from 'react';
-import { Breadcrumb, Layout, Menu, theme, Avatar, Divider, Space, Progress, Tabs } from 'antd';
+import { useEffect, useRef, useState } from 'react';
+import {
+    Breadcrumb,
+    Layout,
+    Menu,
+    theme,
+    Avatar,
+    Divider,
+    Space,
+    Progress,
+    Tabs,
+    Upload,
+    Modal,
+} from 'antd';
 import { UserOutlined } from '@ant-design/icons';
 import { UserInfo } from 'components/User/UserInfo';
 import { Like } from 'components/User/Like';
 import axios from 'axios';
-
+const test = 'It is just test for git_hub ';
 //TODO:코드라인이 심각하게 많아지고 있다 컴포넌트의 필요성을 절실하게 느끼는 중..
 const { Header, Content, Footer } = Layout;
 const tierColors = {
     bronze: '#964b00',
     silver: '#c0c0c0',
     gold: '#ffbd1b',
+    platinum: '#A0B2C6',
 };
 
 const onChange = (key: string) => {
@@ -28,6 +41,44 @@ type Mock = {
     avatarUrl: string;
 };
 const Profile: React.FC = () => {
+    const [open, setOpen] = useState(false);
+    const [confirmLoading, setConfirmLoading] = useState(false);
+    const [modalText, setModalText] = useState('Content of the modal');
+    const imgLoadRef: any = useRef();
+    const imgFileSend = async (body: any) => {
+        try {
+            const res = await axios.post('/root/file/url', body);
+            console.log(res);
+        } catch (e) {
+            console.log(e);
+        }
+    };
+    const showModal = () => {
+        setOpen(true);
+    };
+
+    const handleOk = () => {
+        const formData1: any = new FormData();
+        const blob = new Blob(imgLoadRef.current.files[0], { type: 'image/png' });
+        formData1.append('image', blob);
+        setModalText('The modal will be closed after two seconds');
+        setConfirmLoading(true);
+        setTimeout(() => {
+            setOpen(false);
+            setConfirmLoading(false);
+            imgFileSend(formData1);
+            console.log(imgLoadRef.current.files[0]);
+        }, 2000);
+    };
+
+    const handleCancel = (e: any) => {
+        // console.log(
+        //     e.target.parentElement.parentElement.parentElement.children[1].children[0].value,
+        // );
+        e.target.parentElement.parentElement.parentElement.children[1].children[0].value = '';
+        console.log('Clicked cancel button');
+        setOpen(false);
+    };
     const {
         token: { colorBgContainer },
     } = theme.useToken();
@@ -66,7 +117,7 @@ const Profile: React.FC = () => {
         getProfile();
     }, []);
 
-    const arr = [20, 40, 100];
+    const arr = [20, 40, 100, 300];
     let upperLimit = arr[0];
     let lowerLimit = 0;
     let tier = 'Bronze';
@@ -81,6 +132,9 @@ const Profile: React.FC = () => {
             } else if (upperLimit === 100) {
                 tier = 'Gold';
                 tierColor = tierColors.gold;
+            } else if (upperLimit === 300) {
+                tier = 'Platinum';
+                tierColor = tierColors.platinum;
             }
             if (upperLimit === arr[0]) {
                 lowerLimit = 0;
@@ -108,7 +162,25 @@ const Profile: React.FC = () => {
                     <div>
                         <Space direction="vertical">
                             <div>
-                                <Avatar size={120} icon={<UserOutlined />} />
+                                <Modal
+                                    title="Title"
+                                    open={open}
+                                    onOk={handleOk}
+                                    confirmLoading={confirmLoading}
+                                    onCancel={handleCancel}
+                                    maskClosable={false}
+                                    keyboard={false}
+                                    closable={false}
+                                >
+                                    <input type="file" ref={imgLoadRef}></input>
+                                </Modal>
+                                <Avatar
+                                    size={120}
+                                    icon={<UserOutlined />}
+                                    src={`${res.avatarUrl}`}
+                                    style={{ cursor: 'pointer' }}
+                                    onClick={showModal}
+                                />
                             </div>
                             <div style={{ height: '38px' }}>
                                 <span style={{ fontSize: '35px' }}>{res.username}</span>
@@ -117,15 +189,15 @@ const Profile: React.FC = () => {
                                 <div style={{ width: `${testWidth}%` }}></div>
                             </div>
                             <p style={{ color: `${tierColor}`, fontWeight: 'bold' }}>{tier}</p>
-                            <Progress
-                                percent={testWidth}
-                                status="active"
-                                strokeColor={{ '0%': `${tierColor}`, '100%': `${tierColor}` }}
-                            />
                         </Space>
                     </div>
+                    <Progress
+                        percent={testWidth}
+                        status="active"
+                        strokeColor={{ '0%': `${tierColor}`, '100%': `${tierColor}` }}
+                    />
                     {/* //TODO: 추후 Tabs 이부분 컴포넌트화 해야함^^ */}
-                    {tier === 'platinum' ? (
+                    {tier === 'Platinum' ? (
                         <Tabs
                             defaultActiveKey="1"
                             onChange={onChange}

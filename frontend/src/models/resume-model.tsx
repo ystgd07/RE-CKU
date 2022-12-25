@@ -13,6 +13,7 @@ export interface ResumeData {
     position?: string;
     updatedAt: string;
     resumeId: number;
+    title: string;
 }
 
 export interface UserData {
@@ -25,11 +26,13 @@ export interface UserData {
 }
 
 export interface WorkFormData {
-    companyName: string;
-    jobGroup: string;
-    startWork: string;
-    endWork: string;
-    workPerformance: string;
+    company: string;
+    position: string;
+    notDevlop: boolean;
+    workNow: boolean;
+    startDate: string;
+    endDate: string;
+    reward: string;
 }
 
 export interface ProjectFormData {
@@ -38,5 +41,21 @@ export interface ProjectFormData {
     information: string;
     link1: string;
     link2: string;
-    // stacks: Stack[],
+    stacks: string[];
+}
+
+export interface FormStore {
+    list: number;
+    state: boolean;
+}
+
+export interface CareerData {
+    careerId: number;
+    company: string;
+    position: string;
+    notDevlop: boolean;
+    workNow: boolean;
+    startDate: string;
+    endDate: string;
+    reward: string;
 }

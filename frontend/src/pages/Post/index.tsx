@@ -148,21 +148,21 @@ interface IProjects {
     updatedAt: Date;
 }
 
-interface ICareer {
-    id: number;
-    company: string;
-    reward: string;
-    position: string;
-    usedResumeId: number;
-    notDevelop: number;
-    workNow: number;
-    startDate: number;
-    endDate: number;
-    name: string;
-    usedUserId: number;
-    information: null;
-    updatedAt: Date;
-}
+// interface ICareer {
+//     id: number;
+//     company: string;
+//     reward: string;
+//     position: string;
+//     usedResumeId: number;
+//     notDevelop: number;
+//     workNow: number;
+//     startDate: number;
+//     endDate: number;
+//     name: string;
+//     usedUserId: number;
+//     information: null;
+//     updatedAt: Date;
+// }
 
 interface ICommentData {
     MARK: string;
@@ -422,4 +422,4 @@ const Post = () => {
     );
 };
 
-export default Post;
+// export default Post;

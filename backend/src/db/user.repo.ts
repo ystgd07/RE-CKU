@@ -192,17 +192,3 @@ export const cancelReportQ = async (reporterUserId: number, defendantUserId: num
 
   return true;
 };
-
-export const banUserQ = async (targerId: number, data: Record<string, number | string>) => {
-  const [keys, values] = utils.updateData(data);
-  console.log("레포", keys, values);
-  await db.query(
-    `
-    UPDATE user
-    SET ${keys}, RT = ""
-    WHERE id = ?
-  `,
-    [...values, targerId]
-  );
-  return true;
-};

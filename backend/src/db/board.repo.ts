@@ -266,6 +266,7 @@ export const findOneBoardQ = async (boardId: number, userId?: null | number): Pr
       avatarUrl: "",
       likeCnt: 0,
       commentCnt: 0,
+      active: 1,
     },
     resumeInfo: null,
   };
@@ -288,7 +289,7 @@ export const findOneBoardQ = async (boardId: number, userId?: null | number): Pr
     commentCnt,
     fromUserId as ownUserId 
     From board 
-    WHERE id=?`,
+    WHERE id=? AND active = 1`,
     [boardId]
   );
   // 쿼리로 받아온 배열의 length 를 사용하기 위해서 jsonParse 유틸함수를 사용함.
@@ -364,13 +365,14 @@ export const create = async (data: Record<string, string | number | boolean>): P
 // 게시글 수정
 export const updateBoard = async (boardId: number, data: Record<string, string | number>) => {
   console.log("게시글 업데이트 내역 : ", data);
+  console.log("boardID 값 : ", boardId);
   const [keys, values] = utils.updateData(data);
   await db.query(
     `
     UPDATE board 
     SET ${keys.join(", ")}, 
       fixed=true,
-      updated=now(),
+      updated=now()
     WHERE id = ?`,
     [...values, boardId]
   );

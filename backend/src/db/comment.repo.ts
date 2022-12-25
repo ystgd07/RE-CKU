@@ -259,7 +259,7 @@ export const findComments = async (boardId: number, count: number): Promise<Alre
     ON s.boardId=a.id 
     Join user u 
     On s.userId=u.id 
-    WHERE a.id=? 
+    WHERE a.id=? AND a.active = 1
     Order BY  s.likes DESC , s.created DESC
     limit ?
     `,

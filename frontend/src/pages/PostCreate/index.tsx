@@ -14,20 +14,20 @@ import Layout from 'components/Layout';
 
 const { Title } = Typography;
 
-const Container = styled.div`
-    display: flex;
-    align-items: center;
-    flex-direction: column;
-    gap: 25px;
-    width: 100%;
-    align-self: center;
-    padding: 25px 25px;
-    margin: 20px auto;
-    margin-right: auto;
-    margin-left: auto;
-    max-width: 1280px;
-    box-sizing: border-box;
-`;
+// const Container = styled.div`
+//     display: flex;
+//     align-items: center;
+//     flex-direction: column;
+//     gap: 25px;
+//     width: 100%;
+//     align-self: center;
+//     padding: 25px 25px;
+//     margin: 20px auto;
+//     margin-right: auto;
+//     margin-left: auto;
+//     max-width: 1280px;
+//     box-sizing: border-box;
+// `;
 
 const Wrapper = styled.div`
     display: flex;
@@ -36,10 +36,10 @@ const Wrapper = styled.div`
     font-size: 1.6rem;
 `;
 
-const WrapperHeader = styled.div`
-    display: flex;
-    align-items: center;
-`;
+// const WrapperHeader = styled.div`
+//     display: flex;
+//     align-items: center;
+// `;
 
 const WrapperTitle = styled.p`
     font-size: 20px;
@@ -52,10 +52,10 @@ const ToggleDiv = styled.div`
     height: 100%;
 `;
 
-const ButtonDiv = styled.div`
-    display: flex;
-    width: 100%;
-`;
+// const ButtonDiv = styled.div`
+//     display: flex;
+//     width: 100%;
+// `;
 
 const ResumeSelectUI = styled.div`
     width: 100%;
@@ -98,10 +98,10 @@ function PostCreate() {
         content: false,
     });
 
-    const onToggleButton = () => {
-        setIsResume(prev => !prev);
-        console.log('Resume :', isResume);
-    };
+    //     const onToggleButton = () => {
+    //         setIsResume(prev => !prev);
+    //         console.log('Resume :', isResume);
+    //     };
 
     const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         e.preventDefault();
@@ -248,8 +248,8 @@ function PostCreate() {
                         <Switch onClick={onToggleButton} />
                     </ToggleDiv>
                 </WrapperHeader>
-
-                {isResume && <ResumeSelectUI />}
+                // {isResume && <ResumeSelectUI />}
+                //{' '}
             </Wrapper>
 
             <Wrapper>
