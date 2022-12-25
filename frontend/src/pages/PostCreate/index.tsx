@@ -1,5 +1,5 @@
 import styled from '@emotion/styled';
-import { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { Editor } from '@toast-ui/react-editor';
 import 'tui-color-picker/dist/tui-color-picker.css';
@@ -7,9 +7,10 @@ import '@toast-ui/editor/dist/toastui-editor.css';
 import '@toast-ui/editor-plugin-color-syntax/dist/toastui-editor-plugin-color-syntax.css';
 import '@toast-ui/editor/dist/i18n/ko-kr';
 import colorSyntax from '@toast-ui/editor-plugin-color-syntax';
-import { Button, Input, Switch, Typography } from 'antd';
+import { Button, Input, Switch, Typography, notification } from 'antd';
+import type { NotificationPlacement } from 'antd/es/notification/interface';
 import API from 'utils/api';
-// import Layout from 'components/Layout';
+import Layout from 'components/Layout';
 
 const { Title } = Typography;
 
@@ -32,6 +33,7 @@ const Wrapper = styled.div`
     display: flex;
     flex-direction: column;
     width: 100%;
+    font-size: 1.6rem;
 `;
 
 const WrapperHeader = styled.div`
@@ -53,11 +55,6 @@ const ToggleDiv = styled.div`
 const ButtonDiv = styled.div`
     display: flex;
     width: 100%;
-`;
-
-const ErrorMsg = styled.p`
-    font-size: 16px;
-    color: #f66;
 `;
 
 const ResumeSelectUI = styled.div`
@@ -114,6 +111,14 @@ function PostCreate() {
             [name]: value,
         });
     };
+    const [api, contextHolder] = notification.useNotification();
+
+    const openNotification = (placement: NotificationPlacement, message: string) => {
+        api.info({
+            message: message,
+            placement,
+        });
+    };
 
     const handleSubmit = async () => {
         // 게시물 작성 폼 유효성 검사
@@ -124,7 +129,7 @@ function PostCreate() {
                 ...error,
                 resume: true,
             });
-            console.log('이력서를 선택해주세요.');
+            openNotification('bottomRight', '이력서를 선택해주세요.');
             return;
         }
         // 제목 입력 여부 판별
@@ -133,7 +138,7 @@ function PostCreate() {
                 ...error,
                 title: true,
             });
-            console.log('제목을 입력해주세요.');
+            openNotification('bottomRight', '제목을 입력해주세요.');
             return;
         }
         // 게시물 내용 입력 여부 판별
@@ -145,7 +150,7 @@ function PostCreate() {
             });
             // 에디터 포커스
             editorRef.current?.getInstance().focus();
-            console.log('게시물 내용을 입력해주세요.');
+            openNotification('bottomRight', '게시물 내용을 입력해주세요.');
             return;
         }
 
@@ -166,6 +171,7 @@ function PostCreate() {
             }
         } catch (err) {
             console.log(err);
+            openNotification('bottomRight', `오류가 발생했습니다: ${err}`);
         }
     };
 
@@ -233,7 +239,8 @@ function PostCreate() {
     };
 
     return (
-        <Container>
+        <Layout>
+            {contextHolder}
             <Wrapper>
                 <WrapperHeader>
                     <WrapperTitle>이력서 첨부</WrapperTitle>
@@ -280,7 +287,7 @@ function PostCreate() {
                     {postId ? '수정' : '등록'}
                 </Button>
             </ButtonDiv>
-        </Container>
+        </Layout>
     );
 }
 
