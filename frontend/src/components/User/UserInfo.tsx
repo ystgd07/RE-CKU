@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
     FacebookOutlined,
     LinkedinOutlined,
@@ -6,9 +6,9 @@ import {
     YoutubeOutlined,
     GithubOutlined,
 } from '@ant-design/icons';
-import { Descriptions, Tag } from 'antd';
+import { Descriptions, Tag, Modal } from 'antd';
 import { InfoModal } from './InfoModal';
-
+import GitHubModal from './GitHubModal';
 type Mock = {
     // id: string;
     email: string;
@@ -18,6 +18,7 @@ type Mock = {
     username: string;
     // created: string;
     // avatarUrl: string;
+    gitHubUrl: string;
 };
 
 type UserProps = {
@@ -25,8 +26,11 @@ type UserProps = {
 };
 
 export const UserInfo = ({ user }: UserProps) => {
-    const { username, phoneNumber, email } = user;
-
+    const { username, phoneNumber, email, gitHubUrl } = user;
+    const [propsOpen, setPropsOpen] = useState(false);
+    const changeOpen = () => {
+        setPropsOpen(prev => !prev);
+    };
     return (
         <>
             <Descriptions title="User Info">
@@ -36,8 +40,17 @@ export const UserInfo = ({ user }: UserProps) => {
                 <Descriptions.Item label="email">{email}</Descriptions.Item>
             </Descriptions>
             <Tag icon={<GithubOutlined />} color="black">
-                <a href="https://github.com/taggon/ryan-login">Github</a>
+                <a
+                    href={gitHubUrl}
+                    onClick={() => {
+                        if (gitHubUrl === null) setPropsOpen(true);
+                        console.log(propsOpen);
+                    }}
+                >
+                    Github
+                </a>
             </Tag>
+            <GitHubModal open={propsOpen} changeOpen={changeOpen}></GitHubModal>
             <InfoModal></InfoModal>
         </>
     );

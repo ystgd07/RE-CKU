@@ -24,10 +24,10 @@ const ResumeMain = () => {
     }
     const gotoModify = (e: any) => {
         e.stopPropagation();
-        navigate(`/resume/${id}`);
+        navigate(`/resume/${id}/edit`);
     };
     const gotoPost = (e: any) => {
-        navigate(`/`);
+        navigate(`/resume/${id}`);
     };
     async function getPortfolio() {
         try {

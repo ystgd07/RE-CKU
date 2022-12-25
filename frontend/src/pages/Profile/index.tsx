@@ -17,7 +17,8 @@ import { UserOutlined } from '@ant-design/icons';
 import { UserInfo } from 'components/User/UserInfo';
 import { Like } from 'components/User/Like';
 import axios from 'axios';
-const test = 'It is just test for git_hub ';
+const token = localStorage.getItem('accessToken');
+
 //TODO:코드라인이 심각하게 많아지고 있다 컴포넌트의 필요성을 절실하게 느끼는 중..
 const { Header, Content, Footer } = Layout;
 const tierColors = {
@@ -39,16 +40,26 @@ type Mock = {
     username: string;
     created: string;
     avatarUrl: string;
+    gitHubUrl: string;
 };
 const Profile: React.FC = () => {
     const [open, setOpen] = useState(false);
     const [confirmLoading, setConfirmLoading] = useState(false);
     const [modalText, setModalText] = useState('Content of the modal');
+    const [imgUrl, setImgUrl] = useState('');
     const imgLoadRef: any = useRef();
+    //TODO: imgUrl update 500 ERR 백엔드와 상의
     const imgFileSend = async (body: any) => {
         try {
-            const res = await axios.post('/root/file/url', body);
-            console.log(res);
+            const res = await await axios.post('/file/url', body);
+            if (res.status === 200) {
+                await axios.patch(
+                    '/users/individuals',
+                    { avatarUrl: `https\\${res.data.imageUrl}` },
+                    { headers: { authorization: `Bearer ${token}` } },
+                );
+            }
+            setImgUrl(res.data.imageUrl);
         } catch (e) {
             console.log(e);
         }
@@ -57,16 +68,19 @@ const Profile: React.FC = () => {
         setOpen(true);
     };
 
-    const handleOk = () => {
+    const handleOk = (e: any) => {
         const formData1: any = new FormData();
-        const blob = new Blob(imgLoadRef.current.files[0], { type: 'image/png' });
-        formData1.append('image', blob);
+        // const blob = new Blob(, { type: 'image/png' });
+        // console.log(blob);
+
+        formData1.append('image', imgLoadRef.current.files[0]);
         setModalText('The modal will be closed after two seconds');
         setConfirmLoading(true);
         setTimeout(() => {
             setOpen(false);
             setConfirmLoading(false);
             imgFileSend(formData1);
+            e.target.parentElement.parentElement.parentElement.children[1].children[0].value = '';
             console.log(imgLoadRef.current.files[0]);
         }, 2000);
     };
@@ -92,6 +106,7 @@ const Profile: React.FC = () => {
         username: '',
         created: '',
         avatarUrl: '',
+        gitHubUrl: '',
     });
     async function getProfile() {
         try {
@@ -177,7 +192,7 @@ const Profile: React.FC = () => {
                                 <Avatar
                                     size={120}
                                     icon={<UserOutlined />}
-                                    src={`${res.avatarUrl}`}
+                                    src={`${imgUrl === '' ? res.avatarUrl : imgUrl}`}
                                     style={{ cursor: 'pointer' }}
                                     onClick={showModal}
                                 />
