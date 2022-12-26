@@ -140,7 +140,7 @@ export const InputForm = styled.div`
                 font-weight: 600;
             }
 
-            & div {
+            & .positionDiv {
                 margin-top: 0.8rem;
                 border: 1px solid #d7e2eb;
                 min-height: 1.6rem;
@@ -453,6 +453,60 @@ export const FormTitle = styled.div`
         cursor: pointer;
         & svg {
             font-size: 2.9rem;
+        }
+    }
+`;
+
+export const ExistForm = styled.section`
+    margin-top: 0.8rem;
+    border-bottom: 1px solid #d7e2eb;
+    padding: 1.6rem;
+    font-size: 1.4rem;
+
+    & h1 {
+        font-size: 1.9rem;
+        font-weight: 600;
+    }
+
+    & .existDiv {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+
+        & ul {
+            width: 50%;
+        }
+
+        & ul:first-of-type {
+            & li {
+                font-size: 1.6rem;
+            }
+        }
+
+        & ul:last-of-type {
+            line-height: 1.6;
+            & li {
+                & strong {
+                    font-size: 2.6rem;
+                }
+            }
+
+            & li:last-of-type {
+                text-indent: 1rem;
+            }
+        }
+
+        & dl {
+            & dt:first-of-type {
+                font-size: 1.8rem;
+                font-weight: 400;
+            }
+
+            & dt {
+                line-height: 1.6;
+            }
+            border-left: 2px solid #d3d3d3;
+            padding: 2rem;
         }
     }
 `;

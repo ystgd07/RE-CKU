@@ -1,16 +1,28 @@
 import React, { useEffect, useState } from 'react';
-import { UserData, ResumeData, WorkFormData, ProjectFormData } from 'models/resume-model';
+import {
+    UserData,
+    ResumeData,
+    WorkFormData,
+    ProjectFormData,
+    FormStore,
+} from 'models/resume-model';
 import axios, { AxiosResponse } from 'axios';
 import { useParams } from 'react-router-dom';
 import { GiCancel } from '@react-icons/all-files/gi/GiCancel';
 
-const Project = () => {
+type ProjectFormState = {
+    setIsProjectFormToggle: React.Dispatch<React.SetStateAction<boolean>>;
+    setAddProject: React.Dispatch<React.SetStateAction<FormStore[]>>;
+    addProject: FormStore[];
+    idx: number;
+};
+
+const Project = ({ setIsProjectFormToggle, addProject, setAddProject, idx }: ProjectFormState) => {
     const [searchStackToggle, setSearchStackToggle] = useState<boolean>(false);
     const [AllStacks, setAllStacks] = useState([]);
     const [stackInputValue, setStackInputValue] = useState<string>('');
     const [tagListItem, setTagListItem] = useState<string[]>([]);
     const [tagItemActive, setTagItemActive] = useState<boolean>(false);
-    const [projectFormToggle, setProjectFormToggle] = useState<boolean>(false);
     const [projectFormDataState, setProjectFormDataState] = useState<ProjectFormData>({
         projectName: '',
         year: '',
@@ -103,8 +115,20 @@ const Project = () => {
         }
     };
 
+    const deleteProjectForm = (e: React.MouseEvent<HTMLButtonElement>) => {
+        const deleteFilter = addProject.filter((tem: FormStore) => tem.list !== idx);
+        setAddProject(deleteFilter);
+        if (deleteFilter.length === 0) setIsProjectFormToggle(e => !e);
+        console.log(deleteFilter, 'fil');
+    };
+
+    const validationForm = (e: React.FormEvent) => {
+        e.preventDefault();
+        console.log(e.target, 'ddd');
+    };
+
     return (
-        <form>
+        <form onSubmit={validationForm}>
             <div className="formWrap">
                 <ul>
                     <li>
@@ -238,12 +262,10 @@ const Project = () => {
                 </section>
 
                 <div className="formBtn">
-                    <button type="button" onClick={() => setProjectFormToggle(!projectFormToggle)}>
+                    <button type="button" onClick={deleteProjectForm}>
                         취소
                     </button>
-                    <button type="submit" onClick={createProjectForm}>
-                        저장
-                    </button>
+                    <button type="submit">저장</button>
                 </div>
             </div>
         </form>

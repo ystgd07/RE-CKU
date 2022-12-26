@@ -46,7 +46,7 @@ const Router = () => {
                         <Route path="/resume/:id" element={<Navigate replace to="/" />} />
                         {/* <Route path="/post/create" element={<PostCreate />} /> */}
                         {/* <Route path="/post/:postId" element={<Navigate replace to="/" />} /> */}
-                        <Route path="/myportfolio" element={<Navigate replace to="/" />} />
+                        <Route path="/resume/list" element={<Navigate replace to="/" />} />
                         <Route path="/profile" element={<Navigate replace to="/" />} />
                         <Route path="/login" element={<Login />} />
                         <Route path="/find-pw" element={<FindPw />} />
