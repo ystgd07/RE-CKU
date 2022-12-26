@@ -3,33 +3,16 @@ import { useEffect, useState, useRef } from 'react';
 import styled from '@emotion/styled';
 import { Viewer } from '@toast-ui/react-editor';
 import '@toast-ui/editor/dist/toastui-editor-viewer.css';
-import Header from 'components/Header';
+import Layout from 'components/Layout';
 import API from 'utils/api';
 import TestProfileImg from 'assets/images/logo-header.png';
 import { LikeOutlined, CommentOutlined, LikeFilled } from '@ant-design/icons';
-import { Button, Typography, Input, Card } from 'antd';
+import { Button, Typography, Input, Card, Modal, notification } from 'antd';
+import type { NotificationPlacement } from 'antd/es/notification/interface';
 import { calcElapsed } from 'utils/format';
 const { Title, Text } = Typography;
 const { TextArea } = Input;
 
-// 본인 게시물일 경우 수정/삭제 버튼 생성
-// 좋아요 누른 경우, 누르지 않은 경우 구분
-// 댓글 좋아요도 마찬가지
-
-const Container = styled.div`
-    display: flex;
-    align-items: center;
-    flex-direction: column;
-    gap: 25px;
-    width: 100%;
-    align-self: center;
-    padding: 25px 25px;
-    margin: 20px auto;
-    margin-right: auto;
-    margin-left: auto;
-    max-width: 1280px;
-    box-sizing: border-box;
-`;
 const Wrapper = styled.div`
     display: flex;
     flex-direction: column;
@@ -70,43 +53,22 @@ const PostStates = styled.div`
 const CommentWrapper = styled(Wrapper)`
     margin: 10px 0;
 `;
-const CommentHeader = styled.h1`
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 16px;
-    padding-left: 30px;
-    button {
-        margin-right: 20px;
-    }
-`;
-const CommentProfile = styled.div`
-    width: 100px;
-`;
-const CommentLikes = styled.div`
-    width: 100px;
-    background-color: yellowgreen;
-`;
-const CommentBody = styled.div`
-    width: 100%;
-    font-size: 14px;
-    padding: 10px;
-    box-sizing: border-box;
-`;
 const ButtonWrapper = styled.div`
     margin-left: auto;
     width: 144px;
     display: flex;
     justify-content: space-evenly;
 `;
-
 const CommentForm = styled.div`
     height: 150px;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     justify-content: space-around;
+`;
+const CommentButtonWrapper = styled.div`
+    display: inline-block;
+    margin-right: 1rem;
 `;
 
 interface IBoardInfo {
@@ -148,21 +110,21 @@ interface IProjects {
     updatedAt: Date;
 }
 
-// interface ICareer {
-//     id: number;
-//     company: string;
-//     reward: string;
-//     position: string;
-//     usedResumeId: number;
-//     notDevelop: number;
-//     workNow: number;
-//     startDate: number;
-//     endDate: number;
-//     name: string;
-//     usedUserId: number;
-//     information: null;
-//     updatedAt: Date;
-// }
+interface ICareer {
+    id: number;
+    company: string;
+    reward: string;
+    position: string;
+    usedResumeId: number;
+    notDevelop: number;
+    workNow: number;
+    startDate: number;
+    endDate: number;
+    name: string;
+    usedUserId: number;
+    information: null;
+    updatedAt: Date;
+}
 
 interface ICommentData {
     MARK: string;
@@ -187,6 +149,10 @@ const Post = () => {
     const [alreadyLike, setAlreadyLike] = useState<boolean>(false);
     const [ownBoard, setOwnBoard] = useState<boolean>(false);
     const [comment, setComment] = useState<string>('');
+    const [editComment, setEditComment] = useState<string>('');
+
+    // 모달 제어
+    const [modalOpen, setModalOpen] = useState(false);
     const { postId } = useParams<{ postId: string }>();
 
     const viewerRef = useRef<Viewer>(null);
@@ -212,7 +178,8 @@ const Post = () => {
             const content = res.boardInfo.content;
             updateViewerContent(content);
         } catch (err) {
-            console.log(err);
+            console.log('해당 게시물이 존재하지 않습니다.');
+            navigate('/');
             return;
         }
     };
@@ -226,6 +193,7 @@ const Post = () => {
                 `?mark=&firstRequest=1&count=4&lifeIsGood=${userId}`,
             );
             setCommentData(res);
+            console.log(res);
         } catch (err) {
             console.log(err);
         }
@@ -241,7 +209,7 @@ const Post = () => {
             // Refresh
             fetchBoardData();
         } catch (err) {
-            console.log('ERROR:', err);
+            openNotification('bottomRight', `문제가 발생했습니다 : ${err}`);
         }
     };
 
@@ -266,6 +234,7 @@ const Post = () => {
             const data = {
                 likesStatus,
             };
+            console.log('LIKESTSTUS =', likesStatus);
             await API.patch(`/comments/${id}/like`, '', data);
 
             const newCommentData = commentData.map(item => {
@@ -282,7 +251,7 @@ const Post = () => {
             });
             setCommentData(newCommentData);
         } catch (err) {
-            console.log(err);
+            openNotification('bottomRight', `문제가 발생했습니다 : ${err}`);
         }
     };
 
@@ -303,10 +272,14 @@ const Post = () => {
         // }
     };
 
-    useEffect(() => {
-        fetchBoardData();
-        fetchCommentData();
-    }, []);
+    // 알림 메세지
+    const [api, contextHolder] = notification.useNotification();
+    const openNotification = (placement: NotificationPlacement, message: string) => {
+        api.info({
+            message: message,
+            placement,
+        });
+    };
 
     const handleBoardEdit = async () => {
         const data = {
@@ -318,23 +291,52 @@ const Post = () => {
     };
 
     const handleBoardRemove = async () => {
-        // 함 물어보고 지우자
         try {
             await API.delete(`/board/${postId}`);
             navigate('/');
         } catch (err) {
-            console.log(err);
+            setModalOpen(false);
+            openNotification('bottomRight', `문제가 발생했습니다 : ${err}`);
         }
     };
 
+    const handleCommentDelete = async (commentId: number) => {
+        console.log(commentId);
+        // /board/:boardId/comments/:commentId
+        try {
+            await API.delete(`/board/${postId}/comments/${commentId}`);
+            fetchBoardData();
+            fetchCommentData();
+        } catch (err) {
+            openNotification('bottomRight', `문제가 발생했습니다 : ${err}`);
+        }
+    };
+
+    const handleCommentEdit = (e: any) => {
+        console.log('hi');
+        console.log(e.target.value);
+    };
+
+    useEffect(() => {
+        fetchBoardData();
+        fetchCommentData();
+    }, []);
+
     return (
         <>
-            <Header />
-            <Container>
+            <Modal
+                title="게시물을 삭제하시겠습니까?"
+                centered
+                open={modalOpen}
+                onOk={handleBoardRemove}
+                onCancel={() => setModalOpen(false)}
+            ></Modal>
+            <Layout>
+                {contextHolder}
                 <Wrapper>
                     <Title level={2}>{boardData?.title}</Title>
                     <Profile>
-                        <ProfileImg src={TestProfileImg}></ProfileImg>
+                        <ProfileImg src={boardData?.avatarUrl}></ProfileImg>
                         <ProfileInfo>
                             <ProfileInfoName>{boardData?.email}</ProfileInfoName>
                             <Text>{calcElapsed(boardData?.boardCreated)} 전</Text>
@@ -344,7 +346,7 @@ const Post = () => {
                                 <Button type="primary" size="large" onClick={handleBoardEdit}>
                                     수정
                                 </Button>
-                                <Button danger size="large" onClick={handleBoardRemove}>
+                                <Button danger size="large" onClick={() => setModalOpen(true)}>
                                     삭제
                                 </Button>
                             </ButtonWrapper>
@@ -391,20 +393,55 @@ const Post = () => {
                                     </Profile>
                                 }
                                 extra={
-                                    <Button
-                                        type={item.alreadyLikes ? 'primary' : 'default'}
-                                        icon={item.alreadyLikes ? <LikeFilled /> : <LikeOutlined />}
-                                        size="large"
-                                        onClick={() =>
-                                            handleCommentLike(item.commentId, item.alreadyLikes)
-                                        }
-                                    >
-                                        {String(item.likes)}
-                                    </Button>
+                                    <>
+                                        {item.myComment && (
+                                            <CommentButtonWrapper>
+                                                <Button
+                                                    type="link"
+                                                    onClick={() => setEditComment(item.text)}
+                                                >
+                                                    수정
+                                                </Button>
+                                                <Button
+                                                    type="link"
+                                                    danger
+                                                    onClick={() =>
+                                                        handleCommentDelete(item.commentId)
+                                                    }
+                                                >
+                                                    삭제
+                                                </Button>
+                                            </CommentButtonWrapper>
+                                        )}
+
+                                        <Button
+                                            type={item.alreadyLikes ? 'primary' : 'default'}
+                                            icon={
+                                                item.alreadyLikes ? (
+                                                    <LikeFilled />
+                                                ) : (
+                                                    <LikeOutlined />
+                                                )
+                                            }
+                                            size="large"
+                                            onClick={() =>
+                                                handleCommentLike(item.commentId, item.alreadyLikes)
+                                            }
+                                        >
+                                            {String(item.likes)}
+                                        </Button>
+                                    </>
                                 }
                                 style={{ width: '100%' }}
                             >
                                 <Text>{item.text}</Text>
+                                {editComment !== '' && (
+                                    <Input
+                                        name="editComment"
+                                        value={editComment}
+                                        onChange={handleCommentEdit}
+                                    />
+                                )}
                             </Card>
                         </CommentWrapper>
                     ))}
@@ -417,9 +454,9 @@ const Post = () => {
                         ''
                     )}
                 </Wrapper>
-            </Container>
+            </Layout>
         </>
     );
 };
 
-// export default Post;
+export default Post;

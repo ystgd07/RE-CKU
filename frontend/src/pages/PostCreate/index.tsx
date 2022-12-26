@@ -7,27 +7,12 @@ import '@toast-ui/editor/dist/toastui-editor.css';
 import '@toast-ui/editor-plugin-color-syntax/dist/toastui-editor-plugin-color-syntax.css';
 import '@toast-ui/editor/dist/i18n/ko-kr';
 import colorSyntax from '@toast-ui/editor-plugin-color-syntax';
-import { Button, Input, Switch, Typography, notification } from 'antd';
+import { Button, Input, Switch, Typography, notification, Modal, Tag, Card } from 'antd';
 import type { NotificationPlacement } from 'antd/es/notification/interface';
 import API from 'utils/api';
 import Layout from 'components/Layout';
 
 const { Title } = Typography;
-
-// const Container = styled.div`
-//     display: flex;
-//     align-items: center;
-//     flex-direction: column;
-//     gap: 25px;
-//     width: 100%;
-//     align-self: center;
-//     padding: 25px 25px;
-//     margin: 20px auto;
-//     margin-right: auto;
-//     margin-left: auto;
-//     max-width: 1280px;
-//     box-sizing: border-box;
-// `;
 
 const Wrapper = styled.div`
     display: flex;
@@ -36,13 +21,13 @@ const Wrapper = styled.div`
     font-size: 1.6rem;
 `;
 
-// const WrapperHeader = styled.div`
-//     display: flex;
-//     align-items: center;
-// `;
+const WrapperHeader = styled.div`
+    display: flex;
+    align-items: center;
+`;
 
 const WrapperTitle = styled.p`
-    font-size: 20px;
+    font-size: 2rem;
     font-weight: 600;
 `;
 
@@ -52,16 +37,19 @@ const ToggleDiv = styled.div`
     height: 100%;
 `;
 
-// const ButtonDiv = styled.div`
-//     display: flex;
-//     width: 100%;
-// `;
+const ButtonDiv = styled.div`
+    display: flex;
+    justify-content: space-around;
+    width: 13rem;
+    margin-top: 2rem;
+`;
 
 const ResumeSelectUI = styled.div`
     width: 100%;
-    height: 80px;
-    background-color: yellowgreen;
+    padding: 2rem;
 `;
+
+const TagWrapper = styled.div``;
 
 interface RouteState {
     state: IBoardInfo;
@@ -71,6 +59,15 @@ interface IBoardInfo {
     content: string;
     hashTags: string;
     title: string;
+}
+
+interface IResumeInfo {
+    intro: string;
+    position: string;
+    resumeId: number;
+    resumeName: string;
+    updatedAt: Date;
+    userId: number;
 }
 
 function PostCreate() {
@@ -84,6 +81,10 @@ function PostCreate() {
     const editorRef = useRef<Editor>(null);
     // 이력서 첨부 여부 상태
     const [isResume, setIsResume] = useState<boolean>(false);
+    // 이력서 목록
+    const [resume, setResume] = useState<IResumeInfo[]>([]);
+    // 해쉬태그 입력 영역
+    const [tag, setTag] = useState('');
     // 폼 입력 데이터
     const [form, setForm] = useState({
         title: '',
@@ -98,10 +99,22 @@ function PostCreate() {
         content: false,
     });
 
-    //     const onToggleButton = () => {
-    //         setIsResume(prev => !prev);
-    //         console.log('Resume :', isResume);
-    //     };
+    const [modalOpen, setModalOpen] = useState(false);
+
+    const onToggleButton = async () => {
+        if (isResume === false) {
+            // 이력서 리스트 로딩
+            try {
+                const res = await API.get('/my-portfolio/resumes');
+                console.log(res);
+                //my-portfolio/resumes
+            } catch (err) {
+                openNotification('bottomRight', `이력서를 불러오는데 실패했습니다: ${err}`);
+            }
+        }
+        setIsResume(prev => !prev);
+        console.log('Resume :', isResume);
+    };
 
     const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         e.preventDefault();
@@ -111,8 +124,8 @@ function PostCreate() {
             [name]: value,
         });
     };
-    const [api, contextHolder] = notification.useNotification();
 
+    const [api, contextHolder] = notification.useNotification();
     const openNotification = (placement: NotificationPlacement, message: string) => {
         api.info({
             message: message,
@@ -129,6 +142,7 @@ function PostCreate() {
                 ...error,
                 resume: true,
             });
+            setModalOpen(false);
             openNotification('bottomRight', '이력서를 선택해주세요.');
             return;
         }
@@ -138,6 +152,7 @@ function PostCreate() {
                 ...error,
                 title: true,
             });
+            setModalOpen(false);
             openNotification('bottomRight', '제목을 입력해주세요.');
             return;
         }
@@ -150,6 +165,7 @@ function PostCreate() {
             });
             // 에디터 포커스
             editorRef.current?.getInstance().focus();
+            setModalOpen(false);
             openNotification('bottomRight', '게시물 내용을 입력해주세요.');
             return;
         }
@@ -162,7 +178,7 @@ function PostCreate() {
         };
 
         try {
-            if (!postId) {
+            if (postId === undefined) {
                 const res = await API.post('/board', data);
                 navigate(`/post/${String(res.data)}`);
             } else {
@@ -170,7 +186,7 @@ function PostCreate() {
                 navigate(`/post/${postId}`);
             }
         } catch (err) {
-            console.log(err);
+            setModalOpen(false);
             openNotification('bottomRight', `오류가 발생했습니다: ${err}`);
         }
     };
@@ -198,96 +214,155 @@ function PostCreate() {
                 });
         }
 
+        const updateOriginBoardData = async () => {
+            // 게시물 페이지 수정 버튼으로 접근한 경우
+            if (state) {
+                setForm({
+                    title: state.title,
+                    hashTags: state.hashTags,
+                });
+                updateEditorContent(state.content);
+                return;
+            }
+
+            // url을 임의로 입력해서 접근한 경우
+            const res = await API.get(
+                `/board/${postId}`,
+                `?lifeIsGood=${localStorage.getItem('userId')}`,
+            );
+
+            const data = res.boardInfo;
+
+            const result = {
+                title: data.title,
+                content: data.content,
+                hashTags: data.hashTags,
+            };
+
+            setForm({
+                title: result?.title,
+                hashTags: result.hashTags,
+            });
+            updateEditorContent(result.content);
+        };
+
         // 게시물 수정일 경우 기존 내용 채우기
         if (postId) {
             updateOriginBoardData();
         }
 
         return () => {};
-    }, []);
+    }, [postId, state]);
 
-    const updateOriginBoardData = async () => {
-        // 게시물 페이지 수정 버튼으로 접근한 경우
-        if (state) {
-            setForm({
-                title: state.title,
-                hashTags: state.hashTags,
-            });
-            updateEditorContent(state.content);
-            return;
+    const onKeyDown = (e: React.KeyboardEvent<HTMLElement>) => {
+        if (tag === '') return;
+        if (e.keyCode === 13) {
+            if (form.hashTags === '') {
+                setForm({
+                    ...form,
+                    hashTags: tag,
+                });
+            } else {
+                setForm({
+                    ...form,
+                    hashTags: form.hashTags + ', ' + tag,
+                });
+            }
+            setTag('');
         }
-
-        // url을 임의로 입력해서 접근한 경우
-        const res = await API.get(
-            `/board/${postId}`,
-            `?lifeIsGood=${localStorage.getItem('userId')}`,
-        );
-
-        const data = res.boardInfo;
-
-        const result = {
-            title: data.title,
-            content: data.content,
-            hashTags: data.hashTags,
-        };
-
-        setForm({
-            title: result?.title,
-            hashTags: result.hashTags,
-        });
-        updateEditorContent(result.content);
     };
 
-    return (
-        <Layout>
-            {contextHolder}
-            <Wrapper>
-                <WrapperHeader>
-                    <WrapperTitle>이력서 첨부</WrapperTitle>
-                    <ToggleDiv>
-                        <Switch onClick={onToggleButton} />
-                    </ToggleDiv>
-                </WrapperHeader>
-                // {isResume && <ResumeSelectUI />}
-                //{' '}
-            </Wrapper>
+    const handleTagInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setTag(e.target.value);
+    };
 
-            <Wrapper>
-                <Title level={4}>제목</Title>
-                <Input
-                    size="large"
-                    placeholder="제목을 입력해주세요."
-                    name="title"
-                    value={title}
-                    onChange={onChange}
-                />
-            </Wrapper>
-            <Wrapper>
-                <Title level={4}>내용</Title>
-                <Editor
-                    placeholder="이 입력폼은 마크다운 문법을 지원합니다."
-                    previewStyle="vertical"
-                    height="600px"
-                    initialEditType="markdown"
-                    useCommandShortcut={true}
-                    language="ko-KR"
-                    plugins={[colorSyntax]}
-                    ref={editorRef}
-                />
-            </Wrapper>
-            <Wrapper>
-                <Title level={4}>태그</Title>
-                <Input size="large" name="hashTags" value={hashTags} onChange={onChange} />
-            </Wrapper>
-            <ButtonDiv>
-                <Button type="default" size="large">
-                    취소
-                </Button>
-                <Button type="primary" size="large" onClick={handleSubmit}>
-                    {postId ? '수정' : '등록'}
-                </Button>
-            </ButtonDiv>
-        </Layout>
+    const handleTagDelete = (e: React.MouseEvent<HTMLElement>) => {
+        console.log(e.target);
+        console.log(form.hashTags);
+    };
+    return (
+        <>
+            <Modal
+                title="게시물을 등록하시겠습니까?"
+                centered
+                open={modalOpen}
+                onOk={handleSubmit}
+                onCancel={() => setModalOpen(false)}
+            ></Modal>
+            <Layout>
+                {contextHolder}
+                <Wrapper>
+                    <WrapperHeader>
+                        <WrapperTitle>이력서 첨부</WrapperTitle>
+                        <ToggleDiv>
+                            <Switch onClick={onToggleButton} />
+                        </ToggleDiv>
+                    </WrapperHeader>
+                    {isResume && (
+                        <ResumeSelectUI>
+                            <Card
+                                title="Default size card"
+                                extra={<a href="#">More</a>}
+                                style={{ width: 300 }}
+                            >
+                                <p>dd</p>
+                            </Card>
+                        </ResumeSelectUI>
+                    )}{' '}
+                </Wrapper>
+
+                <Wrapper>
+                    <Title level={4}>제목</Title>
+                    <Input
+                        size="large"
+                        placeholder="제목을 입력해주세요."
+                        name="title"
+                        value={title}
+                        onChange={onChange}
+                    />
+                </Wrapper>
+                <Wrapper>
+                    <Title level={4}>내용</Title>
+                    <Editor
+                        placeholder="이 입력폼은 마크다운 문법을 지원합니다."
+                        previewStyle="vertical"
+                        height="600px"
+                        initialEditType="markdown"
+                        useCommandShortcut={true}
+                        language="ko-KR"
+                        plugins={[colorSyntax]}
+                        ref={editorRef}
+                    />
+                </Wrapper>
+                <Wrapper>
+                    <Title level={4}>태그</Title>
+                    <TagWrapper>
+                        {hashTags !== '' &&
+                            hashTags.split(',').map((item, index) => (
+                                <Tag key={index} closable onClose={handleTagDelete}>
+                                    {item}
+                                </Tag>
+                            ))}
+                    </TagWrapper>
+
+                    <Input
+                        size="large"
+                        name="hashTags"
+                        value={tag}
+                        onChange={handleTagInput}
+                        onKeyDown={onKeyDown}
+                    />
+                </Wrapper>
+                <ButtonDiv>
+                    <Button type="default" size="large">
+                        취소
+                    </Button>
+                    <Button type="primary" size="large" onClick={() => setModalOpen(true)}>
+                        {postId ? '수정' : '등록'}
+                    </Button>
+                </ButtonDiv>
+            </Layout>
+        </>
     );
 }
 

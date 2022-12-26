@@ -9,8 +9,8 @@ import axios from 'axios';
 
 class axiosAPI {
     instance;
-    // BASE_URL = 'http://localhost:3001';
-    BASE_URL = 'https://rechu-api.jinytree.shop';
+    BASE_URL = 'http://localhost:3001';
+    // BASE_URL = 'https://rechu-api.jinytree.shop';
 
     constructor() {
         this.instance = axios.create();
@@ -56,7 +56,6 @@ class axiosAPI {
         }
     }
 
-    // 미완성
     async patch(endpoint: any, params = '', data: any) {
         try {
             const apiUrl = `${endpoint}/${params}`;
@@ -67,7 +66,6 @@ class axiosAPI {
         }
     }
 
-    // 미완성
     async delete(endpoint: any, params = '', data = {}) {
         try {
             const apiUrl = `${endpoint}/${params}`;
