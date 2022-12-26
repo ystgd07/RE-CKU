@@ -10,12 +10,14 @@ import { EmailAuth, UserProfile } from "../db/schemas";
 // 매칭 관련
 export const getRotListOrMatchingStatus = async (
   userId: number
-): Promise<userRepo.RotList | userRepo.MatchInfo | false> => {
+): Promise<userRepo.RotList | userRepo.MatchInfo | string> => {
   try {
     const mentee = await userRepo.unIncludePasswordUserInfoQ(userId);
     // 매칭이 없을경우 리스트 O
+    console.log("어디서");
     if (!mentee.matching) {
       const list = await userRepo.getRotListQ(userId);
+      console.log("어디서");
       return list;
     }
     // 이미 매칭중이라면 리스트 X 현재 매칭정보 O

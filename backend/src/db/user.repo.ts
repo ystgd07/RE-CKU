@@ -261,7 +261,7 @@ export const findMatchByMatchingId = async (matchingId: number): Promise<Match> 
   return result;
 };
 
-export const findMatchQ = async (userId: number): Promise<MatchInfo | false> => {
+export const findMatchQ = async (userId: number): Promise<MatchInfo | string> => {
   const result: MatchInfo = {
     matchInfo: { matchingId: 0, step: "", rotId: 0, email: "", username: "" },
     cancelAble: false,
@@ -283,8 +283,9 @@ export const findMatchQ = async (userId: number): Promise<MatchInfo | false> => 
     [userId]
   );
   const parseConnect = utils.jsonParse(connect)[0];
+  console.log("이상이상", parseConnect);
   if (!parseConnect) {
-    return false;
+    return "매칭중인것 없음";
   }
   result.matchInfo = parseConnect;
   console.log(utils.jsonParse(connect)[0]);
