@@ -224,26 +224,33 @@ export const getRotListQ = async (userId: number): Promise<RotList> => {
 };
 
 // 매칭 현황
-export type Connecting = {
-  matchingId: number;
-  step: string;
-  rotId: number;
-  email: string;
-  username: string;
+export type MatchInfo = {
+  matchInfo: {
+    matchingId: number;
+    step: string;
+    rotId: number;
+    email: string;
+    username: string;
+  };
+  cancelAble: boolean;
 };
 
 export type Match = {
   id: number;
   step: string;
   complate: number;
+  mentoComplate: string;
+  menteeComplate: string;
 };
-export const findMatch = async (matchingId: number): Promise<Match> => {
+export const findMatchByMatchingId = async (matchingId: number): Promise<Match> => {
   const [connect] = await db.query(
     `
     SELECT 
       id,
       step,
-      complate
+      mentoComplate,
+      menteeComplate
+    FROM connect
     WHERE
       id=?
   `,
@@ -253,7 +260,12 @@ export const findMatch = async (matchingId: number): Promise<Match> => {
 
   return result;
 };
-export const findMatchQ = async (userId: number): Promise<Connecting> => {
+
+export const findMatchQ = async (userId: number): Promise<MatchInfo | false> => {
+  const result: MatchInfo = {
+    matchInfo: { matchingId: 0, step: "", rotId: 0, email: "", username: "" },
+    cancelAble: false,
+  };
   const [connect] = await db.query(
     `
       SELECT 
@@ -270,9 +282,13 @@ export const findMatchQ = async (userId: number): Promise<Connecting> => {
     `,
     [userId]
   );
-  const result = utils.jsonParse(connect)[0];
-  result.cancelAble = false;
-  if (result.step === "요청중") {
+  const parseConnect = utils.jsonParse(connect)[0];
+  if (!parseConnect) {
+    return false;
+  }
+  result.matchInfo = parseConnect;
+  console.log(utils.jsonParse(connect)[0]);
+  if (result.matchInfo.step === "요청중") {
     result.cancelAble = true;
   }
   return result;
@@ -346,24 +362,26 @@ export const acceptMatchQ = async (matchingId: number, menteeId: number): Promis
 };
 
 // 매칭 끝내기버튼
-export const successMatchQ = async (matchingId: number, data: { complate: number }): Promise<string> => {
+export const successMatchQ = async (matchingId: number, data: { role: string }): Promise<string> => {
   // 멘티로 들어오면 count = ? mentee = ?
-  const [keys, values] = utils.updateData(data);
+  console.log(data.role);
   const [updated] = await db.query(
     `
     UPDATE connect
-    SET ${keys.join(", ")}
+    SET 
+      ${data.role} = 1
     WHERE 
       id = ?
   `,
-    [...values, matchingId]
+    [matchingId]
   );
-  const result = data.complate === 1 ? "멘티가 종료누름" : "멘토가 종료누름";
+  const result = data.role === "menteeComplate" ? "멘티가 종료누름" : "멘토가 종료누름";
   return result;
 };
 
 // 매칭 종료 ( 멘티id 비우고, 멘토id 만 남기기)
 export const complateMatch = async (matchingId: number) => {
+  console.log("??");
   const [match] = await db.query(
     `
     SELECT 
@@ -374,15 +392,17 @@ export const complateMatch = async (matchingId: number) => {
       id = ?
   `,
     [matchingId]
-  )[0];
-  const mentoId = match.mentoId;
-  const menteeId = match.menteeId;
-
+  );
+  const parseMatch = utils.jsonParse(match)[0];
+  const mentoId = parseMatch.mentoId;
+  const menteeId = parseMatch.menteeId;
+  console.log(parseMatch);
   await db.query(
     `
     UPDATE connect
     SET
-      menteeId = 0
+      menteeId = 0 ,
+      step = "완료"
     WHERE 
       id = ?
   `,
@@ -413,4 +433,45 @@ export const complateMatch = async (matchingId: number) => {
   // 트렌젝션 해야할듯
 
   return "매칭 종료";
+};
+
+// 고인물에게 들어온 요청
+export const getRequestCorrectionQ = async (userId: number) => {
+  // step = 요청중, mentoId =userId , complate = 0인것들을 created DESC 로 뱉기
+  console.log("이까진 오나?");
+  const [list] = await db.query(
+    `
+    SELECT 
+      id as matchingId,
+      step,
+      menteeId,
+      created
+    FROM connect
+    WHERE 
+      step = '요청중' OR step = '진행중' AND
+      
+      mentoId = ? AND
+      mentoComplate <0
+    ORDER BY created DESC
+  `,
+    [userId]
+  );
+  const result = utils.jsonParse(list);
+  type Req = {
+    matchingId: number;
+    step: string;
+    menteeId: number;
+    created: string;
+    cancelAble: boolean;
+  };
+  const zz = result.map((req: Req) => {
+    req.cancelAble = req.step === "진행중" ? false : true;
+    return { ...req };
+  });
+  console.log(zz);
+  if (result.step === "진행중") {
+    result.cancelAble = false;
+  }
+  result.cancelAble = true;
+  return result;
 };

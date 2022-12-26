@@ -7,7 +7,10 @@ import jwt from "jsonwebtoken";
 import { send } from "../config/sendMail";
 import { EmailAuth, UserProfile } from "../db/schemas";
 
-export const getRotListOrMatchingStatus = async (userId: number): Promise<userRepo.RotList | userRepo.Connecting> => {
+// 매칭 관련
+export const getRotListOrMatchingStatus = async (
+  userId: number
+): Promise<userRepo.RotList | userRepo.MatchInfo | false> => {
   try {
     const mentee = await userRepo.unIncludePasswordUserInfoQ(userId);
     // 매칭이 없을경우 리스트 O
@@ -31,18 +34,26 @@ export const createMatch = async (menteeId: number, mentoId: number): Promise<nu
     mentoId,
   };
   try {
+    const alreadyMatch = await userRepo.findMatchQ(menteeId);
+    if (alreadyMatch) throw new Error(`이미 요청한 고인물입니다.`);
     const matchingId = await userRepo.createMatchQ(data);
     return matchingId;
   } catch (err) {
     console.log(err.message);
+    if (err.message === "이미 요청한 고인물입니다.") throw new Error(`400, 이미 요청한 고인물입니다.`);
     throw new Error(`500, 서버오류`);
   }
 };
 export const cancelMatch = async (matchingId: number) => {
   try {
+    const isMatch = await userRepo.findMatchByMatchingId(matchingId);
+    console.log(isMatch);
+    if (!isMatch) throw new Error("존재하지 않은 매칭입니다.");
     const deleteMatch = await userRepo.cancelMatchQ(matchingId);
     return deleteMatch;
   } catch (err) {
+    console.log(err.message);
+    if (err.message === "존재하지 않은 매칭입니다.") throw new Error(`404, 존재하지 않은 매칭입니다.`);
     throw new Error(`500, 서버 오류`);
   }
 };
@@ -58,29 +69,40 @@ export const acceptMatch = async (userId: number, matchingId: number, menteeId: 
     throw new Error(`500, 서버 오류`);
   }
 };
-export const successMatch = async (userId: number, matchingId: number, role: string): Promise<string> => {
-  const data: { complate: number; menteeId?: number; mentoId?: number } = {
-    complate: 0,
+export const successMatch = async (matchingId: number, role: string): Promise<string> => {
+  const data: { role: string } = {
+    role: "",
   };
   switch (role) {
     case "mento":
-      data.mentoId = userId;
-      data.complate = 2;
+      data.role = "mentoComplate";
       break;
     default:
-      data.menteeId = userId;
-      data.complate = 1;
+      data.role = "menteeComplate";
       break;
   }
 
   try {
-    const matchInfo = await userRepo.findMatch(matchingId);
     const success = await userRepo.successMatchQ(matchingId, data);
-    if (matchInfo.complate >= 3) {
+    const matchInfo = await userRepo.findMatchByMatchingId(matchingId);
+    const menteeComplate = Number(matchInfo.menteeComplate);
+    const mentoComplate = Number(matchInfo.mentoComplate);
+    if (mentoComplate > 0 && menteeComplate > 0) {
+      console.log("ㅋㅋ");
       const complateMatch = await userRepo.complateMatch(matchingId);
+      console.log(complateMatch);
       return complateMatch;
     }
     return success;
+  } catch (err) {
+    console.log(err.message);
+    throw new Error(`500, 서버 오류`);
+  }
+};
+export const getRequestCorrection = async (userId: number) => {
+  try {
+    const list = await userRepo.getRequestCorrectionQ(userId);
+    return list;
   } catch (err) {
     throw new Error(`500, 서버 오류`);
   }

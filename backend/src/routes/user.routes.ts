@@ -26,7 +26,7 @@ userRoute.get("/rots", tokenValidator, async (req, res, next) => {
 userRoute.post("/match", tokenValidator, async (req, res, next) => {
   const menteeId = Number(req.body.jwtDecoded.id);
   const mentoId = Number(req.body.rotId);
-  console.log("고인물매칭 요청or 취소, ", menteeId, mentoId);
+  console.log("고인물매칭 요청, ", menteeId, mentoId);
   try {
     const matchingId = await userService.createMatch(menteeId, mentoId);
     return res.status(200).json({
@@ -72,10 +72,23 @@ userRoute.post("/match/success", tokenValidator, async (req, res, next) => {
     return;
   }
   try {
-    const result = await userService.successMatch(userId, matchingId, role);
+    const result = await userService.successMatch(matchingId, role);
     return res.status(200).json({
       msg: "첨삭완료",
       data: result,
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+//고인물이 요청들어온거 볼때
+userRoute.get("/req", tokenValidator, async (req, res, next) => {
+  const userId = Number(req.body.jwtDecoded.id);
+  try {
+    const nubList = await userService.getRequestCorrection(userId);
+    return res.status(200).json({
+      msg: "도움이 필요한 뉴비들",
+      data: nubList,
     });
   } catch (err) {
     next(err);

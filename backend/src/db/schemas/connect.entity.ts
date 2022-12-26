@@ -18,7 +18,9 @@ export class Connect {
   menteeId: number;
 
   @Column({ default: 0 })
-  complate: number;
+  mentoComplate: number;
+  @Column({ default: 0 })
+  menteeComplate: number;
 
   @Column({ default: () => "CURRENT_TIMESTAMP" })
   created: Date;
