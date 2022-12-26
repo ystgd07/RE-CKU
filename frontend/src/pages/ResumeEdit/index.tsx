@@ -15,7 +15,7 @@ import Header from 'components/Header';
 import { useParams } from 'react-router-dom';
 import Job from './Job';
 import Project from './Project';
-import { UserData, ResumeData, FormStore, CareerData } from 'models/resume-model';
+import { UserData, ResumeData, FormStore, CareerData, ProjectData } from 'models/resume-model';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from 'context/store';
 
@@ -24,18 +24,21 @@ const Resume = () => {
     const [isprojectFormToggle, setIsProjectFormToggle] = useState<boolean>(false);
     const [userInfo, setUserInfo] = useState<UserData>({} as UserData);
     const [resumeTitle, setResumeTitle] = useState<ResumeData>({} as ResumeData);
-    const [addJob, setAddJob] = useState<FormStore[]>([]);
-    const [addProject, setAddProject] = useState<FormStore[]>([]);
+    const [addJobElement, setAddJobElement] = useState<FormStore[]>([]);
+    const [addProjectElement, setAddProjectElement] = useState<FormStore[]>([]);
 
-    const [careerData, setCareerData] = useState<CareerData[]>([]);
-    const [getCareeData, setGetCareeData] = useState<CareerData[]>([]);
-    const [carrIds, setCarrIds] = useState<number[]>([]);
+    const [careerDataAll, setCareerDataAll] = useState<CareerData[]>([]);
+    const [getCareerComponents, setGetCareerComponents] = useState<CareerData[]>([]);
+    const [carrerIds, setCarrerIds] = useState<number[]>([]);
+
+    const [projectDataAll, setProjectDataAll] = useState<ProjectData[]>([]);
+    const [projectIds, setProjectIds] = useState<number[]>([]);
 
     const params = useParams();
     const resumeIds = params.id;
     const token = localStorage.getItem('accessToken');
-    const value = useSelector<RootState>(state => state.form.workFormToggle);
-    console.log(value, 'susususuusussususu');
+    // const value = useSelector<RootState>(state => state.form.workFormToggle);
+    // console.log(value, 'susususuusussususu');
 
     const fetchResume = async () => {
         try {
@@ -44,6 +47,7 @@ const Resume = () => {
                     userData: UserData;
                     resumeData: ResumeData;
                     careersData: CareerData[];
+                    projectsData: ProjectData[];
                 }>
             >(`/my-portfolio/resumes/${resumeIds}`, {
                 headers: { authorization: `Bearer ${token}` },
@@ -51,52 +55,55 @@ const Resume = () => {
             const userInfoData = res.data.data.userData;
             const resumeTitle = res.data.data.resumeData;
             const careerData = res.data.data.careersData;
+            const projectData = res.data.data.projectsData;
+
             setResumeTitle(resumeTitle);
             setUserInfo(userInfoData);
-            setCareerData(careerData);
+            setCareerDataAll(careerData);
+            setProjectDataAll(projectData);
 
-            const carrerIds = careerData.map(e => e.careerId);
-            setCarrIds(carrerIds);
-            console.log(careerData, ' carrData', carrerIds, ' carrIds');
+            const carrerId = careerDataAll.map(e => e.careerId);
+            setCarrerIds(carrerId);
+
+            const projectId = projectDataAll.map(e => e.projectId);
+            setProjectIds(projectId);
+            console.log(projectDataAll, ' carrData', projectIds, ' carrerIds');
         } catch (err) {
             console.log(err);
         }
     };
 
-    console.log(carrIds, ' carrids');
-
-    const getJob = async (ids: number[]) => {
+    const getJobCarrerData = async (ids: number[]) => {
         const res = await Promise.all(
             ids.map(id => {
                 return axios.get(`/my-portfolio/careers/${id}`).then(res => res.data.data);
             }),
         );
         return res;
-
-        // const res = carrIds.map(async ids => {
-        //     return await axios.get(`/my-portfolio/careers/${ids}`).then(result => result);
-        // });
-        // return res;
     };
+
+    // const getProjectData = async (ids: number[]) => {
+    //     const res = await Promise.all(
+    //         ids.map(id => {
+    //             return axios.get(`/my-portfolio/projects/${id}`).then(res => res.data.data);
+    //         }),
+    //     );
+    //     return res;
+    // };
 
     useEffect(() => {
         fetchResume();
     }, [resumeIds, token]);
 
     useEffect(() => {
-        // getJob()
-        //     .then(res => res.json())
-        //     .then(data => console.log(data));
-        getJob(carrIds).then(result => {
-            // const newData = [...result];
-            // console.log(newData, 'data');
+        getJobCarrerData(carrerIds).then(result => {
             const newData = [];
             for (let i = 0; i < result.length; i++) {
                 newData.push(...result[i]);
-                setGetCareeData(newData);
+                setGetCareerComponents(newData);
             }
         });
-    }, [carrIds]);
+    }, [carrerIds]);
 
     const choiceJob = async (e: React.ChangeEvent<HTMLSelectElement>) => {
         const posionValue = e.target.value;
@@ -128,19 +135,37 @@ const Resume = () => {
         }
     };
 
-    const addJobEl = () => {
-        const newJob = [...addJob, { list: addJob.length, state: false }];
-        setAddJob(newJob);
+    const addJobComponents = () => {
+        const newJob = [...addJobElement, { list: addJobElement.length, state: false }];
+        setAddJobElement(newJob);
         setIsWorkFormToggle(true);
     };
     // console.log(addJob, ' addjob list');
 
-    const addProjectEl = () => {
-        const newProject = [...addProject, { list: addProject.length, state: false }];
-        setAddProject(newProject);
+    const addProjectComponents = () => {
+        const newProject = [...addProjectElement, { list: addProjectElement.length, state: false }];
+        setAddProjectElement(newProject);
         setIsProjectFormToggle(true);
     };
     // console.log(addProject, ' addProject list');
+
+    const handleJobComponent = async (e: React.MouseEvent<HTMLButtonElement>, id: number) => {
+        const name = e.currentTarget.name;
+
+        switch (name) {
+            case 'update':
+                return await axios.patch(`/my-portfolio/careers/${id}`);
+            case 'delete': {
+                return (
+                    await axios.delete(`/my-portfolio/careers/${id}`),
+                    setGetCareerComponents([...getCareerComponents])
+                );
+            }
+
+            default:
+                return;
+        }
+    };
 
     return (
         <>
@@ -219,24 +244,46 @@ const Resume = () => {
                             <section>
                                 <FormTitle>
                                     <label>업무경험</label>
-                                    <span onClick={addJobEl}>
+                                    <span onClick={addJobComponents}>
                                         <BiPlus className={isWorkFormToggle ? 'rotate' : ''} />
                                     </span>
                                 </FormTitle>
 
-                                {getCareeData.map((tem: CareerData, idx: number) => {
+                                {getCareerComponents.map((tem: CareerData, idx: number) => {
                                     return (
                                         <ExistForm key={idx}>
-                                            {/* <div>
-                                                <h1>업무경험 {idx}</h1>
-                                                <button>수정</button>
-                                                <button>삭제</button>
-                                            </div> */}
+                                            <div>
+                                                <h1>업무경험 {tem.careerId}</h1>
+                                                <ul className="customBtn">
+                                                    <li>
+                                                        <button
+                                                            type="button"
+                                                            name="update"
+                                                            onClick={e =>
+                                                                handleJobComponent(e, tem.careerId)
+                                                            }
+                                                        >
+                                                            수정
+                                                        </button>
+                                                    </li>
+                                                    <li>
+                                                        <button
+                                                            type="button"
+                                                            name="delete"
+                                                            onClick={e =>
+                                                                handleJobComponent(e, tem.careerId)
+                                                            }
+                                                        >
+                                                            삭제
+                                                        </button>
+                                                    </li>
+                                                </ul>
+                                            </div>
                                             <div className="existDiv">
                                                 <ul>
                                                     <li>
                                                         {tem.startDate} ~ &nbsp;
-                                                        {tem.workNow ? '재직중' : tem.endDate}
+                                                        {tem.workNow ? tem.endDate : '재직중'}
                                                     </li>
                                                 </ul>
 
@@ -244,11 +291,10 @@ const Resume = () => {
                                                     <li>
                                                         <strong>{tem.company}</strong>
                                                     </li>
-                                                    <li>직무: {tem.position}</li>
+                                                    <li>{tem.position}</li>
                                                 </ul>
 
                                                 <dl>
-                                                    <dt>성과</dt>
                                                     <dt>{tem.reward}</dt>
                                                 </dl>
                                             </div>
@@ -257,15 +303,21 @@ const Resume = () => {
                                 })}
 
                                 {isWorkFormToggle &&
-                                    addJob.map((jobItem: any, idx: number) => {
+                                    addJobElement.map((jobItem: any, idx: number) => {
                                         return (
                                             <Job
                                                 key={idx}
-                                                // onCareerCreated={(state: workFormState) => {}}
+                                                onCareerCreated={state => {
+                                                    setCarrerIds([...carrerIds]);
+                                                    setGetCareerComponents([
+                                                        ...getCareerComponents,
+                                                        state,
+                                                    ]);
+                                                }}
                                                 setIsWorkFormToggle={setIsWorkFormToggle}
-                                                setAddJob={setAddJob}
+                                                setAddJobElement={setAddJobElement}
                                                 jobItem={jobItem}
-                                                addJob={addJob}
+                                                addJobElement={addJobElement}
                                                 idx={idx}
                                             />
                                         );
@@ -275,18 +327,18 @@ const Resume = () => {
                             <section>
                                 <FormTitle>
                                     <label>프로젝트</label>
-                                    <span onClick={addProjectEl}>
+                                    <span onClick={addProjectComponents}>
                                         <BiPlus className={isprojectFormToggle ? 'rotate' : ''} />
                                     </span>
                                 </FormTitle>
                                 {isprojectFormToggle &&
-                                    addProject.map((projectTem: any, idx: number) => {
+                                    addProjectElement.map((projectTem: any, idx: number) => {
                                         return (
                                             <Project
                                                 key={idx}
                                                 setIsProjectFormToggle={setIsProjectFormToggle}
-                                                setAddProject={setAddProject}
-                                                addProject={addProject}
+                                                setAddProjectElement={setAddProjectElement}
+                                                addProjectElement={addProjectElement}
                                                 idx={idx}
                                             />
                                         );

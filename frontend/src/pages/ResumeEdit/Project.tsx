@@ -12,12 +12,17 @@ import { GiCancel } from '@react-icons/all-files/gi/GiCancel';
 
 type ProjectFormState = {
     setIsProjectFormToggle: React.Dispatch<React.SetStateAction<boolean>>;
-    setAddProject: React.Dispatch<React.SetStateAction<FormStore[]>>;
-    addProject: FormStore[];
+    setAddProjectElement: React.Dispatch<React.SetStateAction<FormStore[]>>;
+    addProjectElement: FormStore[];
     idx: number;
 };
 
-const Project = ({ setIsProjectFormToggle, addProject, setAddProject, idx }: ProjectFormState) => {
+const Project = ({
+    setIsProjectFormToggle,
+    addProjectElement,
+    setAddProjectElement,
+    idx,
+}: ProjectFormState) => {
     const [searchStackToggle, setSearchStackToggle] = useState<boolean>(false);
     const [AllStacks, setAllStacks] = useState([]);
     const [stackInputValue, setStackInputValue] = useState<string>('');
@@ -98,8 +103,21 @@ const Project = ({ setIsProjectFormToggle, addProject, setAddProject, idx }: Pro
         });
     }, [tagListItem]);
 
-    const createProjectForm = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    const deleteProjectForm = (e: React.MouseEvent<HTMLButtonElement>) => {
+        const deleteFilter = addProjectElement.filter((tem: FormStore) => tem.list !== idx);
+        setAddProjectElement(deleteFilter);
+        if (deleteFilter.length === 0) setIsProjectFormToggle(e => !e);
+        console.log(deleteFilter, 'fil');
+    };
+
+    const validationForm = async (e: React.FormEvent) => {
         e.preventDefault();
+
+        if (projectFormDataState.year === '') {
+            alert('필수 정보를 입력해주세요.');
+            return;
+        }
+
         try {
             const res = await axios.post(`/my-portfolio/resumes/${resumeIds}/new-project`, {
                 projectName: projectFormDataState.projectName,
@@ -109,22 +127,15 @@ const Project = ({ setIsProjectFormToggle, addProject, setAddProject, idx }: Pro
                 link2: projectFormDataState.link2,
                 skills: projectFormDataState.stacks,
             });
+
+            if (res.status === 200) {
+                // onCareerCreated(workFormDataState);
+                setIsProjectFormToggle(false);
+            }
             console.log(res, ' project sususususususususuussusu');
         } catch (err: unknown) {
             console.log(err);
         }
-    };
-
-    const deleteProjectForm = (e: React.MouseEvent<HTMLButtonElement>) => {
-        const deleteFilter = addProject.filter((tem: FormStore) => tem.list !== idx);
-        setAddProject(deleteFilter);
-        if (deleteFilter.length === 0) setIsProjectFormToggle(e => !e);
-        console.log(deleteFilter, 'fil');
-    };
-
-    const validationForm = (e: React.FormEvent) => {
-        e.preventDefault();
-        console.log(e.target, 'ddd');
     };
 
     return (
@@ -140,6 +151,7 @@ const Project = ({ setIsProjectFormToggle, addProject, setAddProject, idx }: Pro
                                     placeholder="프로젝트 이름을 입력해주세요."
                                     name="projectName"
                                     onChange={projectFormHandler}
+                                    required
                                 />
                             </dd>
                         </dl>
@@ -201,7 +213,10 @@ const Project = ({ setIsProjectFormToggle, addProject, setAddProject, idx }: Pro
                             onKeyPress={enterKeyPress}
                             onChange={changeStackValue}
                         />
-                        <article className={searchStackToggle ? 'block' : 'none'}>
+                        <article
+                            className={searchStackToggle ? 'block' : 'none'}
+                            onBlur={searchStackBlur}
+                        >
                             {stackFilter.length === 0 &&
                                 AllStacks.map((stack: { name: string }, idx: number) => {
                                     return (

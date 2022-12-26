@@ -468,6 +468,42 @@ export const ExistForm = styled.section`
         font-weight: 600;
     }
 
+    & div:first-of-type {
+        display: flex;
+        justify-content: space-between;
+
+        .customBtn {
+            display: flex;
+
+            & li {
+                & button[type='button'] {
+                    border: 0;
+                    background-color: transparent;
+                    padding: 0.4rem 1.3rem;
+                    font-size: 1.3rem;
+                    line-height: 2rem;
+                    font-weight: 400;
+                    box-sizing: border-box;
+                    border-radius: 0.4rem;
+
+                    &:hover {
+                        opacity: 0.8;
+                        cursor: pointer;
+                        font-weight: 900;
+                    }
+                }
+            }
+
+            & li:last-of-type {
+                & button[type='button']:last-of-type {
+                    &:hover {
+                        color: red;
+                    }
+                }
+            }
+        }
+    }
+
     & .existDiv {
         display: flex;
         flex-wrap: wrap;
@@ -492,19 +528,15 @@ export const ExistForm = styled.section`
             }
 
             & li:last-of-type {
-                text-indent: 1rem;
+                font-size: 1.6rem;
             }
         }
 
         & dl {
-            & dt:first-of-type {
-                font-size: 1.8rem;
-                font-weight: 400;
-            }
-
             & dt {
                 line-height: 1.6;
             }
+
             border-left: 2px solid #d3d3d3;
             padding: 2rem;
         }

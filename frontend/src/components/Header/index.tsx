@@ -1,17 +1,24 @@
+import { useCallback, useEffect, useState } from 'react';
 import Logo from 'assets/images/logo.png';
+import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
 import { HContainer, HHeader } from './style';
 
 const Header = () => {
     const navigate = useNavigate();
     const token = localStorage.getItem('accessToken');
+    const [login, setLogin] = useState<boolean>(false);
 
-    const deleteLogout = () => {
-        // if (token) {
-        //     localStorage.clear();
-        // }
-        localStorage.clear();
-    };
+    const logout = useCallback(() => {
+        try {
+            axios.patch(`/users/sign-out`, {}, { headers: { authorization: `Bearer ${token}` } });
+
+            localStorage.clear();
+            setLogin(!login);
+        } catch (err: unknown) {
+            console.log(err);
+        }
+    }, [login]);
 
     return (
         <HContainer>
@@ -35,7 +42,7 @@ const Header = () => {
                                 <li>
                                     <Link to="profile">마이페이지</Link>
                                 </li>
-                                <li onClick={deleteLogout}>로그아웃</li>
+                                <li onClick={logout}>로그아웃</li>
                             </>
                         ) : (
                             <li>

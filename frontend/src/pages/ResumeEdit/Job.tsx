@@ -4,15 +4,27 @@ import { FormStore, WorkFormData } from 'models/resume-model';
 import axios, { AxiosResponse } from 'axios';
 import { useParams } from 'react-router-dom';
 
+// export type FunctionType={
+//     onCareerCreated((value: any) =>  void);
+// }
+
 type WorkFormState = {
     setIsWorkFormToggle: React.Dispatch<React.SetStateAction<boolean>>;
-    setAddJob: React.Dispatch<React.SetStateAction<FormStore[]>>;
-    addJob: FormStore[];
+    setAddJobElement: React.Dispatch<React.SetStateAction<FormStore[]>>;
+    addJobElement: FormStore[];
     jobItem: React.Dispatch<React.SetStateAction<FormStore[]>>;
     idx: number;
+    onCareerCreated: (state: any) => void;
 };
 
-const Job = ({ setIsWorkFormToggle, setAddJob, jobItem, addJob, idx }: WorkFormState) => {
+const Job = ({
+    setIsWorkFormToggle,
+    setAddJobElement,
+    jobItem,
+    addJobElement,
+    idx,
+    onCareerCreated,
+}: WorkFormState) => {
     const [isStilWork, setIsStilWork] = useState<boolean>(true);
 
     const [workFormDataState, setWorkFormDataState] = useState<WorkFormData>({
@@ -58,15 +70,17 @@ const Job = ({ setIsWorkFormToggle, setAddJob, jobItem, addJob, idx }: WorkFormS
     };
 
     const deleteWorkForm = (e: React.MouseEvent<HTMLButtonElement>) => {
-        const deleteFilter = addJob.filter((tem: FormStore) => tem.list !== idx);
-        setAddJob(deleteFilter);
+        const deleteFilter = addJobElement.filter((tem: FormStore) => tem.list !== idx);
+        setAddJobElement(deleteFilter);
         if (deleteFilter.length === 0) setIsWorkFormToggle(e => !e);
         console.log(deleteFilter, 'fil');
     };
 
     const validationForm = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (workFormDataState.startDate === '' || workFormDataState.endDate) {
+        if (
+            workFormDataState.startDate === '' || isStilWork ? workFormDataState.endDate === '' : ''
+        ) {
             alert('필수정보를 입력해주세요.');
             return;
         }
@@ -82,10 +96,10 @@ const Job = ({ setIsWorkFormToggle, setAddJob, jobItem, addJob, idx }: WorkFormS
                 workNow: workFormDataState.workNow,
             });
 
-            // if (res.status === 201) {
-            //     // onCarrerCreated()
-            //     setWorkFormDataState(false);
-            // }
+            if (res.status === 200) {
+                onCareerCreated(workFormDataState);
+                setIsWorkFormToggle(false);
+            }
 
             console.log(res, ' data state');
         } catch (err: unknown) {

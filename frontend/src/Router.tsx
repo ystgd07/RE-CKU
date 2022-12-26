@@ -30,7 +30,7 @@ const Router = () => {
                         {/* <Route path="/post/:postId/edit" element={<PostCreate />} /> */}
                         {/* <Route path="/post/create" element={<PostCreate />} /> */}
                         <Route path="/profile" element={<Profile />} />
-                        <Route path="/login" element={<Navigate replace to="/" />} />
+                        <Route path="/login" element={<Login />} />
                         <Route path="/find-pw" element={<Navigate replace to="/" />} />
                         <Route path="/join" element={<Navigate replace to="/" />} />
                         <Route path="/admin" element={<Admin />}>
