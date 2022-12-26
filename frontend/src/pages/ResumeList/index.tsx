@@ -11,7 +11,6 @@ const ResumeMain = () => {
     // /my-portfolio/resumes/:resumeId
     async function deletePortfolio(e: any) {
         e.stopPropagation();
-        console.log(e.target.value);
         try {
             const res = await axios.delete(`/my-portfolio/resumes/${e.target.value}`);
 
@@ -27,7 +26,6 @@ const ResumeMain = () => {
         navigate(`/resume/${e.target.value}/edit`);
     };
     const gotoPost = (e: any) => {
-        console.log(e.currentTarget.id);
         navigate(`/resume/${e.currentTarget.id}`);
     };
     async function getPortfolio() {
@@ -40,7 +38,6 @@ const ResumeMain = () => {
                 })
                 .then(res => res.data)
                 .then(res => res.data);
-            console.log(mocks, 'SUCCCCCCCCCess');
 
             await setRes(mocks);
         } catch (e) {
