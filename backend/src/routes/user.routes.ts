@@ -74,17 +74,14 @@ userRoute.post("/", validateBody(LoginUserDto), async (req, res, next) => {
 });
 
 // 개인정보 수정 라우트
-userRoute.patch("/individuals", tokenValidator, avatarImg.single("image"), async (req, res, next) => {
+userRoute.patch("/individuals", tokenValidator, async (req, res, next) => {
   const id = Number(req.body.jwtDecoded.id);
   // const currentPw = req.body.currentPw;
   // if (!currentPw) next(new Error("400, 기존 비밀번호를 입력하세요."));
   const password = req.body.password;
   const phoneNumber = req.body.phoneNumber;
   const gitHubUrl = req.body.gitHubUrl;
-  let avatarUrl = "";
-  // if (req.file) {
-  //   avatarUrl = req.file.path;
-  // }
+  const avatarUrl = req.body.avatarUrl;
   console.log("아바타 유알엘", avatarUrl);
   // const avatarUrl = req.body.avatarUrl;
   const toUpdate = {

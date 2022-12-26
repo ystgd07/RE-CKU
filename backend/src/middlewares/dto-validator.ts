@@ -27,3 +27,6 @@ export function validateBody(schema: { new (): any }) {
     }
   };
 }
+
+export const validateQuery = (req, res, next) => {};
+export const validateParams = (req, res, next) => {};

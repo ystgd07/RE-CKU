@@ -78,7 +78,6 @@ const style = css`
     }
 
     .Container {
-        height: 100%;
         max-width: 128rem;
         margin: 0 auto;
     }
