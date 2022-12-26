@@ -50,7 +50,7 @@ export const banUser = async (userId: number, type: string): Promise<Date> => {
       return new Date(Date.now() + 1209600000);
     }
 
-    data.ban = Date.now();
+    data.ban = 0;
 
     await adminRepo.banUserQ(userId, data, type);
 
