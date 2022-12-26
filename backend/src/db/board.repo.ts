@@ -453,7 +453,7 @@ export const alreadyLikesBoard = async (boardId: number, userId: number) => {
       SELECT 
         userId 
       FROM board_like_maping 
-      WHERE(boardId=? AND userId=?)
+      WHERE(boardId=? AND useFrId=?)
     `,
     [boardId, userId]
   );
