@@ -25,8 +25,8 @@ const tierColors = {
     bronze: '#964b00',
     silver: '#c0c0c0',
     gold: '#ffbd1b',
-    platinum: '#A0B2C6',
-    diamond: '#4EE2EC',
+    platinum: '#005666',
+    diamond: '#00a3d2',
     challenger: '#dc143c',
 };
 
@@ -144,19 +144,19 @@ const Profile: React.FC = () => {
     arr.map((e: number, idx: number): void => {
         if (e <= res.point) {
             upperLimit = arr[idx + 1];
-            if (upperLimit === 40) {
+            if (lowerLimit === 40) {
                 tier = 'Silver';
                 tierColor = tierColors.silver;
-            } else if (upperLimit === 60) {
+            } else if (lowerLimit === 60) {
                 tier = 'Gold';
                 tierColor = tierColors.gold;
-            } else if (upperLimit === 200) {
+            } else if (lowerLimit === 200) {
                 tier = 'Platinum';
                 tierColor = tierColors.platinum;
-            } else if (upperLimit === 1000) {
+            } else if (lowerLimit === 1000) {
                 tier = 'Diamond';
                 tierColor = tierColors.diamond;
-            } else if (upperLimit === 10000) {
+            } else if (lowerLimit === 10000) {
                 tier = 'Challenger';
                 tierColor = tierColors.challenger;
             }
@@ -190,7 +190,7 @@ const Profile: React.FC = () => {
                         height: '100%',
                         border: 'solid',
                         borderRadius: '6px',
-                        borderColor: `${tierColor}`,
+                        borderColor: '#c0c0c0',
                     }}
                 >
                     <div>
@@ -238,17 +238,21 @@ const Profile: React.FC = () => {
                         percent={testWidth}
                         status="active"
                         strokeColor={{ '0%': `${tierColor}`, '100%': `${tierColor}` }}
-                        style={{ marginLeft: '3px', marginRight: '10px' }}
+                        style={{
+                            marginLeft: '1px',
+                            marginRight: '10px',
+                            fontWeight: 'bold',
+                        }}
                     />
                     {/* //TODO: 추후 Tabs 이부분 컴포넌트화 해야함^^ */}
                     {tier === 'Platinum' ? (
                         <Tabs
                             tabBarStyle={{
-                                color: `${tierColor}`,
+                                color: '#c0c0c0',
                                 fontWeight: 'bold',
                                 border: 'solid',
                                 borderRadius: '6px',
-                                borderColor: `${tierColor}`,
+                                borderColor: '#c0c0c0',
                                 marginLeft: '10px',
                                 marginRight: '10px',
                             }}

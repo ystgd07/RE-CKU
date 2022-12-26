@@ -56,9 +56,6 @@ export const UserInfo = ({ user, getEvent }: UserProps) => {
                 style={{
                     marginLeft: '12px',
                     marginRight: '12px',
-                    border: 'solid',
-                    borderRadius: '6px',
-                    borderColor: `${tierColor}`,
                     height: '80%',
                     marginBottom: '20px',
                 }}
@@ -89,11 +86,9 @@ export const UserInfo = ({ user, getEvent }: UserProps) => {
 
             <Row
                 style={{
+                    marginTop: '20%',
                     marginLeft: '12px',
                     marginRight: '12px',
-                    border: 'solid',
-                    borderRadius: '6px',
-                    borderColor: `${tierColor}`,
                     height: '120px',
                     display: 'flex',
                     alignContent: 'center',
@@ -114,9 +109,6 @@ export const UserInfo = ({ user, getEvent }: UserProps) => {
                 </Col>
                 <Col xs={{ span: 11, offset: 1 }} lg={{ span: 6, offset: 2 }}>
                     <InfoModal></InfoModal>
-                </Col>
-                <Col xs={{ span: 5, offset: 1 }} lg={{ span: 6, offset: 2 }}>
-                    Col
                 </Col>
             </Row>
 
