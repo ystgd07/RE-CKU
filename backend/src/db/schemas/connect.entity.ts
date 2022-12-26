@@ -2,7 +2,7 @@ import { Entity, Column, PrimaryGeneratedColumn, OneToMany, ManyToMany, JoinTabl
 // import { Company } from "./company.entity";
 import { User } from "./user.entity";
 export enum stepEnum {
-  receipt = "시작전",
+  receipt = "요청중",
   interview = "진행중",
   reward = "완료",
 }
@@ -11,7 +11,7 @@ export class Connect {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ default: stepEnum.receipt })
   step: stepEnum;
 
   @ManyToOne((type) => User, (user) => user.asMento)

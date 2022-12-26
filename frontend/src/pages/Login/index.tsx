@@ -1,11 +1,10 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import * as S from './style';
 import Logo from 'assets/images/logo.png';
 import Kakao from 'assets/images/kakao_login_medium_wide.png';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useForm } from 'react-hook-form';
-import dotenv from 'dotenv';
 
 const Login = () => {
     const navigate = useNavigate();
@@ -21,12 +20,6 @@ const Login = () => {
         email: string;
     }
 
-    // useEffect(() => {
-    //     console.log('이동?');
-    //     if (localStorage.getItem('accessToken')) {
-    //         navigate('/');
-    //     }
-    // }, []);
     const onSubmitHandler = async (data: FormData) => {
         const jsondata = {
             email: data.email,
@@ -36,13 +29,14 @@ const Login = () => {
             console.log('jsondata', jsondata);
             const res = await axios.post('/users', jsondata);
             console.log(res, '성공');
-
             const accessToken = res.data.accessToken;
             const refreshToken = res.data.refreshToken;
             const userId = res.data.userId;
+            const isAdmin = res.data.isAdmin;
             localStorage.setItem('accessToken', accessToken);
             localStorage.setItem('refreshToken', refreshToken);
             localStorage.setItem('userId', userId);
+            localStorage.setItem('isAdmin', isAdmin);
             localStorage.setItem('email', data.email);
             navigate('/');
         } catch (err: any) {
@@ -105,7 +99,7 @@ const Login = () => {
                         />
                         <button type="submit">로그인</button>
                         <div onClick={kakao}>
-                            <img src={Kakao}></img>
+                            <img src={Kakao} alt={'카카오로그인'}></img>
                         </div>
 
                         <Link

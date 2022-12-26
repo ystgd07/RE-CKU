@@ -198,8 +198,9 @@ export const findCareerQ = async (careerId: number) => {
 };
 
 // 2-7. 프로젝트 조회
+// TODO] skill 받아오는거 쿼리 합치기
 export const findProjectQ = async (projectId: number) => {
-  const [project] = await db.query(
+  const [project, ] = await db.query(
     `SELECT 
     id AS projectID,
     projectName,
@@ -212,6 +213,15 @@ export const findProjectQ = async (projectId: number) => {
     WHERE id = ?`,
     projectId
   );
+
+  const [skillName,] = await db.query(
+    `SELECT name AS stackName FROM stack JOIN skill ON stack.skillId = skill.id WHERE projectId = ?`, projectId);
+
+  for (let j=0; j<Object.values(skillName).length; j++) {
+    skillName[j] = skillName[j].stackName
+  }
+
+  project[0]['skills'] = skillName
 
   return project;
 };

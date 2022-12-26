@@ -1,8 +1,8 @@
 import express, { Request, Response, NextFunction } from "express";
 //import { CreateUserDto, CreateAuthDataDto, AuthEmailDto, LoginUserDto } from "./dto";
 import * as adminService from "../services/admin.service";
-import {findReport, findUsers, updateUser} from "../services/admin.service";
-import {updateProject} from "../services";
+import { findReport, findUsers, updateUser } from "../services/admin.service";
+import { updateProject } from "../services";
 import resumeRoute from "./resume.routes";
 import userRoute from "./user.routes";
 //import { createIndiUser, findOneUser } from "../db/user.repo";
@@ -77,7 +77,7 @@ adminRoute.patch("/worst-users/:userId/ban", async (req, res, next) => {
   const typeEnum = ["BAN", "RECOVERY"];
   let msg = "";
 
-  if (type === 'RECOVERY') {
+  if (type === "RECOVERY") {
     msg = "복구";
   }
 
