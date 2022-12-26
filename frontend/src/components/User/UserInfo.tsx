@@ -1,15 +1,10 @@
 import React, { useState } from 'react';
-import {
-    FacebookOutlined,
-    LinkedinOutlined,
-    TwitterOutlined,
-    YoutubeOutlined,
-    GithubOutlined,
-} from '@ant-design/icons';
-import { Descriptions, Tag, Modal } from 'antd';
+import { GithubOutlined } from '@ant-design/icons';
+import { Descriptions, Tag, Col, Row, Button } from 'antd';
 import { InfoModal } from './InfoModal';
 import GitHubModal from './GitHubModal';
 import axios from 'axios';
+
 type Mock = {
     // id: string;
     email: string;
@@ -25,11 +20,12 @@ type Mock = {
 
 type UserProps = {
     user: Mock;
+    getEvent: Function;
 };
 
 const anytype: any = null;
 const token = localStorage.getItem('accessToken');
-export const UserInfo = ({ user }: UserProps) => {
+export const UserInfo = ({ user, getEvent }: UserProps) => {
     let { username, phoneNumber, email, gitHubUrl, tierColor } = user;
     const [propsOpen, setPropsOpen] = useState(false);
 
@@ -64,6 +60,7 @@ export const UserInfo = ({ user }: UserProps) => {
                     borderRadius: '6px',
                     borderColor: `${tierColor}`,
                     height: '80%',
+                    marginBottom: '20px',
                 }}
             >
                 <Descriptions title="User Info">
@@ -71,27 +68,63 @@ export const UserInfo = ({ user }: UserProps) => {
                     <Descriptions.Item label="Telephone">{phoneNumber}</Descriptions.Item>
 
                     <Descriptions.Item label="email">{email}</Descriptions.Item>
+                    <Descriptions.Item label="gitHub">
+                        <Tag
+                            icon={<GithubOutlined />}
+                            color="black"
+                            style={{ marginLeft: '12px', marginRight: '12px' }}
+                        >
+                            <a
+                                href={gitHubUrl}
+                                onClick={() => {
+                                    if (gitHubUrl === null) setPropsOpen(true);
+                                }}
+                            >
+                                Github
+                            </a>
+                        </Tag>
+                    </Descriptions.Item>
                 </Descriptions>
-                <Tag
-                    icon={<GithubOutlined />}
-                    color="black"
-                    style={{ marginLeft: '12px', marginRight: '12px' }}
-                >
-                    <a
-                        href={gitHubUrl}
+            </div>
+
+            <Row
+                style={{
+                    marginLeft: '12px',
+                    marginRight: '12px',
+                    border: 'solid',
+                    borderRadius: '6px',
+                    borderColor: `${tierColor}`,
+                    height: '120px',
+                    display: 'flex',
+                    alignContent: 'center',
+                    justifyContent: 'center',
+                }}
+            >
+                <Col xs={{ span: 5, offset: 1 }} lg={{ span: 6, offset: 2 }}>
+                    <Button
+                        icon={<GithubOutlined />}
+                        type="primary"
+                        style={{ backgroundColor: 'black' }}
                         onClick={() => {
-                            if (gitHubUrl === null) setPropsOpen(true);
+                            setPropsOpen(true);
                         }}
                     >
-                        Github
-                    </a>
-                </Tag>
-                <InfoModal></InfoModal>
-            </div>
+                        GitHub Url 변경
+                    </Button>
+                </Col>
+                <Col xs={{ span: 11, offset: 1 }} lg={{ span: 6, offset: 2 }}>
+                    <InfoModal></InfoModal>
+                </Col>
+                <Col xs={{ span: 5, offset: 1 }} lg={{ span: 6, offset: 2 }}>
+                    Col
+                </Col>
+            </Row>
+
             <GitHubModal
                 open={propsOpen}
                 changeOpen={changeOpen}
                 updateGitURL={updateGitURL}
+                getEvent={getEvent}
             ></GitHubModal>
         </>
     );

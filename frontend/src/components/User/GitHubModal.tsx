@@ -23,7 +23,8 @@ const GitHubModal = (props: any) => {
             setOpen(false);
             setConfirmLoading(false);
             props.changeOpen();
-        }, 2000);
+            props.getEvent();
+        }, 1000);
     };
 
     const handleCancel = (e: any) => {

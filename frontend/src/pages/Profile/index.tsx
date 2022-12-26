@@ -258,7 +258,9 @@ const Profile: React.FC = () => {
                                 {
                                     label: `유저정보`,
                                     key: '1',
-                                    children: <UserInfo user={res}></UserInfo>,
+                                    children: (
+                                        <UserInfo user={res} getEvent={getProfile}></UserInfo>
+                                    ),
                                 },
 
                                 {
@@ -276,7 +278,9 @@ const Profile: React.FC = () => {
                                 {
                                     label: `유저정보`,
                                     key: '1',
-                                    children: <UserInfo user={res}></UserInfo>,
+                                    children: (
+                                        <UserInfo user={res} getEvent={getProfile}></UserInfo>
+                                    ),
                                 },
 
                                 {
