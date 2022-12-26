@@ -13,6 +13,7 @@ import Admin from 'pages/Admin';
 import Resume from 'pages/Resume';
 import Loading from 'pages/Loading';
 import Match from 'pages/Match';
+import Matched from 'pages/Matched';
 import AdminUser from 'components/Admin/AdminUser';
 import AdminContent from 'components/Admin/AdminContent';
 
@@ -45,6 +46,7 @@ const Router = () => {
 
                                 <Route path="/loading" element={<Loading />} />
                                 <Route path="/match" element={<Match />} />
+                                <Route path="/matched" element={<Matched />} />
                                 <Route path="/*" element={<Err404 />} />
                             </>
                         ) : (

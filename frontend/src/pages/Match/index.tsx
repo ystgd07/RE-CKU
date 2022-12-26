@@ -3,24 +3,57 @@ import { Col, Row, Slider, Modal, List } from 'antd';
 import axios from 'axios';
 import * as S from './style';
 import './index.css';
+import API from 'utils/api';
 import Header from 'components/Header';
 import { Outlet } from 'react-router-dom';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 interface data {
+    corrections: number;
     id: number;
-    userName: string;
+    username: string;
     point: number;
 }
+
 const Match = () => {
     const [modalIdContent, setModalIdContent] = useState<number | string>();
     const [modalUserNameContent, setModalUserNameContent] = useState<number | string>('');
     const [modalPointContent, setModalPointContent] = useState<number | string>();
+    const [data, setData] = useState<data[]>([]);
     const [modalOpen, setModalOpen] = useState(false);
+    const navigate = useNavigate();
+    async function getMatching() {
+        try {
+            const res = await API.get(`/users/rots`);
+            console.log(res);
+            if (res.matchInfo) {
+                navigate('/matched');
+            } else {
+                setData(res);
+            }
+        } catch (e) {
+            console.log(e);
+        }
+    }
 
-    const onClickModal = async (data: data) => {
+    async function postMatching() {
+        try {
+            const rotId = modalIdContent;
+            const res = await API.post(`/users/match`, { rotId });
+            console.log(res);
+            getMatching();
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
+    useEffect(() => {
+        getMatching();
+    }, []);
+
+    const onClickModal = async (data: any) => {
         const id = data.id;
-        const userName = data.userName;
+        const userName = data.username;
         const point = data.point;
 
         setModalIdContent(id);
@@ -30,48 +63,26 @@ const Match = () => {
         setModalOpen(true);
     };
 
-    const user = [
-        {
-            id: 1,
-            userName: '우디르',
-            point: 500,
-        },
-        {
-            id: 2,
-            userName: '리신',
-            point: 600,
-        },
-        {
-            id: 3,
-            userName: '게롤트',
-            point: 700,
-        },
-        {
-            id: 4,
-            userName: '부커',
-            point: 800,
-        },
-    ];
     return (
         <>
             <Header />
             <h1>이력서 첨삭 매칭</h1>
             <S.MobileDiv>
                 <Row gutter={[0, 0]}>
-                    {user.map((data: any) => (
+                    {data.map((data: any) => (
                         <>
-                            <Col span={12} key={data.id}>
+                            <Col span={12}>
                                 <div onClick={() => onClickModal(data)}>
                                     <div>
-                                        {/* <Link to="/match/modal"> */}
-                                        <p>{data.userName}</p>
+                                        <h3>{data.username}</h3>
                                         <p>
-                                            <strong>등급 : </strong>다이아
+                                            <strong>등급 : </strong>
+                                            {data.point}
                                         </p>
                                         <p>
-                                            <strong>부탁건수 : </strong>20회
+                                            <strong>부탁건수 : </strong>
+                                            {data.corrections}회
                                         </p>
-                                        {/* </Link> */}
                                     </div>
                                 </div>
                             </Col>
@@ -79,12 +90,16 @@ const Match = () => {
                     ))}
                     <Outlet />
                     <Modal
-                        title={<h1>{modalUserNameContent}</h1>}
+                        title={
+                            <h1>
+                                {modalUserNameContent}({modalIdContent})
+                            </h1>
+                        }
                         centered
                         cancelText="싫어요"
-                        okText={`부탁할래요(point)`}
+                        okText={`부탁할래요(50point)`}
                         open={modalOpen}
-                        onOk={() => setModalOpen(false)}
+                        onOk={() => postMatching()}
                         onCancel={() => setModalOpen(false)}
                     >
                         <hr />

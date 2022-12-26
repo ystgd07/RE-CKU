@@ -28,7 +28,9 @@ export const getUsersByAdmin = async () => {
 };
 
 /** 인자로 userId 또는 email을 넣어주시면, 비밀번호를 제외한 사용자 정보를 드립니다. */
-export const unIncludePasswordUserInfoQ = async (userIdOrEmail: number | string): Promise<UserProfile> => {
+export const unIncludePasswordUserInfoQ = async (
+  userIdOrEmail: number | string
+): Promise<UserProfile> => {
   const queryResultCoulmns =
     "id,matching,username,point,email,phoneNumber,created,avatarUrl,clickedLikes,gitHubUrl,howToLogin,role,working";
   let [userInfoRows, fields] = [[], []];
@@ -61,7 +63,9 @@ export const unIncludePasswordUserInfoQ = async (userIdOrEmail: number | string)
   return result;
 };
 
-export const findOneUser = async (userIdOrEmail: number | string): Promise<UserProfile> => {
+export const findOneUser = async (
+  userIdOrEmail: number | string
+): Promise<UserProfile> => {
   const queryResultCoulmns =
     "id,username,point,email,phoneNumber,created,avatarUrl,password,clickedLikes,gitHubUrl,howToLogin,role,working,ban ";
   let [userInfoRows, fields] = [[], []];
@@ -94,7 +98,9 @@ export const findOneUser = async (userIdOrEmail: number | string): Promise<UserP
   return result;
 };
 
-export const createIndiUser = async (data: Record<string, string | number | boolean>) => {
+export const createIndiUser = async (
+  data: Record<string, string | number | boolean>
+) => {
   const { username, email, phoneNumber, password } = data;
   const [keys, values, valval] = utils.insertData(data);
   const [newUser] = await db.query(
@@ -111,7 +117,10 @@ export const createIndiUser = async (data: Record<string, string | number | bool
   return result;
 };
 
-export const updateUser = async (id: number, data: Record<string, string | boolean | number>): Promise<string> => {
+export const updateUser = async (
+  id: number,
+  data: Record<string, string | boolean | number>
+): Promise<string> => {
   const [keys, values] = updateData(data);
   console.log("업뎃내역 ", data);
   await db.query(
@@ -145,7 +154,11 @@ export const checkReportedQ = async (reporter: number, defendant: number) => {
   return result;
 };
 
-export const reportQ = async (reportData: { reporterUserId: number; defendantUserId: number; reason: string }) => {
+export const reportQ = async (reportData: {
+  reporterUserId: number;
+  defendantUserId: number;
+  reason: string;
+}) => {
   const [keys, values, valval] = utils.insertData(reportData);
   const [newReport] = await db.query(
     `
@@ -169,7 +182,10 @@ export const reportQ = async (reportData: { reporterUserId: number; defendantUse
   return true;
 };
 
-export const cancelReportQ = async (reporterUserId: number, defendantUserId: number) => {
+export const cancelReportQ = async (
+  reporterUserId: number,
+  defendantUserId: number
+) => {
   await db.query(
     `
     DELETE 
@@ -242,7 +258,9 @@ export type Match = {
   mentoComplate: string;
   menteeComplate: string;
 };
-export const findMatchByMatchingId = async (matchingId: number): Promise<Match> => {
+export const findMatchByMatchingId = async (
+  matchingId: number
+): Promise<Match> => {
   const [connect] = await db.query(
     `
     SELECT 
@@ -261,7 +279,9 @@ export const findMatchByMatchingId = async (matchingId: number): Promise<Match> 
   return result;
 };
 
-export const findMatchQ = async (userId: number): Promise<MatchInfo | false> => {
+export const findMatchQ = async (
+  userId: number
+): Promise<MatchInfo | false> => {
   const result: MatchInfo = {
     matchInfo: { matchingId: 0, step: "", rotId: 0, email: "", username: "" },
     cancelAble: false,
@@ -295,7 +315,11 @@ export const findMatchQ = async (userId: number): Promise<MatchInfo | false> => 
 };
 
 // 매칭 요청
-export const createMatchQ = async (data: { step: string; menteeId: number; mentoId: number }): Promise<number> => {
+export const createMatchQ = async (data: {
+  step: string;
+  menteeId: number;
+  mentoId: number;
+}): Promise<number> => {
   const [keys, values, valval] = utils.insertData(data);
   const [create] = await db.query(
     `
@@ -346,7 +370,10 @@ export const cancelMatchQ = async (matchingId: number): Promise<boolean> => {
 };
 
 // 매칭 수락 ( 고인물 )
-export const acceptMatchQ = async (matchingId: number, menteeId: number): Promise<boolean> => {
+export const acceptMatchQ = async (
+  matchingId: number,
+  menteeId: number
+): Promise<boolean> => {
   const [updateMatch] = await db.query(
     `
     UPDATE connect
@@ -362,7 +389,10 @@ export const acceptMatchQ = async (matchingId: number, menteeId: number): Promis
 };
 
 // 매칭 끝내기버튼
-export const successMatchQ = async (matchingId: number, data: { role: string }): Promise<string> => {
+export const successMatchQ = async (
+  matchingId: number,
+  data: { role: string }
+): Promise<string> => {
   // 멘티로 들어오면 count = ? mentee = ?
   console.log(data.role);
   const [updated] = await db.query(
@@ -375,7 +405,8 @@ export const successMatchQ = async (matchingId: number, data: { role: string }):
   `,
     [matchingId]
   );
-  const result = data.role === "menteeComplate" ? "멘티가 종료누름" : "멘토가 종료누름";
+  const result =
+    data.role === "menteeComplate" ? "멘티가 종료누름" : "멘토가 종료누름";
   return result;
 };
 
