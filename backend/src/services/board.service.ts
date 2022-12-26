@@ -160,4 +160,15 @@ export const addLikes = async (userId: number, boardId: number, likesStatus: boo
   }
 };
 
+export const randomBoards = async (userId: number) => {
+  try {
+    const canShowBoard = await boardRepo.randomBoardsQ(userId);
+    console.log(canShowBoard);
+    return canShowBoard;
+  } catch (err) {
+    console.log(err.message);
+    throw new Error(`500, 서버 오류`);
+  }
+};
+
 export const postComment = async (data: CreateCommentDto) => {};
