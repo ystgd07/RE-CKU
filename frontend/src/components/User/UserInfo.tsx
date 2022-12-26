@@ -54,8 +54,8 @@ export const UserInfo = ({ user, getEvent }: UserProps) => {
         <>
             <div
                 style={{
-                    marginLeft: '12px',
-                    marginRight: '12px',
+                    marginLeft: '20px',
+                    marginRight: '20px',
                     height: '80%',
                     marginBottom: '20px',
                 }}
