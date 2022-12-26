@@ -20,6 +20,7 @@ type Mock = {
     // created: string;
     // avatarUrl: string;
     gitHubUrl: string;
+    tierColor: string;
 };
 
 type UserProps = {
@@ -29,7 +30,7 @@ type UserProps = {
 const anytype: any = null;
 const token = localStorage.getItem('accessToken');
 export const UserInfo = ({ user }: UserProps) => {
-    let { username, phoneNumber, email, gitHubUrl } = user;
+    let { username, phoneNumber, email, gitHubUrl, tierColor } = user;
     const [propsOpen, setPropsOpen] = useState(false);
 
     const changeOpen = () => {
@@ -55,28 +56,43 @@ export const UserInfo = ({ user }: UserProps) => {
     // { headers: { authorization: `Bearer ${token}` } },
     return (
         <>
-            <Descriptions title="User Info">
-                <Descriptions.Item label="UserName">{username}</Descriptions.Item>
-                <Descriptions.Item label="Telephone">{phoneNumber}</Descriptions.Item>
+            <div
+                style={{
+                    marginLeft: '12px',
+                    marginRight: '12px',
+                    border: 'solid',
+                    borderRadius: '6px',
+                    borderColor: `${tierColor}`,
+                    height: '80%',
+                }}
+            >
+                <Descriptions title="User Info">
+                    <Descriptions.Item label="UserName">{username}</Descriptions.Item>
+                    <Descriptions.Item label="Telephone">{phoneNumber}</Descriptions.Item>
 
-                <Descriptions.Item label="email">{email}</Descriptions.Item>
-            </Descriptions>
-            <Tag icon={<GithubOutlined />} color="black">
-                <a
-                    href={gitHubUrl}
-                    onClick={() => {
-                        if (gitHubUrl === null) setPropsOpen(true);
-                    }}
+                    <Descriptions.Item label="email">{email}</Descriptions.Item>
+                </Descriptions>
+                <Tag
+                    icon={<GithubOutlined />}
+                    color="black"
+                    style={{ marginLeft: '12px', marginRight: '12px' }}
                 >
-                    Github
-                </a>
-            </Tag>
+                    <a
+                        href={gitHubUrl}
+                        onClick={() => {
+                            if (gitHubUrl === null) setPropsOpen(true);
+                        }}
+                    >
+                        Github
+                    </a>
+                </Tag>
+                <InfoModal></InfoModal>
+            </div>
             <GitHubModal
                 open={propsOpen}
                 changeOpen={changeOpen}
                 updateGitURL={updateGitURL}
             ></GitHubModal>
-            <InfoModal></InfoModal>
         </>
     );
 };

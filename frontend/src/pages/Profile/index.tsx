@@ -43,6 +43,7 @@ type Mock = {
     created: string;
     avatarUrl: string;
     gitHubUrl: string;
+    tierColor: string;
 };
 const Profile: React.FC = () => {
     const [open, setOpen] = useState(false);
@@ -109,6 +110,7 @@ const Profile: React.FC = () => {
         created: '',
         avatarUrl: '',
         gitHubUrl: '',
+        tierColor: '',
     });
     async function getProfile() {
         try {
@@ -170,16 +172,26 @@ const Profile: React.FC = () => {
     let testWidth: number = ((res.point - lowerLimit) / (upperLimit - lowerLimit)) * 100;
     testWidth = Math.floor(testWidth);
     if (testWidth === 100) testWidth = 0;
-
+    res.tierColor = tierColor;
     console.log(testWidth);
 
     return (
         <Layout className="layout">
-            <Content style={{ padding: '0 50px', height: '768px' }}>
-                <Breadcrumb style={{ margin: '16px 0' }}></Breadcrumb>
+            <Content
+                style={{
+                    padding: '0 50px',
+                    height: '768px',
+                }}
+            >
                 <div
                     className="site-layout-content"
-                    style={{ background: colorBgContainer, height: '100%' }}
+                    style={{
+                        background: colorBgContainer,
+                        height: '100%',
+                        border: 'solid',
+                        borderRadius: '6px',
+                        borderColor: `${tierColor}`,
+                    }}
                 >
                     <div>
                         <Space direction="vertical">
@@ -210,17 +222,36 @@ const Profile: React.FC = () => {
                             <div>
                                 <div style={{ width: `${testWidth}%` }}></div>
                             </div>
-                            <p style={{ color: `${tierColor}`, fontWeight: 'bold' }}>{tier}</p>
+                            <p
+                                style={{
+                                    color: `${tierColor}`,
+                                    fontWeight: 'bold',
+                                    marginLeft: '10px',
+                                    marginRight: '10px',
+                                }}
+                            >
+                                {tier}
+                            </p>
                         </Space>
                     </div>
                     <Progress
                         percent={testWidth}
                         status="active"
                         strokeColor={{ '0%': `${tierColor}`, '100%': `${tierColor}` }}
+                        style={{ marginLeft: '3px', marginRight: '10px' }}
                     />
                     {/* //TODO: 추후 Tabs 이부분 컴포넌트화 해야함^^ */}
                     {tier === 'Platinum' ? (
                         <Tabs
+                            tabBarStyle={{
+                                color: `${tierColor}`,
+                                fontWeight: 'bold',
+                                border: 'solid',
+                                borderRadius: '6px',
+                                borderColor: `${tierColor}`,
+                                marginLeft: '10px',
+                                marginRight: '10px',
+                            }}
                             defaultActiveKey="1"
                             onChange={onChange}
                             items={[
@@ -231,7 +262,7 @@ const Profile: React.FC = () => {
                                 },
 
                                 {
-                                    label: `첨삭`,
+                                    label: `첨삭(플레티넘)`,
                                     key: '2',
                                     children: <Proofread></Proofread>,
                                 },
@@ -255,11 +286,17 @@ const Profile: React.FC = () => {
                                     disabled: true,
                                 },
                             ]}
+                            tabBarStyle={{
+                                color: `${tierColor}`,
+                                fontWeight: 'bold',
+                                border: 'solid',
+                                borderRadius: '6px',
+                                borderColor: `${tierColor}`,
+                            }}
                         />
                     )}
                 </div>
             </Content>
-            <Footer style={{ textAlign: 'center' }}></Footer>
         </Layout>
     );
 };
