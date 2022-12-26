@@ -15,7 +15,7 @@ import Loading from 'pages/Loading';
 import Match from 'pages/Match';
 import AdminUser from 'components/Admin/AdminUser';
 import AdminContent from 'components/Admin/AdminContent';
-import MatchModal from 'components/MatchModal/index';
+
 const Router = () => {
     const isLogined = localStorage.getItem('accessToken') ? true : false;
     const isAdmin = localStorage.getItem('isAdmin') ? true : false;
