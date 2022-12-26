@@ -1,6 +1,7 @@
 import * as commentRepo from "../db/comment.repo";
 import * as userRepo from "../db/user.repo";
 
+// 확인
 export const commentLikes = async (userId: number, commentId: number, likesStatus: boolean): Promise<boolean> => {
   const data = {
     userId,
@@ -8,10 +9,10 @@ export const commentLikes = async (userId: number, commentId: number, likesStatu
   };
   try {
     // 댓글에 좋아요 여부
-    const alreadyLikes = await commentRepo.alreadyLikesComment(commentId);
+    const alreadyLikes = await commentRepo.alreadyLikesComment(commentId, userId);
     console.log("alreadyLikeszzz : ", alreadyLikes);
 
-    // 좋아요 하지 않은 게시물이라면 좋아요 및 포인트 습득
+    // 좋아요 하지 않은 댓글이라면 좋아요 및 포인트 습득
     if (!likesStatus && !alreadyLikes) {
       await commentRepo.likeCommentFromUser(data);
 

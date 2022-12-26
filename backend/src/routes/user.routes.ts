@@ -8,14 +8,94 @@ import { avatarImg, tokenValidator, validateBody } from "../middlewares";
 import { CreateReportDto } from "./dto/create-report.dto";
 export const userRoute = express();
 
-userRoute.get("/", tokenValidator, async (req, res, next) => {
-  const userRole = req.body.jwtDecoded.role;
+/**고인물 관련 */
+// 포인트 상점 -
+userRoute.get("/rots", tokenValidator, async (req, res, next) => {
+  const userId = Number(req.body.jwtDecoded.id);
+
   try {
+    const result = await userService.getRotListOrMatchingStatus(userId);
+    return res.status(200).json({
+      msg: "고인물찾기 or 매칭현황",
+      data: result,
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+userRoute.post("/match", tokenValidator, async (req, res, next) => {
+  const menteeId = Number(req.body.jwtDecoded.id);
+  const mentoId = Number(req.body.rotId);
+  console.log("고인물매칭 요청, ", menteeId, mentoId);
+  try {
+    const matchingId = await userService.createMatch(menteeId, mentoId);
+    return res.status(200).json({
+      msg: "고인물 매칭 성공",
+      data: { matchingId },
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+userRoute.delete("/match", tokenValidator, async (req, res, next) => {
+  const matchingId = req.body.matchingId;
+  try {
+    const result = await userService.cancelMatch(matchingId);
+    return res.status(200).json({
+      msg: "매칭 취소",
+      data: { status: result },
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+userRoute.patch("/match", tokenValidator, async (req, res, next) => {
+  const userId = Number(req.body.jwtDecoded.id);
+  const matchingId = req.body.matchingId;
+  const menteeID = req.body.menteeId;
+  try {
+    const result = await userService.acceptMatch(userId, matchingId, menteeID);
+    return res.status(200).json({
+      msg: "매칭 수락",
+      data: { reason: result },
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+userRoute.post("/match/success", tokenValidator, async (req, res, next) => {
+  const userId = Number(req.body.jwtDecoded.id);
+  const role = req.body.role;
+  const matchingId = req.body.matchingId;
+  if (role === "mentee" && role === "mento") {
+    next(new Error(`400, role 값을 잘 입력해주세요`));
+    return;
+  }
+  try {
+    const result = await userService.successMatch(matchingId, role);
+    return res.status(200).json({
+      msg: "첨삭완료",
+      data: result,
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+//고인물이 요청들어온거 볼때
+userRoute.get("/req", tokenValidator, async (req, res, next) => {
+  const userId = Number(req.body.jwtDecoded.id);
+  try {
+    const nubList = await userService.getRequestCorrection(userId);
+    return res.status(200).json({
+      msg: "도움이 필요한 뉴비들",
+      data: nubList,
+    });
   } catch (err) {
     next(err);
   }
 });
 
+// 회원정보 보기
 userRoute.get("/individuals", tokenValidator, async (req, res, next) => {
   const { id } = req.body.jwtDecoded;
   console.log(id);
@@ -30,6 +110,7 @@ userRoute.get("/individuals", tokenValidator, async (req, res, next) => {
   }
 });
 
+/** 회원가입, 로그인, 정보수정, 로그아웃 */
 // 개인 회원가입 라우트
 userRoute.post("/individuals", validateBody(CreateUserDto), async (req: Request, res: Response, next: NextFunction) => {
   const { username, email, phoneNumber, password } = req.body;
@@ -53,7 +134,6 @@ userRoute.post("/individuals", validateBody(CreateUserDto), async (req: Request,
     next(err);
   }
 });
-
 // 로그인 라우트
 userRoute.post("/", validateBody(LoginUserDto), async (req, res, next) => {
   if (req.body.password === null) {
@@ -67,24 +147,22 @@ userRoute.post("/", validateBody(LoginUserDto), async (req, res, next) => {
       accessToken: success.accessToken,
       refreshToken: success.refreshToken,
       userId: success.userId,
+      isAdmin: success.isAdmin,
     });
   } catch (err) {
     next(err);
   }
 });
-
 // 개인정보 수정 라우트
-userRoute.patch("/individuals", tokenValidator, avatarImg.single("image"), async (req, res, next) => {
+userRoute.patch("/individuals", tokenValidator, async (req, res, next) => {
   const id = Number(req.body.jwtDecoded.id);
   // const currentPw = req.body.currentPw;
   // if (!currentPw) next(new Error("400, 기존 비밀번호를 입력하세요."));
   const password = req.body.password;
   const phoneNumber = req.body.phoneNumber;
   const gitHubUrl = req.body.gitHubUrl;
-  let avatarUrl = "";
-  // if (req.file) {
-  //   avatarUrl = req.file.path;
-  // }
+  const avatarUrl = req.body.avatarUrl;
+  const working = req.body.working;
   console.log("아바타 유알엘", avatarUrl);
   // const avatarUrl = req.body.avatarUrl;
   const toUpdate = {
@@ -92,6 +170,7 @@ userRoute.patch("/individuals", tokenValidator, avatarImg.single("image"), async
     ...(phoneNumber && { phoneNumber }),
     ...(avatarUrl && { avatarUrl }),
     ...(gitHubUrl && { gitHubUrl }),
+    ...(working && { working }),
   };
   console.log(toUpdate);
   try {
@@ -103,7 +182,7 @@ userRoute.patch("/individuals", tokenValidator, avatarImg.single("image"), async
     next(err);
   }
 });
-
+// 로그아웃
 userRoute.patch("/sign-out", tokenValidator, async (req, res, next) => {
   const userId = Number(req.body.jwtDecoded.id);
   try {
@@ -117,6 +196,7 @@ userRoute.patch("/sign-out", tokenValidator, async (req, res, next) => {
   }
 });
 
+/** 이메일 인증 관련 */
 // 회원가입시 인증번호 보내는 라우트
 userRoute.post("/email", validateBody(CreateAuthDataDto), async (req, res, next) => {
   const toEmail = req.body.email;
@@ -134,7 +214,6 @@ userRoute.post("/email", validateBody(CreateAuthDataDto), async (req, res, next)
     next(err);
   }
 });
-
 // 회원가입시 이메일 인증하는 라우트
 userRoute.post("/email/auth", validateBody(AuthEmailDto), async (req, res, next) => {
   try {
@@ -147,7 +226,6 @@ userRoute.post("/email/auth", validateBody(AuthEmailDto), async (req, res, next)
     next(err);
   }
 });
-
 // 임시 비번 보내기 라우트
 userRoute.post("/eamil/password", validateBody(CreateAuthDataDto), async (req, res, next) => {
   const { email } = req.body;
@@ -162,6 +240,8 @@ userRoute.post("/eamil/password", validateBody(CreateAuthDataDto), async (req, r
   }
 });
 
+/**신고 관련 */
+// 신고 여부
 userRoute.get("/report", tokenValidator, async (req, res, next) => {
   const reporterUserId = Number(req.body.jwtDecoded.id);
   const defendantUserId = Number(req.query.defendantUserId);
@@ -175,6 +255,7 @@ userRoute.get("/report", tokenValidator, async (req, res, next) => {
     next(err);
   }
 });
+// 신고하기
 userRoute.post("/report", validateBody(CreateReportDto), tokenValidator, async (req, res, next) => {
   const reporterUserId = Number(req.body.jwtDecoded.id);
   const { defendantUserId, reason } = req.body;
@@ -194,7 +275,7 @@ userRoute.post("/report", validateBody(CreateReportDto), tokenValidator, async (
     next(err);
   }
 });
-
+// 신고 취소
 userRoute.patch("/report", tokenValidator, async (req, res, next) => {
   const reporterUserId = Number(req.body.jwtDecoded.id);
   const defendantUserId = req.body.defendantUserId;
