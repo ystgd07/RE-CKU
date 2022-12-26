@@ -3,7 +3,7 @@ import { db } from ".";
 import { UserProfile } from "./schemas";
 
 // 2-1. 전체 회원 목록 조회
-export const findUsersQ = async () => {
+export const findUsersQ = async (count: number, offset: number) => {
   const [usersInfo] = await db.query(
     `SELECT 
         id AS userId,
@@ -19,7 +19,11 @@ export const findUsersQ = async () => {
         working,
         created
         FROM user
-        WHERE role != 'admin'`
+        WHERE role != 'admin'
+        ORDER BY id ASC
+        LIMIT ?
+        OFFSET ?`,
+    [count, offset]
   );
 
   const users = usersInfo;
