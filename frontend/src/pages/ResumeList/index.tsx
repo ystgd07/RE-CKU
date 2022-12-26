@@ -2,7 +2,7 @@ import { Layout, Alert } from './style';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-
+import { Card, Col, Row, Button } from 'antd';
 type Mock = { resumeName: string; address: string; updatedAt: string; resumeId: any };
 let id: any;
 const ResumeMain = () => {
@@ -12,7 +12,7 @@ const ResumeMain = () => {
     async function deletePortfolio(e: any) {
         e.stopPropagation();
         try {
-            const res = await axios.delete(`/my-portfolio/resumes/${e.target.value}`);
+            const res = await axios.delete(`/my-portfolio/resumes/${e.currentTarget.value}`);
 
             if (res.status === 200) {
                 getPortfolio();
@@ -23,7 +23,7 @@ const ResumeMain = () => {
     }
     const gotoModify = (e: any) => {
         e.stopPropagation();
-        navigate(`/resume/${e.target.value}/edit`);
+        navigate(`/resume/${e.currentTarget.value}/edit`);
     };
     const gotoPost = (e: any) => {
         navigate(`/resume/${e.currentTarget.id}`);
@@ -81,7 +81,7 @@ const ResumeMain = () => {
                     </div>
                 </div>
 
-                {res.map((e: Mock) => (
+                {/* {res.map((e: Mock) => (
                     <div onClick={gotoPost} key={e.resumeId} id={e.resumeId}>
                         <h3>{e.resumeName}</h3>
                         <p>{e.updatedAt.split('T')[0]}</p>
@@ -92,9 +92,49 @@ const ResumeMain = () => {
                             수정
                         </button>
                     </div>
-                ))}
+                ))} */}
             </Layout>
             <Alert>{res.length === 0 && <p>작성된 이력서가 없습니다.</p>}</Alert>
+            <div className="site-card-wrapper">
+                <Row gutter={16}>
+                    {res.map((e: Mock) => (
+                        <Col span={8}>
+                            <Card
+                                onClick={gotoPost}
+                                key={e.resumeId}
+                                id={e.resumeId}
+                                style={{ marginTop: 16, cursor: 'pointer' }}
+                                title={e.resumeName}
+                                bordered={true}
+                                extra={
+                                    <div>
+                                        <Button
+                                            type="primary"
+                                            shape="round"
+                                            value={e.resumeId}
+                                            onClick={gotoModify}
+                                        >
+                                            수정
+                                        </Button>
+                                        <Button
+                                            type="primary"
+                                            danger
+                                            shape="round"
+                                            style={{ marginLeft: '5px' }}
+                                            value={e.resumeId}
+                                            onClick={deletePortfolio}
+                                        >
+                                            삭제
+                                        </Button>
+                                    </div>
+                                }
+                            >
+                                {e.updatedAt.split('T')[0]}
+                            </Card>
+                        </Col>
+                    ))}
+                </Row>
+            </div>
         </>
     );
 };
