@@ -40,6 +40,9 @@ export const HHeader = styled.header`
         & .util {
             display: flex;
             gap: 1.9rem;
+            li:last-child {
+                cursor: pointer;
+            }
         }
     }
 `;

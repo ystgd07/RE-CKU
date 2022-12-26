@@ -1,4 +1,3 @@
-import React, { useState } from 'react';
 import Logo from 'assets/images/logo.png';
 import { useNavigate, Link } from 'react-router-dom';
 import { HContainer, HHeader } from './style';
@@ -6,7 +5,6 @@ import { HContainer, HHeader } from './style';
 const Header = () => {
     const navigate = useNavigate();
     const token = localStorage.getItem('accessToken');
-    const [userInfo, setUserInfo] = useState<boolean>(false);
 
     const deleteLogout = () => {
         // if (token) {
@@ -34,10 +32,10 @@ const Header = () => {
                     <ul className="util">
                         {token ? (
                             <>
-                                <li onClick={deleteLogout}>로그아웃</li>
                                 <li>
                                     <Link to="profile">마이페이지</Link>
                                 </li>
+                                <li onClick={deleteLogout}>로그아웃</li>
                             </>
                         ) : (
                             <li>
