@@ -7,7 +7,8 @@ import '@toast-ui/editor/dist/toastui-editor.css';
 import '@toast-ui/editor-plugin-color-syntax/dist/toastui-editor-plugin-color-syntax.css';
 import '@toast-ui/editor/dist/i18n/ko-kr';
 import colorSyntax from '@toast-ui/editor-plugin-color-syntax';
-import { Button, Input, Switch, Typography, notification, Modal, Tag, Card } from 'antd';
+import { Button, Input, Switch, Typography, notification, Modal, Tag, Radio, Space } from 'antd';
+import type { RadioChangeEvent } from 'antd';
 import type { NotificationPlacement } from 'antd/es/notification/interface';
 import API from 'utils/api';
 import Layout from 'components/Layout';
@@ -82,7 +83,9 @@ function PostCreate() {
     // 이력서 첨부 여부 상태
     const [isResume, setIsResume] = useState<boolean>(false);
     // 이력서 목록
-    const [resume, setResume] = useState<IResumeInfo[]>([]);
+    const [resumeList, setResumeList] = useState<IResumeInfo[]>([]);
+    const [resume, setResume] = useState<number>(0);
+
     // 해쉬태그 입력 영역
     const [tag, setTag] = useState('');
     // 폼 입력 데이터
@@ -107,6 +110,7 @@ function PostCreate() {
             try {
                 const res = await API.get('/my-portfolio/resumes');
                 console.log(res);
+                setResumeList(res);
                 //my-portfolio/resumes
             } catch (err) {
                 openNotification('bottomRight', `이력서를 불러오는데 실패했습니다: ${err}`);
@@ -114,6 +118,11 @@ function PostCreate() {
         }
         setIsResume(prev => !prev);
         console.log('Resume :', isResume);
+    };
+
+    // 이력서 선택
+    const handleResumeSelect = (e: RadioChangeEvent) => {
+        setResume(e.target.value);
     };
 
     const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -136,7 +145,7 @@ function PostCreate() {
     const handleSubmit = async () => {
         // 게시물 작성 폼 유효성 검사
         // 이력서 on 인데 이력서를 선택하지 않았을 경우
-        if (isResume === true) {
+        if (isResume === true && resume === 0) {
             // 이력서 선택 여부 추가 필요
             setError({
                 ...error,
@@ -170,12 +179,13 @@ function PostCreate() {
             return;
         }
 
-        const resumeId = isResume ? 0 : 0;
+        // const resumeId = isResume ? 0 : 0;
         const data = {
             ...form,
             content,
-            resumeId,
+            resumeId: resume,
         };
+        console.log(data);
 
         try {
             if (postId === undefined) {
@@ -280,6 +290,7 @@ function PostCreate() {
         console.log(e.target);
         console.log(form.hashTags);
     };
+
     return (
         <>
             <Modal
@@ -300,13 +311,18 @@ function PostCreate() {
                     </WrapperHeader>
                     {isResume && (
                         <ResumeSelectUI>
-                            <Card
-                                title="Default size card"
-                                extra={<a href="#">More</a>}
-                                style={{ width: 300 }}
-                            >
-                                <p>dd</p>
-                            </Card>
+                            <Radio.Group onChange={handleResumeSelect} value={resume}>
+                                <Space direction="vertical">
+                                    {resumeList.map((item, index) => (
+                                        <Radio key={index} value={item.resumeId}>
+                                            {item.resumeName}
+                                        </Radio>
+                                    ))}
+                                    <Button onClick={() => navigate('/')}>
+                                        이력서 작성하러가기
+                                    </Button>
+                                </Space>
+                            </Radio.Group>
                         </ResumeSelectUI>
                     )}{' '}
                 </Wrapper>

@@ -5,11 +5,12 @@ import { Viewer } from '@toast-ui/react-editor';
 import '@toast-ui/editor/dist/toastui-editor-viewer.css';
 import Layout from 'components/Layout';
 import API from 'utils/api';
-import TestProfileImg from 'assets/images/logo-header.png';
 import { LikeOutlined, CommentOutlined, LikeFilled } from '@ant-design/icons';
 import { Button, Typography, Input, Card, Modal, notification } from 'antd';
 import type { NotificationPlacement } from 'antd/es/notification/interface';
 import { calcElapsed } from 'utils/format';
+import ResumeComponent from 'components/Resume';
+
 const { Title, Text } = Typography;
 const { TextArea } = Input;
 
@@ -71,6 +72,8 @@ const CommentButtonWrapper = styled.div`
     margin-right: 1rem;
 `;
 
+const ResumeWrapper = styled.div``;
+
 interface IBoardInfo {
     avatarUrl: string;
     boardCreated: Date;
@@ -87,7 +90,7 @@ interface IBoardInfo {
 }
 
 interface IResumeInfo {
-    id: number;
+    resumeId: number;
     name: string;
     usedUserId: number;
     projects: Array<IProjects> | null;
@@ -228,7 +231,7 @@ const Post = () => {
         }
     };
 
-    // 댓글 좋아요 동작
+    // 댓글 좋아요
     const handleCommentLike = async (id: number, likesStatus: boolean) => {
         try {
             const data = {
@@ -259,28 +262,21 @@ const Post = () => {
         setComment(e.target.value);
     };
 
-    const handleMoreComment = () => {
-        // try {
-        //     const mark = postData?.comments.slice(-1)[0].MARK;
-        //     const res = API.get(
-        //         `/board/${postId}/comments/pagenation`,
-        //         `?lifeIsGood=${localStorage.getItem('userId')}&mark=${mark}&count=5`,
-        //     );
-        //     console.log(res);
-        // } catch (err) {
-        //     console.log(err);
-        // }
+    // 댓글 더 불러오기
+    const handleMoreComment = async () => {
+        try {
+            const mark = commentData?.slice(-1)[0].MARK;
+            const res = await API.get(
+                `/board/${postId}/comments`,
+                `?firstRequest=0&lifeIsGood=${localStorage.getItem('userId')}&mark=${mark}&count=4`,
+            );
+            setCommentData([...commentData, ...res]);
+        } catch (err) {
+            openNotification('bottomRight', `문제가 발생했습니다 : ${err}`);
+        }
     };
 
-    // 알림 메세지
-    const [api, contextHolder] = notification.useNotification();
-    const openNotification = (placement: NotificationPlacement, message: string) => {
-        api.info({
-            message: message,
-            placement,
-        });
-    };
-
+    // 게시물 수정하기
     const handleBoardEdit = async () => {
         const data = {
             title: boardData?.title,
@@ -290,6 +286,7 @@ const Post = () => {
         navigate(`/post/${postId}/edit`, { state: data });
     };
 
+    // 게시물 삭제
     const handleBoardRemove = async () => {
         try {
             await API.delete(`/board/${postId}`);
@@ -300,9 +297,8 @@ const Post = () => {
         }
     };
 
+    // 댓글 삭제
     const handleCommentDelete = async (commentId: number) => {
-        console.log(commentId);
-        // /board/:boardId/comments/:commentId
         try {
             await API.delete(`/board/${postId}/comments/${commentId}`);
             fetchBoardData();
@@ -312,9 +308,19 @@ const Post = () => {
         }
     };
 
+    // 댓글 수정
     const handleCommentEdit = (e: any) => {
         console.log('hi');
         console.log(e.target.value);
+    };
+
+    // 알림 메세지
+    const [api, contextHolder] = notification.useNotification();
+    const openNotification = (placement: NotificationPlacement, message: string) => {
+        api.info({
+            message: message,
+            placement,
+        });
     };
 
     useEffect(() => {
@@ -354,6 +360,11 @@ const Post = () => {
                             ''
                         )}
                     </Profile>
+                    {resumeData !== null && (
+                        <ResumeWrapper>
+                            <ResumeComponent resumeId={resumeData.resumeId} />
+                        </ResumeWrapper>
+                    )}
                     <Contents>
                         <Viewer initialValue={boardData?.title} ref={viewerRef} />
                     </Contents>
