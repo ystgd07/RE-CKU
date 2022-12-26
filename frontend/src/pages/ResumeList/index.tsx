@@ -1,8 +1,10 @@
-import { Layout, Alert } from './style';
+import { Alert, ContentElement } from './style';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Card, Col, Row, Button } from 'antd';
+import { Card, Col, Row, Button, Layout } from 'antd';
+import Header from 'components/Header';
+const { Footer, Content } = Layout;
 type Mock = { resumeName: string; address: string; updatedAt: string; resumeId: any };
 let id: any;
 const ResumeMain = () => {
@@ -70,18 +72,82 @@ const ResumeMain = () => {
 
     return (
         <>
-            <h1>My Portfolio</h1>
-            <Layout>
-                <div onClick={postPortfolio}>
-                    <div>
-                        <div>
-                            <i>+</i>
+            {' '}
+            <Layout style={{ backgroundColor: 'white' }}>
+                <Header></Header>
+                <Content
+                    style={{
+                        backgroundColor: 'white',
+                        margin: '30px',
+                        width: '-webkit-calc(100% - 80px)',
+                    }}
+                >
+                    <ContentElement>
+                        <div onClick={postPortfolio}>
+                            <div>
+                                <div>
+                                    <i>+</i>
+                                </div>
+                                <p>새 이력서 작성</p>
+                            </div>
                         </div>
-                        <p>새 이력서 작성</p>
+                    </ContentElement>
+                    <Alert>{res.length === 0 && <p>작성된 이력서가 없습니다.</p>}</Alert>
+                    <div className="site-card-wrapper">
+                        <Row gutter={16}>
+                            {res.map((e: Mock) => (
+                                <Col span={8}>
+                                    <Card
+                                        onClick={gotoPost}
+                                        key={e.resumeId}
+                                        id={e.resumeId}
+                                        style={{
+                                            marginTop: 16,
+                                            cursor: 'pointer',
+                                            border: '1px solid #dbdbdb',
+                                            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)',
+                                        }}
+                                        title={e.resumeName}
+                                        bordered={true}
+                                        extra={
+                                            <div>
+                                                <Button
+                                                    type="primary"
+                                                    shape="round"
+                                                    value={e.resumeId}
+                                                    onClick={gotoModify}
+                                                >
+                                                    수정
+                                                </Button>
+                                                <Button
+                                                    type="primary"
+                                                    danger
+                                                    shape="round"
+                                                    style={{ marginLeft: '5px' }}
+                                                    value={e.resumeId}
+                                                    onClick={deletePortfolio}
+                                                >
+                                                    삭제
+                                                </Button>
+                                            </div>
+                                        }
+                                    >
+                                        {e.updatedAt.split('T')[0]}
+                                    </Card>
+                                </Col>
+                            ))}
+                        </Row>
                     </div>
-                </div>
+                </Content>
+                <Footer style={{ backgroundColor: 'white' }}>Footer</Footer>
+            </Layout>
+        </>
+    );
+};
 
-                {/* {res.map((e: Mock) => (
+export default ResumeMain;
+{
+    /* {res.map((e: Mock) => (
                     <div onClick={gotoPost} key={e.resumeId} id={e.resumeId}>
                         <h3>{e.resumeName}</h3>
                         <p>{e.updatedAt.split('T')[0]}</p>
@@ -92,51 +158,5 @@ const ResumeMain = () => {
                             수정
                         </button>
                     </div>
-                ))} */}
-            </Layout>
-            <Alert>{res.length === 0 && <p>작성된 이력서가 없습니다.</p>}</Alert>
-            <div className="site-card-wrapper">
-                <Row gutter={16}>
-                    {res.map((e: Mock) => (
-                        <Col span={8}>
-                            <Card
-                                onClick={gotoPost}
-                                key={e.resumeId}
-                                id={e.resumeId}
-                                style={{ marginTop: 16, cursor: 'pointer' }}
-                                title={e.resumeName}
-                                bordered={true}
-                                extra={
-                                    <div>
-                                        <Button
-                                            type="primary"
-                                            shape="round"
-                                            value={e.resumeId}
-                                            onClick={gotoModify}
-                                        >
-                                            수정
-                                        </Button>
-                                        <Button
-                                            type="primary"
-                                            danger
-                                            shape="round"
-                                            style={{ marginLeft: '5px' }}
-                                            value={e.resumeId}
-                                            onClick={deletePortfolio}
-                                        >
-                                            삭제
-                                        </Button>
-                                    </div>
-                                }
-                            >
-                                {e.updatedAt.split('T')[0]}
-                            </Card>
-                        </Col>
-                    ))}
-                </Row>
-            </div>
-        </>
-    );
-};
-
-export default ResumeMain;
+                ))} */
+}
