@@ -30,3 +30,15 @@ export const insertData = (input: Record<string, string | number | boolean>) => 
   );
   return data;
 };
+
+// export const selectData = (input : Record<string,|number>)=>{
+//   const data = Object.entries(input).reduce(
+//     (a,[key,value])=>{
+//       a[0].push(key);
+//       a[1].push()
+//     },
+//     [[],[]] as [string[],string[]]
+//   )
+// }
+// ...
+//   WHERE (WORKDEPT, EDLEVEL, JOB) = ('E11', 12, 'CLERK')

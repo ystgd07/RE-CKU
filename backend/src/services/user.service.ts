@@ -7,6 +7,85 @@ import jwt from "jsonwebtoken";
 import { send } from "../config/sendMail";
 import { EmailAuth, UserProfile } from "../db/schemas";
 
+export const getRotListOrMatchingStatus = async (userId: number): Promise<userRepo.RotList | userRepo.Connecting> => {
+  try {
+    const mentee = await userRepo.unIncludePasswordUserInfoQ(userId);
+    // 매칭이 없을경우 리스트 O
+    if (!mentee.matching) {
+      const list = await userRepo.getRotListQ(userId);
+      return list;
+    }
+    // 이미 매칭중이라면 리스트 X 현재 매칭정보 O
+    const connect = await userRepo.findMatchQ(userId);
+    console.log(connect);
+    return connect;
+  } catch (err) {
+    console.log(err.message);
+    throw new Error(`500, 서버오류`);
+  }
+};
+export const createMatch = async (menteeId: number, mentoId: number): Promise<number> => {
+  const data = {
+    step: "요청중",
+    menteeId,
+    mentoId,
+  };
+  try {
+    const matchingId = await userRepo.createMatchQ(data);
+    return matchingId;
+  } catch (err) {
+    console.log(err.message);
+    throw new Error(`500, 서버오류`);
+  }
+};
+export const cancelMatch = async (matchingId: number) => {
+  try {
+    const deleteMatch = await userRepo.cancelMatchQ(matchingId);
+    return deleteMatch;
+  } catch (err) {
+    throw new Error(`500, 서버 오류`);
+  }
+};
+export const acceptMatch = async (userId: number, matchingId: number, menteeId: number) => {
+  try {
+    const mentoInfo = await userRepo.unIncludePasswordUserInfoQ(userId);
+    if (mentoInfo.point < 200) throw new Error(`당신은 고이지 않았다.`);
+    const result = await userRepo.acceptMatchQ(matchingId, menteeId);
+    return result;
+  } catch (err) {
+    console.log(err.message);
+    if (err.message === "당신은 고이지 않았다.") throw new Error(`400, 당신은 고이지 않았따.`);
+    throw new Error(`500, 서버 오류`);
+  }
+};
+export const successMatch = async (userId: number, matchingId: number, role: string): Promise<string> => {
+  const data: { complate: number; menteeId?: number; mentoId?: number } = {
+    complate: 0,
+  };
+  switch (role) {
+    case "mento":
+      data.mentoId = userId;
+      data.complate = 2;
+      break;
+    default:
+      data.menteeId = userId;
+      data.complate = 1;
+      break;
+  }
+
+  try {
+    const matchInfo = await userRepo.findMatch(matchingId);
+    const success = await userRepo.successMatchQ(matchingId, data);
+    if (matchInfo.complate >= 3) {
+      const complateMatch = await userRepo.complateMatch(matchingId);
+      return complateMatch;
+    }
+    return success;
+  } catch (err) {
+    throw new Error(`500, 서버 오류`);
+  }
+};
+
 export const getUserList = async () => {
   try {
     // 일반사용자가 회원조회하는 경우는 이력서 첨삭요청할때 고인물들 목록 보는것 뿐임

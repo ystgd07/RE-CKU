@@ -21,6 +21,7 @@ export type UserProfile = {
   ban?: number;
   howToLogin?: string;
   active: number;
+  matching: number;
 };
 
 export enum sosialEnum {
@@ -81,6 +82,9 @@ export class User {
   @Column({ default: false })
   working: boolean;
 
+  @Column({ default: false })
+  matching: boolean;
+
   @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP" })
   created: Date;
 
@@ -119,6 +123,6 @@ export class User {
   @OneToMany((type) => Connect, (connect) => connect.mento, { nullable: true })
   asMento: Connect[];
 
-  @OneToMany((type) => Connect, (connect) => connect.mentee, { nullable: true })
-  asMentee: Connect[];
+  // @OneToMany((type) => Connect, (connect) => connect.mentee, { nullable: true })
+  // asMentee: Connect[];
 }
