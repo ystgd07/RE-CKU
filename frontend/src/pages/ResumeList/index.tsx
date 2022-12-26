@@ -2,19 +2,39 @@ import { Alert, ContentElement } from './style';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Card, Col, Row, Button, Layout } from 'antd';
+import { Card, Col, Row, Button, Layout, Modal } from 'antd';
 import Header from 'components/Header';
 const { Footer, Content } = Layout;
 type Mock = { resumeName: string; address: string; updatedAt: string; resumeId: any };
 let id: any;
+let test: string = '';
+
 const ResumeMain = () => {
     const [res, setRes] = useState<Mock[]>([]);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [portfolioId, setPortfolioId] = useState('');
     const navigate = useNavigate();
-    // /my-portfolio/resumes/:resumeId
-    async function deletePortfolio(e: any) {
+    const showModal = (e: any) => {
         e.stopPropagation();
+        // setPortfolioId(e.target.parentNode.value);
+        test = e.currentTarget.value;
+        setIsModalOpen(true);
+        setPortfolioId(test);
+    };
+    const handleOk = () => {
+        setIsModalOpen(false);
+        deletePortfolio(portfolioId);
+    };
+    console.log('hi');
+    const handleCancel = () => {
+        setIsModalOpen(false);
+    };
+    // /my-portfolio/resumes/:resumeId
+    async function deletePortfolio(id: string) {
+        console.log(portfolioId);
+
         try {
-            const res = await axios.delete(`/my-portfolio/resumes/${e.currentTarget.value}`);
+            const res = await axios.delete(`/my-portfolio/resumes/${id}`);
 
             if (res.status === 200) {
                 getPortfolio();
@@ -96,7 +116,7 @@ const ResumeMain = () => {
                     <div className="site-card-wrapper">
                         <Row gutter={16}>
                             {res.map((e: Mock) => (
-                                <Col span={8}>
+                                <Col span={8} key={e.resumeId}>
                                     <Card
                                         onClick={gotoPost}
                                         key={e.resumeId}
@@ -125,7 +145,7 @@ const ResumeMain = () => {
                                                     shape="round"
                                                     style={{ marginLeft: '5px' }}
                                                     value={e.resumeId}
-                                                    onClick={deletePortfolio}
+                                                    onClick={showModal}
                                                 >
                                                     삭제
                                                 </Button>
@@ -138,6 +158,14 @@ const ResumeMain = () => {
                             ))}
                         </Row>
                     </div>
+                    <Modal
+                        title="이력서 삭제"
+                        open={isModalOpen}
+                        onOk={handleOk}
+                        onCancel={handleCancel}
+                    >
+                        <p>정말로 해당 이력서를 삭제하시겠습니까?</p>
+                    </Modal>
                 </Content>
                 <Footer style={{ backgroundColor: 'white' }}>Footer</Footer>
             </Layout>
