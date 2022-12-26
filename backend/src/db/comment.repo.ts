@@ -137,14 +137,14 @@ export const unlikeCommentFromUser = async (userId: number, commentId: number) =
 };
 
 // 댓글 좋아요 눌렀는지 확인
-export const alreadyLikesComment = async (commentId: number) => {
+export const alreadyLikesComment = async (commentId: number, userId: number) => {
   const table = await db.query(
     `
       SELECT userId 
       FROM comment_like_maping 
-      WHERE(commentId=?)
+      WHERE(commentId=? AND userId=?)
     `,
-    [commentId]
+    [commentId, userId]
   );
 
   const overlap = utils.jsonParse(table)[0][0];
