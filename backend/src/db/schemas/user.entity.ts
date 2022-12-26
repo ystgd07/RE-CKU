@@ -75,6 +75,9 @@ export class User {
   @Column({ default: 0 })
   reported: number;
 
+  @Column({ default: 0 })
+  corrections: number;
+
   @Column({ default: false })
   working: boolean;
 
