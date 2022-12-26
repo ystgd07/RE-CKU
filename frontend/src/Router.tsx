@@ -2,7 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Main from 'pages/Main';
 import Login from 'pages/Login';
 import ResumeEdit from 'pages/ResumeEdit';
-// import Post from 'pages/Post';
+import Post from 'pages/Post';
 import PostCreate from 'pages/PostCreate';
 import Join from 'pages/Join';
 import FindPw from 'pages/FindPw';
@@ -70,8 +70,8 @@ const Router = () => {
                     <>
                         <Route path="/" element={<Main />} />
                         <Route path="/resume/:id" element={<Navigate replace to="/" />} />
-                        {/* <Route path="/post/create" element={<PostCreate />} /> */}
-                        <Route path="/post/:postId" element={<Navigate replace to="/" />} />
+                        <Route path="/post/:postId" element={<Post />} />
+                        <Route path="/post/create" element={<PostCreate />} />
                         <Route path="/myportfolio" element={<Navigate replace to="/" />} />
                         <Route path="/profile" element={<Navigate replace to="/" />} />
                         <Route path="/login" element={<Login />} />
