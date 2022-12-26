@@ -9,8 +9,8 @@ import { EmailAuth, UserProfile } from "../db/schemas";
 import {findUsersQ, updateUserQ} from "../db/admin.repo";
 
 // 2-1. 전체 회원 목록 조회
-export const findUsers = async () => {
-  const users = await adminRepo.findUsersQ();
+export const findUsers = async (count: number, offset: number) => {
+  const users = await adminRepo.findUsersQ(count, offset);
 
   return users;
 };
@@ -30,9 +30,9 @@ export const findReport = async (userId: number) => {
 };
 
 // 3-1. 포인트 / 비활성화
-export const updateUser = async (userId: number, updateInfo: Record<string, string | number>) => {
+export const updateUser = async (userId: number, updateInfo: Record<string, string | number>, count: number, offset: number) => {
   const updatedUser = await adminRepo.updateUserQ(userId, updateInfo);
-  const updatedUsers = await adminRepo.findUsersQ();
+  const updatedUsers = await adminRepo.findUsersQ(count, offset);
 
   return updatedUsers;
 }
