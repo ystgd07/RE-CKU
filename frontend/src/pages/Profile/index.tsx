@@ -15,7 +15,7 @@ import {
 } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
 import { UserInfo } from 'components/User/UserInfo';
-import { Like } from 'components/User/Like';
+import { Proofread } from 'components/User/Proofread';
 import axios from 'axios';
 const token = localStorage.getItem('accessToken');
 
@@ -26,6 +26,8 @@ const tierColors = {
     silver: '#c0c0c0',
     gold: '#ffbd1b',
     platinum: '#A0B2C6',
+    diamond: '#4EE2EC',
+    challenger: '#dc143c',
 };
 
 const onChange = (key: string) => {
@@ -122,7 +124,6 @@ const Profile: React.FC = () => {
             console.log(mocks);
 
             setRes(mocks);
-            console.log(res.point);
         } catch (e) {
             console.log(e);
         }
@@ -132,7 +133,7 @@ const Profile: React.FC = () => {
         getProfile();
     }, []);
 
-    const arr = [20, 40, 100, 300];
+    const arr = [40, 60, 200, 1000, 10000];
     let upperLimit = arr[0];
     let lowerLimit = 0;
     let tier = 'Bronze';
@@ -144,24 +145,30 @@ const Profile: React.FC = () => {
             if (upperLimit === 40) {
                 tier = 'Silver';
                 tierColor = tierColors.silver;
-            } else if (upperLimit === 100) {
+            } else if (upperLimit === 60) {
                 tier = 'Gold';
                 tierColor = tierColors.gold;
-            } else if (upperLimit === 300) {
+            } else if (upperLimit === 200) {
                 tier = 'Platinum';
                 tierColor = tierColors.platinum;
+            } else if (upperLimit === 1000) {
+                tier = 'Diamond';
+                tierColor = tierColors.diamond;
+            } else if (upperLimit === 10000) {
+                tier = 'Challenger';
+                tierColor = tierColors.challenger;
             }
             if (upperLimit === arr[0]) {
                 lowerLimit = 0;
             } else {
-                lowerLimit = upperLimit - arr[idx];
+                lowerLimit = arr[idx];
             }
         }
     });
     console.log(upperLimit, lowerLimit);
 
     let testWidth: number = ((res.point - lowerLimit) / (upperLimit - lowerLimit)) * 100;
-
+    testWidth = Math.floor(testWidth);
     if (testWidth === 100) testWidth = 0;
 
     console.log(testWidth);
@@ -222,15 +229,11 @@ const Profile: React.FC = () => {
                                     key: '1',
                                     children: <UserInfo user={res}></UserInfo>,
                                 },
-                                {
-                                    label: `좋아요`,
-                                    key: '2',
-                                    children: ``,
-                                },
+
                                 {
                                     label: `첨삭`,
-                                    key: '3',
-                                    children: `Content of Tab Pane 3`,
+                                    key: '2',
+                                    children: <Proofread></Proofread>,
                                 },
                             ]}
                         />
@@ -244,15 +247,11 @@ const Profile: React.FC = () => {
                                     key: '1',
                                     children: <UserInfo user={res}></UserInfo>,
                                 },
-                                {
-                                    label: `좋아요`,
-                                    key: '2',
-                                    children: <Like></Like>,
-                                },
+
                                 {
                                     label: `첨삭(플레티넘)`,
-                                    key: '3',
-                                    children: `Content of Tab Pane 3`,
+                                    key: '2',
+                                    children: <Proofread></Proofread>,
                                     disabled: true,
                                 },
                             ]}

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Descriptions } from 'antd';
-export const Like = () => {
+export const Proofread = () => {
     return (
         <Descriptions title="User Info">
             <Descriptions.Item label="UserName">Zhou Maomao</Descriptions.Item>
