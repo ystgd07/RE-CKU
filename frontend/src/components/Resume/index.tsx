@@ -44,8 +44,6 @@ interface userDataRes {
 }
 
 const Resume = ({ resumeId }: any) => {
-    console.log('받았다! =', resumeId);
-
     const [careerData, setCareerData] = useState<careerDataRes[]>([]);
     const [projectData, setProjectData] = useState<projectDataRes[]>([]);
     const [resumeData, setResumeData] = useState<resumeDataRes>();
