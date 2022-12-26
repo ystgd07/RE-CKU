@@ -2,6 +2,18 @@ import * as utils from "./utils";
 import { db } from ".";
 import { UserProfile } from "./schemas";
 
+// 2-0. 페이지네이션
+export const findPagesQ = async () => {
+  const [rows] = await db.query(
+    `SELECT 
+        COUNT(id)
+        FROM user
+        WHERE role != 'admin'`
+  );
+
+  return rows[0]['COUNT(id)'];
+};
+
 // 2-1. 전체 회원 목록 조회
 export const findUsersQ = async (count: number, offset: number) => {
   const [usersInfo] = await db.query(
@@ -76,10 +88,7 @@ export const findReportQ = async (userId: number) => {
 };
 
 // 3-1. 회원 정보 수정
-export const updateUserQ = async (
-  userId: number,
-  updateInfo: Record<string, string | number>
-) => {
+export const updateUserQ = async (userId: number, updateInfo: Record<string, string | number>) => {
   const [key, value] = utils.updateData(updateInfo);
 
   const updatedUser = await db.query(

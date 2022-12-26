@@ -8,6 +8,15 @@ import * as adminRepo from "../db/admin.repo";
 import { EmailAuth, UserProfile } from "../db/schemas";
 import {findUsersQ, updateUserQ} from "../db/admin.repo";
 
+// 2-0. 페이지네이션
+export const findPages = async (count: number) => {
+  const rows: number = await adminRepo.findPagesQ();
+
+  const pages: number = Math.ceil(rows / count);
+
+  return pages;
+};
+
 // 2-1. 전체 회원 목록 조회
 export const findUsers = async (count: number, offset: number) => {
   const users = await adminRepo.findUsersQ(count, offset);

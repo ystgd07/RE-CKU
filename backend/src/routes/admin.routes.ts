@@ -9,7 +9,23 @@ import userRoute from "./user.routes";
 //import { avatarImg, tokenValidator, validateBody } from "../middlewares";
 export const adminRoute = express();
 
-// 2-1. 전체 회원 목록 조회
+// 2-0. 페이지네이션
+adminRoute.get("/users/pages", async (req, res, next) => {
+  try {
+    const count = Number(req.query.count);
+
+    const pages = await adminService.findPages(count);
+
+    return res.status(200).json({
+      msg: "페이지 수 조회 성공",
+      data: pages,
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// 2-1. 전체 회원 목록 조회 (offset 페이지네이션)
 adminRoute.get("/users", async (req, res, next) => {
   try {
     const count = Number(req.query.count);
