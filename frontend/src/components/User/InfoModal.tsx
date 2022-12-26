@@ -71,8 +71,7 @@ export const InfoModal: React.FC = () => {
             if (passRef.current.input.value === newPassRef.current.input.value) setValid(false);
             else console.log('no correct');
         }
-        console.log(passRef.current.input.value);
-    }; //input 1
+    };
     const checkPasswordChnage = (e: any) => {
         setCheckPass(e.target.value);
         if (
@@ -81,12 +80,11 @@ export const InfoModal: React.FC = () => {
         ) {
             setValid(true);
         }
-        console.log(newPassRef.current.input.value);
         if (checkPass !== '') {
             if (passRef.current.input.value === newPassRef.current.input.value) setValid(false);
             else console.log('no correct');
         }
-    }; //input 2
+    };
 
     return (
         <>

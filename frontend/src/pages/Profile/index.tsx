@@ -55,7 +55,7 @@ const Profile: React.FC = () => {
             if (res.status === 200) {
                 await axios.patch(
                     '/users/individuals',
-                    { avatarUrl: `https\\${res.data.imageUrl}` },
+                    { avatarUrl: `${res.data.imageUrl}` },
                     { headers: { authorization: `Bearer ${token}` } },
                 );
             }

@@ -9,6 +9,7 @@ import {
 import { Descriptions, Tag, Modal } from 'antd';
 import { InfoModal } from './InfoModal';
 import GitHubModal from './GitHubModal';
+import axios from 'axios';
 type Mock = {
     // id: string;
     email: string;
@@ -25,12 +26,33 @@ type UserProps = {
     user: Mock;
 };
 
+const anytype: any = null;
+const token = localStorage.getItem('accessToken');
 export const UserInfo = ({ user }: UserProps) => {
-    const { username, phoneNumber, email, gitHubUrl } = user;
+    let { username, phoneNumber, email, gitHubUrl } = user;
     const [propsOpen, setPropsOpen] = useState(false);
+
     const changeOpen = () => {
         setPropsOpen(prev => !prev);
     };
+
+    const updateGitURL = (gitURl: any) => {
+        gitHubUrl = gitURl;
+        try {
+            const res = axios.patch(
+                '/users/individuals',
+                { gitHubUrl: `${gitURl}` },
+                {
+                    headers: { authorization: `Bearer ${token}` },
+                },
+            );
+            console.log(res);
+        } catch (e) {
+            console.log(e);
+        }
+    };
+    // { avatarUrl: `${res.data.imageUrl}` },
+    // { headers: { authorization: `Bearer ${token}` } },
     return (
         <>
             <Descriptions title="User Info">
@@ -44,13 +66,16 @@ export const UserInfo = ({ user }: UserProps) => {
                     href={gitHubUrl}
                     onClick={() => {
                         if (gitHubUrl === null) setPropsOpen(true);
-                        console.log(propsOpen);
                     }}
                 >
                     Github
                 </a>
             </Tag>
-            <GitHubModal open={propsOpen} changeOpen={changeOpen}></GitHubModal>
+            <GitHubModal
+                open={propsOpen}
+                changeOpen={changeOpen}
+                updateGitURL={updateGitURL}
+            ></GitHubModal>
             <InfoModal></InfoModal>
         </>
     );

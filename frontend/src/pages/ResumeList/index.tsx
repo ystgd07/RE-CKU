@@ -24,18 +24,16 @@ const ResumeMain = () => {
     }
     const gotoModify = (e: any) => {
         e.stopPropagation();
-        navigate(`/resume/${id}/edit`);
+        navigate(`/resume/${e.target.value}/edit`);
     };
     const gotoPost = (e: any) => {
-        navigate(`/resume/${id}`);
+        console.log(e.currentTarget.id);
+        navigate(`/resume/${e.currentTarget.id}`);
     };
     async function getPortfolio() {
         try {
             const token = localStorage.getItem('accessToken');
-            // const res = await axios.post(
-            //   "https://reactproject-test-78fcd-default-rtdb.firebaseio.com/mock.json",
-            //   { mocksPortfolio }
-            // );
+
             const mocks = await axios
                 .get('/my-portfolio/resumes', {
                     headers: { authorization: `Bearer ${token}` },
@@ -45,10 +43,6 @@ const ResumeMain = () => {
             console.log(mocks, 'SUCCCCCCCCCess');
 
             await setRes(mocks);
-
-            // console.log(mocks.data["-NJJR5a9003Z0Qw6WOzB"]);
-            // const mock = mocks.data["-NJJR5a9003Z0Qw6WOzB"].mocksPortfolio;
-            // setRes(mock);
         } catch (e) {
             console.log(e);
         }
@@ -64,12 +58,10 @@ const ResumeMain = () => {
                 },
             );
 
-            id = mocks.data.createdResumeId;
-            console.log(id);
+            id = mocks.data.data[0].insertId;
             if (mocks.status === 200) {
-                navigate(`/resume/${id}`);
+                navigate(`/resume/${id}/edit`);
             }
-            console.log(mocks);
         } catch (e) {
             console.log(e);
         }
@@ -93,7 +85,7 @@ const ResumeMain = () => {
                 </div>
 
                 {res.map((e: Mock) => (
-                    <div onClick={gotoPost} key={e.resumeId}>
+                    <div onClick={gotoPost} key={e.resumeId} id={e.resumeId}>
                         <h3>{e.resumeName}</h3>
                         <p>{e.updatedAt.split('T')[0]}</p>
                         <button value={e.resumeId} onClick={deletePortfolio}>

@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { Modal } from 'antd';
+import React, { useState, useEffect, useRef } from 'react';
+import { Modal, Input, Tooltip, Button } from 'antd';
+import { CopyOutlined } from '@ant-design/icons';
 const GitHubModal = (props: any) => {
     const [open, setOpen] = useState(false);
     const [confirmLoading, setConfirmLoading] = useState(false);
-
+    const githubUrlRef: any = useRef();
     console.log(props.open, '여기는 프롭스공간');
 
     const showModal = () => {
@@ -14,8 +15,10 @@ const GitHubModal = (props: any) => {
         if (props.open) setOpen(prev => !prev);
     }, [props.open]);
 
-    const handleOk = (e: any) => {
+    const handleOk = async (e: any) => {
         setConfirmLoading(true);
+        console.log(githubUrlRef.current.input.value);
+        await props.updateGitURL(githubUrlRef.current.input.value);
         setTimeout(() => {
             setOpen(false);
             setConfirmLoading(false);
@@ -25,11 +28,12 @@ const GitHubModal = (props: any) => {
 
     const handleCancel = (e: any) => {
         setOpen(false);
+        githubUrlRef.current.input.value = '';
         props.changeOpen();
     };
     return (
         <Modal
-            title="Title"
+            title="GitHub URL 변경"
             open={open}
             onOk={handleOk}
             confirmLoading={confirmLoading}
@@ -38,7 +42,10 @@ const GitHubModal = (props: any) => {
             keyboard={false}
             closable={false}
         >
-            <input type="url"></input>
+            <Input style={{ width: 'calc(100% - 200px)' }} ref={githubUrlRef} />
+            <Tooltip title="copy git url">
+                <Button icon={<CopyOutlined />} />
+            </Tooltip>
         </Modal>
     );
 };
