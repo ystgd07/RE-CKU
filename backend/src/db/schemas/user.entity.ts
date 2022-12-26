@@ -79,6 +79,9 @@ export class User {
   @Column({ default: 0 })
   corrections: number;
 
+  @Column({ default: 3 })
+  chance: number;
+
   @Column({ default: false })
   working: boolean;
 

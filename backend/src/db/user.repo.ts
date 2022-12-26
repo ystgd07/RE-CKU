@@ -228,9 +228,13 @@ export type MatchInfo = {
   matchInfo: {
     matchingId: number;
     step: string;
+    mentoId: number;
+    menteeId: number;
+    created: "";
     rotId: number;
     email: string;
     username: string;
+    point: number;
   };
   cancelAble: boolean;
 };
@@ -250,7 +254,7 @@ export const findMatchByMatchingId = async (matchingId: number): Promise<Match> 
       step,
       mentoComplate,
       menteeComplate
-    FROM connect
+    FROM connect 
     WHERE
       id=?
   `,
@@ -263,7 +267,17 @@ export const findMatchByMatchingId = async (matchingId: number): Promise<Match> 
 
 export const findMatchQ = async (userId: number): Promise<MatchInfo | string> => {
   const result: MatchInfo = {
-    matchInfo: { matchingId: 0, step: "", rotId: 0, email: "", username: "" },
+    matchInfo: {
+      matchingId: 0,
+      step: "",
+      mentoId: 0,
+      menteeId: 0,
+      created: "",
+      rotId: 0,
+      email: "",
+      username: "",
+      point: 0,
+    },
     cancelAble: false,
   };
   const [connect] = await db.query(
@@ -271,9 +285,13 @@ export const findMatchQ = async (userId: number): Promise<MatchInfo | string> =>
       SELECT 
         c.id as matchingId,
         c.step,
+        c.mentoId,
+        c.menteeId,
+        c.created,
         u.id as rotId,
         u.email,
-        u.username
+        u.username,
+        u.point
       FROM connect c
       JOIN user u
       on mentoId = u.id
