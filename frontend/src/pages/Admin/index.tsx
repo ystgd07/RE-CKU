@@ -1,31 +1,61 @@
-import * as S from './style';
-import { Link } from 'react-router-dom';
-import Header from './../../components/Header/index';
+import React, { useState } from 'react';
+import { UserOutlined, BookOutlined } from '@ant-design/icons';
+import { Layout, Menu, theme } from 'antd';
+import { Link, Outlet } from 'react-router-dom';
 
-const Admin = () => {
+const { Header, Sider, Content } = Layout;
+
+const Admin: React.FC = () => {
+    const [collapsed, setCollapsed] = useState(false);
+    const {
+        token: { colorBgContainer },
+    } = theme.useToken();
+
     return (
-        <S.Div>
-            <div>
-                <S.H1>Admin</S.H1>
-            </div>
-            <S.RowDiv>
-                <S.Nav>
-                    <Link to="/" style={{ textDecoration: 'none', color: 'black' }}>
-                        <div>회원관리</div>
-                    </Link>
-                    <Link to="/" style={{ textDecoration: 'none', color: 'black' }}>
-                        <div>회원관리</div>
-                    </Link>
-                    <Link to="/" style={{ textDecoration: 'none', color: 'black' }}>
-                        <div>회원관리</div>
-                    </Link>
-                </S.Nav>
-                <S.Content>
-                    컨텐츠
-                    <div>d</div>
-                </S.Content>
-            </S.RowDiv>
-        </S.Div>
+        <Layout style={{ height: '100vh' }}>
+            <Sider trigger={null} collapsible collapsed={collapsed}>
+                <div
+                    style={{
+                        height: '32px',
+                        margin: '16px',
+                        // background: 'rgba(255, 255, 255, 0.3)',
+                        padding: '10px',
+                        color: 'white',
+                        fontSize: '20px',
+                        fontWeight: 'bold',
+                    }}
+                    className="logo"
+                >
+                    관리자 페이지
+                </div>
+                <Menu
+                    theme="dark"
+                    mode="inline"
+                    // defaultSelectedKeys={['1']}
+                    items={[
+                        {
+                            key: '1',
+                            icon: <UserOutlined />,
+                            label: <Link to="/admin/user">회원관리</Link>,
+                        },
+                        {
+                            key: '2',
+                            icon: <BookOutlined />,
+                            label: <Link to="/admin/content">회원신고관리</Link>,
+                        },
+                    ]}
+                />
+            </Sider>
+            <Layout className="site-layout">
+                {/* <Header style={{ padding: 0, background: colorBgContainer }}>
+                    {React.createElement(collapsed ? MenuUnfoldOutlined : MenuFoldOutlined, {
+                        className: 'trigger',
+                        onClick: () => setCollapsed(!collapsed),
+                    })}
+                </Header> */}
+                <Outlet />
+            </Layout>
+        </Layout>
     );
 };
 
