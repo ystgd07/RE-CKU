@@ -82,6 +82,11 @@ const Job = ({ setIsWorkFormToggle, setAddJob, jobItem, addJob, idx }: WorkFormS
                 workNow: workFormDataState.workNow,
             });
 
+            // if (res.status === 201) {
+            //     // onCarrerCreated()
+            //     setWorkFormDataState(false);
+            // }
+
             console.log(res, ' data state');
         } catch (err: unknown) {
             console.log(err);

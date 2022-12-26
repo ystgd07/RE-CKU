@@ -16,7 +16,8 @@ import { useParams } from 'react-router-dom';
 import Job from './Job';
 import Project from './Project';
 import { UserData, ResumeData, FormStore, CareerData } from 'models/resume-model';
-// import { useSelector, useDispatch } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+import { RootState } from 'context/store';
 
 const Resume = () => {
     const [isWorkFormToggle, setIsWorkFormToggle] = useState<boolean>(false);
@@ -33,8 +34,8 @@ const Resume = () => {
     const params = useParams();
     const resumeIds = params.id;
     const token = localStorage.getItem('accessToken');
-    // const value = useSelector<boolean>(state => state.form.workFormToggle);
-    // console.log(value, 'susususuusussususu');
+    const value = useSelector<RootState>(state => state.form.workFormToggle);
+    console.log(value, 'susususuusussususu');
 
     const fetchResume = async () => {
         try {
@@ -62,11 +63,10 @@ const Resume = () => {
         }
     };
 
-    const filterCarrerId = () => {};
     console.log(carrIds, ' carrids');
 
     const getJob = async (ids: number[]) => {
-        const res = Promise.all(
+        const res = await Promise.all(
             ids.map(id => {
                 return axios.get(`/my-portfolio/careers/${id}`).then(res => res.data.data);
             }),
@@ -261,6 +261,7 @@ const Resume = () => {
                                         return (
                                             <Job
                                                 key={idx}
+                                                // onCareerCreated={(state: workFormState) => {}}
                                                 setIsWorkFormToggle={setIsWorkFormToggle}
                                                 setAddJob={setAddJob}
                                                 jobItem={jobItem}
