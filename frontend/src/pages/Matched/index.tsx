@@ -12,6 +12,7 @@ interface data {
     rotId: number;
     step: string;
     username: string;
+    point: number;
 }
 
 const Matched = () => {
@@ -45,12 +46,12 @@ const Matched = () => {
                         {data?.username}({data?.email})
                     </h3>
                     <p>
-                        <strong>부탁건수 : </strong>
-                        {/* {data?.rotId}회 */}
-                    </p>
-                    <p>
                         <strong>상태 :</strong>
                         {data?.step}
+                    </p>
+                    <p>
+                        <strong>point :</strong>
+                        {data?.point}
                     </p>
                 </div>
             </S.MobileDiv>

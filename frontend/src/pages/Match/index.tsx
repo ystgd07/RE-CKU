@@ -26,11 +26,11 @@ const Match = () => {
         try {
             const res = await API.get(`/users/rots`);
             console.log(res);
-            if (res.matchInfo) {
-                navigate('/matched');
-            } else {
-                setData(res);
-            }
+            // if (res.matchInfo) {
+            //     navigate('/matched');
+            // } else {
+            //     setData(res);
+            // }
         } catch (e) {
             console.log(e);
         }
