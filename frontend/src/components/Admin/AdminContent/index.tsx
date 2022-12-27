@@ -18,8 +18,6 @@ import styled from '@emotion/styled';
 import e from 'express';
 const { Panel } = Collapse;
 const { Content } = Layout;
-const { Search } = Input;
-const { Paragraph } = Typography;
 
 const BorderDiv = styled.div`
     width: 90%;

@@ -1,4 +1,4 @@
-import express from "express";
+import express, { request } from "express";
 import * as middlewares from "../middlewares/multer";
 import sharp from "sharp";
 import fs from "fs";

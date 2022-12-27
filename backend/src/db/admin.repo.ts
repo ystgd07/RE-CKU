@@ -2,7 +2,43 @@ import * as utils from "./utils";
 import { db } from ".";
 import { UserProfile } from "./schemas";
 
+// 2-0. 페이지네이션
+export const findPagesQ = async () => {
+  const [rows] = await db.query(
+    `SELECT 
+        COUNT(id)
+        FROM user
+        WHERE role != 'admin'`
+  );
+
+  return rows[0]['COUNT(id)'];
+};
+
 // 2-1. 전체 회원 목록 조회
+export const findUsersAllQ = async () => {
+  const [users] = await db.query(
+    `SELECT 
+        id AS userId,
+        username,
+        email,
+        phoneNumber,
+        avatarUrl,
+        active,
+        howToLogin,
+        point,
+        clickedLikes,
+        reported,
+        working,
+        created
+        FROM user
+        WHERE role != 'admin'
+        ORDER BY id ASC`
+  );
+
+  return users;
+};
+
+// 2-2. 전체 회원 목록 조회 (페이지네이션)
 export const findUsersQ = async (count: number, offset: number) => {
   const [usersInfo] = await db.query(
     `SELECT 
@@ -30,7 +66,7 @@ export const findUsersQ = async (count: number, offset: number) => {
   return users;
 };
 
-// 2-2. 최악의 회원 목록 조회
+// 2-3. 최악의 회원 목록 조회
 export const findWorstUsersQ = async () => {
   const [usersInfo] = await db.query(
     `SELECT 
@@ -58,7 +94,7 @@ export const findWorstUsersQ = async () => {
   return users;
 };
 
-// 2-3. 신고 내역 조회
+// 2-4. 신고 내역 조회
 export const findReportQ = async (userId: number) => {
   const [reportInfo] = await db.query(
     `SELECT
@@ -76,10 +112,7 @@ export const findReportQ = async (userId: number) => {
 };
 
 // 3-1. 회원 정보 수정
-export const updateUserQ = async (
-  userId: number,
-  updateInfo: Record<string, string | number>
-) => {
+export const updateUserQ = async (userId: number, updateInfo: Record<string, string | number>) => {
   const [key, value] = utils.updateData(updateInfo);
 
   const updatedUser = await db.query(

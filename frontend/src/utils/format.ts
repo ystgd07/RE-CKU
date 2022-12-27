@@ -1,14 +1,3 @@
-// 13,000원, 2개 등의 문자열에서 쉼표, 글자 등 제외 후 숫자만 뺴냄
-// 예시: 13,000원 -> 13000, 20,000개 -> 20000
-export const convertToNumber = (price: string) => {
-    return parseInt(price.replace(/(,|개|원)/g, ''));
-};
-
-// 숫자에 쉼표를 추가함. (10000 -> 10,000)
-export const addCommas = (n: number) => {
-    return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-};
-
 // 폰 번호 형식 자동 포맷
 export function formatPhoneNumber(phoneNumber: string) {
     const formattedPhoneNumber = phoneNumber

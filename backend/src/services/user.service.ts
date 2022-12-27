@@ -8,9 +8,7 @@ import { send } from "../config/sendMail";
 import { EmailAuth, UserProfile } from "../db/schemas";
 
 // 매칭 관련
-export const getRotListOrMatchingStatus = async (
-  userId: number
-): Promise<userRepo.RotList | userRepo.MatchInfo | false> => {
+export const getRotListOrMatchingStatus = async (userId: number): Promise<userRepo.RotList | userRepo.MatchInfo> => {
   try {
     const mentee = await userRepo.unIncludePasswordUserInfoQ(userId);
     // 매칭이 없을경우 리스트 O
