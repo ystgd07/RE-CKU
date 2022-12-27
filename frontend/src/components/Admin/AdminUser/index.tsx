@@ -12,7 +12,7 @@ import {
     Skeleton,
     Divider,
 } from 'antd';
-import InfiniteScroll from 'react-infinite-scroll-component';
+// import InfiniteScroll from 'react-infinite-scroll-component';
 import axios from 'axios';
 import styled from '@emotion/styled';
 const { Content } = Layout;

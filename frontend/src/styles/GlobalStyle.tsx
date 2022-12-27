@@ -80,7 +80,7 @@ const style = css`
     .Container {
         max-width: 128rem;
         margin: 0 auto;
-        padding: 2.5rem;
+        padding: 0 1rem;
     }
 `;
 
