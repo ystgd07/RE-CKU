@@ -37,7 +37,6 @@ const Login = () => {
             localStorage.setItem('refreshToken', refreshToken);
             localStorage.setItem('userId', userId);
             localStorage.setItem('isAdmin', isAdmin);
-            localStorage.setItem('email', data.email);
             navigate('/');
         } catch (err: any) {
             console.error(err.stack);
@@ -45,7 +44,7 @@ const Login = () => {
         }
     };
 
-    const kakao = async () => {
+    const LoginByKakao = async () => {
         try {
             const baseUrl = 'https://kauth.kakao.com/oauth/authorize?';
             const zz = `client_id=${process.env.REACT_APP_KAKAO_KEY}&redirect_uri=${process.env.REACT_APP_REDIRECT_URI}&response_type=code&scope=profile_nickname,profile_image,account_email`;

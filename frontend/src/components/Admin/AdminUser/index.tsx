@@ -81,7 +81,7 @@ const AdminContent: React.FC = () => {
         token: { colorBgContainer },
     } = theme.useToken();
 
-    async function getId() {
+    async function getUserId() {
         try {
             const res = await axios.get(`/admin/users`);
             console.log('😀');
@@ -106,21 +106,21 @@ const AdminContent: React.FC = () => {
     }
 
     useEffect(() => {
-        getId();
+        getUserId();
     }, []);
 
     function onSearchUser(searchEmail: string) {
         if (searchEmail === '') {
-            getId();
+            getUserId();
         }
         const searchUser = userData.filter((data: any) => data.email.includes(searchEmail));
         setUserData(searchUser);
     }
-
-    const onChangeActivetrue = async (userId: any) => {
+    const onChangeActive = async (userId: string, active: boolean): Promise<void> => {
+        // const onChangeActivetrue = async (userId: any) => {
         try {
             console.log(userId);
-            const res = await axios.patch(`/admin/users/${userId}`, { active: 0 });
+            const res = await axios.patch(`/admin/users/${userId}`, { active: active });
             console.log('0');
             console.log(res);
             setUserData(res.data.data);
@@ -128,16 +128,16 @@ const AdminContent: React.FC = () => {
             console.log(e);
         }
     };
-    const onChangeActivefalse = async (userId: any) => {
-        try {
-            console.log(userId);
-            const res = await axios.patch(`/admin/users/${userId}`, { active: 1 });
-            console.log('1');
-            setUserData(res.data.data);
-        } catch (e) {
-            console.log(e);
-        }
-    };
+    // const onChangeActivefalse = async (userId: any) => {
+    //     try {
+    //         console.log(userId);
+    //         const res = await axios.patch(`/admin/users/${userId}`, { active: 1 });
+    //         console.log('1');
+    //         setUserData(res.data.data);
+    //     } catch (e) {
+    //         console.log(e);
+    //     }
+    // };
     return (
         <>
             <Content
@@ -233,12 +233,12 @@ const AdminContent: React.FC = () => {
                                         <div>
                                             활동 :
                                             <Switch
-                                                checked={item.active == 1 ? true : false}
+                                                checked={item.active === 1}
                                                 // onChange={() => onChangeActive}
                                                 onClick={() => {
                                                     item.active === 1
-                                                        ? onChangeActivetrue(item.userId)
-                                                        : onChangeActivefalse(item.userId);
+                                                        ? onChangeActive(String(item.userId), false)
+                                                        : onChangeActive(String(item.userId), true);
                                                 }}
                                                 size="small"
                                             />

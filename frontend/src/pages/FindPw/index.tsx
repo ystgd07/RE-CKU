@@ -53,7 +53,7 @@ const FindPw = () => {
                                 },
                             })}
                             placeholder="이메일 입력"
-                            autoComplete="off"
+                            // autoComplete="off"
                         />
                         <label>{errors?.email?.message}</label>
                         <button formAction="">이메일로 임시 비밀번호 보내기</button>

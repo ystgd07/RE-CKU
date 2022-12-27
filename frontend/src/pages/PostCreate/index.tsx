@@ -38,6 +38,10 @@ export {};
 // // //     height: 80px;
 // // //     background-color: yellowgreen;
 // // // `;
+// // const ErrorMsg = styled.p`
+// //     font-size: 16px;
+// //     color: #f66;
+// // `;
 
 // const ButtonDiv = styled.div`
 //     display: flex;
@@ -67,6 +71,8 @@ export {};
 // //         hashTags: '',
 // //     });
 // //     const { title, hashTags } = form;
+// function PostCreate() {
+//     const navigate = useNavigate();
 
 // interface IResumeInfo {
 //     intro: string;
@@ -84,6 +90,12 @@ export {};
 // // //         setIsResume(prev => !prev);
 // // //         console.log('Resume :', isResume);
 // // //     };
+//     // 폼 제출 시 에러 발생한 항목에 에러 메세지 출력을 위한 상태값
+//     const [error, setError] = useState({
+//         resume: false,
+//         title: false,
+//         content: false,
+//     });
 
 //     // 마크다운 에디터 객체
 //     const editorRef = useRef<Editor>(null);
@@ -102,39 +114,14 @@ export {};
 //     });
 //     const { title, hashTags } = form;
 
-// // //     const handleSubmit = async () => {
-// // //         // 게시물 작성 폼 유효성 검사
-// // //         // 이력서 on 인데 이력서를 선택하지 않았을 경우
-// // //         if (isResume === true) {
-// // //             // 이력서 선택 여부 추가 필요
-// // //             setError({
-// // //                 ...error,
-// // //                 resume: true,
-// // //             });
-// // //             console.log('이력서를 선택해주세요.');
-// // //             return;
-// // //         }
-// // //         // 제목 입력 여부 판별
-// // //         if (form.title === '') {
-// // //             setError({
-// // //                 ...error,
-// // //                 title: true,
-// // //             });
-// // //             console.log('제목을 입력해주세요.');
-// // //             return;
-// // //         }
-// // //         // 게시물 내용 입력 여부 판별
-// // //         const content = editorRef.current?.getInstance().getMarkdown();
-// // //         if (content === '') {
-// // //             setError({
-// // //                 ...error,
-// // //                 content: true,
-// // //             });
-// // //             // 에디터 포커스
-// // //             editorRef.current?.getInstance().focus();
-// // //             console.log('게시물 내용을 입력해주세요.');
-// // //             return;
-// // //         }
+// //     const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+// //         e.preventDefault();
+// //         const { name, value } = e.target;
+// //         setForm({
+// //             ...form,
+// //             [name]: value,
+// //         });
+// //     };
 
 //     const [modalOpen, setModalOpen] = useState(false);
 
@@ -235,18 +222,18 @@ export {};
 //         }
 //     };
 
-// //         const result = {
-// //             title: data.title,
-// //             content: data.content,
-// //             hashTags: data.hashTags,
-// //         };
+//         const result = {
+//             title: data.title,
+//             content: data.content,
+//             hashTags: data.hashTags,
+//         };
 
-// //         setForm({
-// //             title: result?.title,
-// //             hashTags: result.hashTags,
-// //         });
-// //         updateEditorContent(result.content);
-// //     };
+//         setForm({
+//             title: result?.title,
+//             hashTags: result.hashTags,
+//         });
+//         updateEditorContent(result.content);
+//     };
 
 //         const updateOriginBoardData = async () => {
 //             // 게시물 페이지 수정 버튼으로 접근한 경우
