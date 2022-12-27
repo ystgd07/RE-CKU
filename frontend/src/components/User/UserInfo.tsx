@@ -4,7 +4,6 @@ import { Descriptions, Tag, Col, Row, Button } from 'antd';
 import { InfoModal } from './InfoModal';
 import GitHubModal from './GitHubModal';
 import axios from 'axios';
-
 type Mock = {
     // id: string;
     email: string;
