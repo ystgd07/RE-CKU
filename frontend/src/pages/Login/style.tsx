@@ -30,7 +30,7 @@ export const MobileDiv = styled.div`
     border-radius: 0.4rem;
 
     & form {
-        max-width: 28rem;
+        max-width: 46rem;
         width: 100%;
         & p {
             display: flex;
@@ -46,7 +46,7 @@ export const MobileDiv = styled.div`
             }
         }
 
-        & div {
+        & .loginWrap {
             display: flex;
             flex-direction: column;
             gap: 2rem;
@@ -54,12 +54,13 @@ export const MobileDiv = styled.div`
             & h1 {
                 text-align: center;
                 font-weight: bold;
-                font-size: 3.2rem;
+                font-size: 4rem;
                 padding-bottom: 1rem;
+                font-family: 'Viga', sans-serif;
             }
 
             & input {
-                padding: 2rem;
+                padding: 1.6rem 2rem;
                 border: 1px solid #c9cacc;
                 border-radius: 0.4rem;
                 font-size: 1.4rem;
@@ -68,21 +69,61 @@ export const MobileDiv = styled.div`
                 width: calc(100% - 4rem);
             }
 
+            & .util {
+                display: flex;
+                gap: 1rem;
+                padding-left: 1rem;
+                border-left: 1rem solid #e2e2e2;
+                text-align: left;
+                font-size: 1.2rem;
+                font-weight: 400;
+
+                & a {
+                    &:hover {
+                        font-weight: 600;
+                        color: black;
+                    }
+                }
+            }
+
             & article {
                 & ul {
-                    & li {
-                        font-size: 1.4rem;
+                    font-size: 1.4rem;
+                    font-weight: 600;
 
-                        & .loginBtn {
-                            padding: 2rem;
-                            border: 1px solid #c9cacc;
-                            border-radius: 0.4rem;
-                            font-size: 1.4rem;
-                            line-height: 2.2rem;
+                    & .loginBtn {
+                        padding: 1.6rem 2rem;
+                        border: 0;
+                        background-color: #d3d3d3;
+                        border-radius: 0.4rem;
+                        font-size: 1.4rem;
+                        line-height: 2.2rem;
+                        width: 100%;
+                        font-weight: 600;
+
+                        &:hover {
+                            cursor: pointer;
+                            background-color: gray;
+                        }
+                    }
+                }
+
+                & .kakaoLogin {
+                    margin-top: 1rem;
+                    & li {
+                        & button[type='button'] {
+                            border: 0;
+                            background-color: #fff115;
                             width: 100%;
-                            background-color: none;
-                            outline: none;
-                            apperance: none;
+                            font-size: 1.4rem;
+                            font-weight: 600;
+                            padding: 1.9rem 2rem;
+                            border-radius: 0.4rem;
+
+                            &:hover {
+                                cursor: pointer;
+                                background-color: yellow;
+                            }
                         }
                     }
                 }

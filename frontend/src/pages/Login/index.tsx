@@ -59,8 +59,8 @@ const Login = () => {
             <S.Div>
                 <S.MobileDiv>
                     <form onSubmit={handleSubmit(onSubmitHandler)}>
-                        <div>
-                            <h1>로그인</h1>
+                        <div className="loginWrap">
+                            <h1>LOGIN</h1>
 
                             <input
                                 type="email"
@@ -87,30 +87,27 @@ const Login = () => {
                                 placeholder="비밀번호 입력"
                                 autoComplete="new-password"
                             />
+                            <div className="util">
+                                <Link to="/join">회원가입 </Link>
+                                <Link to="/find-pw">비밀번호 찾기</Link>
+                            </div>
 
                             <article>
                                 <ul>
-                                    <li>
-                                        <Link to="/join">회원가입 </Link>
-                                    </li>
-                                    <li>
-                                        <Link to="/find-pw">비밀번호를 잊으셨나요?</Link>
-                                    </li>
                                     <li>
                                         <button type="submit" className="loginBtn">
                                             로그인
                                         </button>
                                     </li>
                                 </ul>
+                                <ul className="kakaoLogin">
+                                    <li>
+                                        <button type="button" onClick={LoginByKakao}>
+                                            KAKAO
+                                        </button>
+                                    </li>
+                                </ul>
                             </article>
-
-                            <ul>
-                                <li>
-                                    <button type="button" onClick={LoginByKakao}>
-                                        카카오 로그인
-                                    </button>
-                                </li>
-                            </ul>
                         </div>
                     </form>
                 </S.MobileDiv>
