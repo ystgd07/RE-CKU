@@ -11,6 +11,7 @@ import type { NotificationPlacement } from 'antd/es/notification/interface';
 import { calcElapsed } from 'utils/format';
 import ResumeComponent from 'components/Resume';
 
+const { confirm } = Modal;
 const { Title, Text } = Typography;
 const { TextArea } = Input;
 
@@ -30,6 +31,7 @@ const ProfileImg = styled.img`
     height: 50px;
     background-color: #ea8532;
     border-radius: 50%;
+    cursor: pointer;
 `;
 const ProfileInfo = styled.div`
     height: 70%;
@@ -72,7 +74,14 @@ const CommentButtonWrapper = styled.div`
     margin-right: 1rem;
 `;
 
-const ResumeWrapper = styled.div``;
+const ResumeWrapper = styled.div`
+    padding-bottom: 2rem;
+    border-radius: 1rem;
+    background-color: rgba(0, 0, 0, 0.1);
+    h3 {
+        margin-left: 4rem;
+    }
+`;
 
 interface IBoardInfo {
     avatarUrl: string;
@@ -106,8 +115,8 @@ interface IProjects {
     link1: string;
     link2: string;
     usedResumeId: number;
-    year: string; // ?
-    information: null; // ?
+    year: string;
+    information: null;
     name: string;
     usedUserId: number;
     updatedAt: Date;
@@ -129,24 +138,21 @@ interface ICareer {
     updatedAt: Date;
 }
 
-// // interface ICareer {
-// //     id: number;
-// //     company: string;
-// //     reward: string;
-// //     position: string;
-// //     usedResumeId: number;
-// //     notDevelop: number;
-// //     workNow: number;
-// //     startDate: number;
-// //     endDate: number;
-// //     name: string;
-// //     usedUserId: number;
-// //     information: null;
-// //     updatedAt: Date;
-// // }
+interface ICommentData {
+    MARK: string;
+    alreadyLikes: boolean;
+    avatarUrl: string;
+    commentCreated: Date;
+    commentId: number;
+    fixed: number;
+    fromUserId: number;
+    likes: number;
+    myComment: boolean;
+    text: string;
+    username: string;
+}
 
 const Post = () => {
-    // const [postData, setPostData] = useState<IPostData | null>(null);
     const [boardData, setBoardData] = useState<IBoardInfo | null>(null);
     const [resumeData, setResumeData] = useState<IResumeInfo | null>(null);
     const [commentData, setCommentData] = useState<ICommentData[] | []>([]);
@@ -154,24 +160,20 @@ const Post = () => {
     const [ownBoard, setOwnBoard] = useState<boolean>(false);
     const [comment, setComment] = useState<string>('');
     const [editComment, setEditComment] = useState<string>('');
-
+    const [isEditComment, setIsEditComment] = useState<number>(0);
+    const [reportReason, setReportReason] = useState<string>('');
     // 모달 제어
     const [modalOpen, setModalOpen] = useState(false);
     const { postId } = useParams<{ postId: string }>();
 
-// const Post = () => {
-//     // const [postData, setPostData] = useState<IPostData | null>(null);
-//     const [boardData, setBoardData] = useState<IBoardInfo | null>(null);
-//     const [resumeData, setResumeData] = useState<IResumeInfo | null>(null);
-//     const [commentData, setCommentData] = useState<ICommentData[] | []>([]);
-//     const [alreadyLike, setAlreadyLike] = useState<boolean>(false);
-//     const [ownBoard, setOwnBoard] = useState<boolean>(false);
-//     const [comment, setComment] = useState<string>('');
-//     const { postId } = useParams<{ postId: string }>();
+    const viewerRef = useRef<Viewer>(null);
 
-//     const viewerRef = useRef<Viewer>(null);
+    const navigate = useNavigate();
 
-//     const navigate = useNavigate();
+    // 마크다운 뷰어 내용 업데이트
+    const updateViewerContent = (content: string) => {
+        viewerRef.current?.getInstance().setMarkdown(content);
+    };
 
     // 게시물 데이터 가져오기
     const fetchBoardData = async () => {
@@ -222,19 +224,20 @@ const Post = () => {
         }
     };
 
-//     // 게시물 좋아요 동작
-//     const handleBoardLike = async () => {
-//         try {
-//             const data = {
-//                 likesStatus: alreadyLike,
-//             };
-//             await API.patch(`/board/${postId}/like`, '', data);
-//             // Refresh
-//             fetchBoardData();
-//         } catch (err) {
-//             console.log('ERROR:', err);
-//         }
-//     };
+    // 댓글 작성
+    const handleCommentSubmit = async () => {
+        const data = {
+            text: comment,
+        };
+        try {
+            await API.post(`/board/${postId}/comments`, data);
+            setComment('');
+            fetchBoardData();
+            fetchCommentData();
+        } catch (err) {
+            console.log(err);
+        }
+    };
 
     // 댓글 좋아요
     const handleCommentLike = async (id: number, likesStatus: boolean) => {
@@ -263,23 +266,9 @@ const Post = () => {
         }
     };
 
-//             const newCommentData = commentData.map(item => {
-//                 if (item.commentId === id) {
-//                     if (item.alreadyLikes) {
-//                         item.likes = item.likes - 1;
-//                         item.alreadyLikes = false;
-//                     } else {
-//                         item.likes = item.likes + 1;
-//                         item.alreadyLikes = true;
-//                     }
-//                 }
-//                 return item;
-//             });
-//             setCommentData(newCommentData);
-//         } catch (err) {
-//             console.log(err);
-//         }
-//     };
+    const handleOnChangeComment = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        setComment(e.target.value);
+    };
 
     // 댓글 더 불러오기
     const handleMoreComment = async () => {
@@ -327,10 +316,9 @@ const Post = () => {
         }
     };
 
-    // 댓글 수정
+    // 댓글 수정 변수
     const handleCommentEdit = (e: any) => {
-        console.log('hi');
-        console.log(e.target.value);
+        setEditComment(e.target.value);
     };
 
     // 알림 메세지
@@ -342,26 +330,123 @@ const Post = () => {
         });
     };
 
+    const handleSubmitEditComment = async () => {
+        const data = {
+            text: editComment,
+        };
+        try {
+            await API.patch(`/comments/${isEditComment}`, '', data);
+            setIsEditComment(0);
+            setEditComment('');
+            const newData = commentData.map(item => {
+                if (item.commentId === isEditComment) {
+                    item.text = editComment;
+                }
+                return item;
+            });
+            setCommentData(newData);
+        } catch (err) {
+            openNotification('bottomRight', `문제가 발생했습니다 : ${err}`);
+        }
+    };
+
     useEffect(() => {
         fetchBoardData();
         fetchCommentData();
     }, []);
 
+    const reportComfirm = async () => {
+        try {
+            const data = {
+                defendantUserId: boardData?.ownUserId,
+                reason: reportReason,
+            };
+            const res = await API.post('/users/report', data);
+            console.log(res);
+            setModalOpen(false);
+        } catch (err) {
+            openNotification('bottomRight', `문제가 발생했습니다 : ${err}`);
+        }
+    };
+
+    const showReportCancel = () => {
+        confirm({
+            title: '이미 신고한 유저입니다. 신고를 취소하시겠습니까?',
+            onOk() {
+                console.log('hello');
+            },
+            onCancel() {
+                console.log('CANCEL');
+            },
+            okText: '신고 취소하기',
+            cancelText: '취소',
+        });
+    };
+
+    const showBoardDeleteConfirm = () => {
+        confirm({
+            title: '게시물을 삭제하시겠습니까?',
+            onOk() {
+                handleBoardRemove();
+            },
+            onCancel() {
+                console.log('CANCEL');
+            },
+            okText: '삭제',
+            cancelText: '취소',
+        });
+    };
+
+    const checkReportBoardUser = async () => {
+        // 본인 프로필 클릭 시 신고 버튼 동작 방지
+        const user = Number(localStorage.getItem('userId'));
+        const boardCreator = boardData?.ownUserId;
+        if (boardCreator === user) {
+            return;
+        }
+
+        try {
+            const res = await API.get('/users/report', `?defendantUserId=${boardData?.id}`);
+            console.log(res);
+            if (res.reported) {
+                // 신고 취소 모달창
+                showReportCancel();
+            } else {
+                // 신고 모달창
+                setModalOpen(true);
+                // showReportComfirm();
+            }
+        } catch (err) {
+            openNotification('bottomRight', `문제가 발생했습니다 : ${err}`);
+        }
+    };
+
+    const handleReportReason = (e: any) => {
+        setReportReason(e.target.value);
+    };
+
     return (
         <>
             <Modal
-                title="게시물을 삭제하시겠습니까?"
+                title="이 사용자를 정말로 신고하시겠습니까? 신고 사유를 입력해주세요."
                 centered
                 open={modalOpen}
-                onOk={handleBoardRemove}
+                onOk={reportComfirm}
                 onCancel={() => setModalOpen(false)}
-            ></Modal>
+                okText="신고하기"
+                cancelText="취소"
+            >
+                <Input value={reportReason} onChange={handleReportReason} />
+            </Modal>
             <Layout>
                 {contextHolder}
                 <Wrapper>
                     <Title level={2}>{boardData?.title}</Title>
                     <Profile>
-                        <ProfileImg src={boardData?.avatarUrl}></ProfileImg>
+                        <ProfileImg
+                            src={boardData?.avatarUrl}
+                            onClick={checkReportBoardUser}
+                        ></ProfileImg>
                         <ProfileInfo>
                             <ProfileInfoName>{boardData?.email}</ProfileInfoName>
                             <Text>{calcElapsed(boardData?.boardCreated)} 전</Text>
@@ -371,7 +456,7 @@ const Post = () => {
                                 <Button type="primary" size="large" onClick={handleBoardEdit}>
                                     수정
                                 </Button>
-                                <Button danger size="large" onClick={() => setModalOpen(true)}>
+                                <Button danger size="large" onClick={showBoardDeleteConfirm}>
                                     삭제
                                 </Button>
                             </ButtonWrapper>
@@ -381,7 +466,8 @@ const Post = () => {
                     </Profile>
                     {resumeData !== null && (
                         <ResumeWrapper>
-                            <ResumeComponent resumeId={resumeData.resumeId} />
+                            <Title level={3}>첨부 이력서</Title>
+                            <ResumeComponent resumeId={resumeData.resumeId} type={'post'} />
                         </ResumeWrapper>
                     )}
                     <Contents>
@@ -428,7 +514,10 @@ const Post = () => {
                                             <CommentButtonWrapper>
                                                 <Button
                                                     type="link"
-                                                    onClick={() => setEditComment(item.text)}
+                                                    onClick={() => {
+                                                        setIsEditComment(item.commentId);
+                                                        setEditComment(item.text);
+                                                    }}
                                                 >
                                                     수정
                                                 </Button>
@@ -443,7 +532,6 @@ const Post = () => {
                                                 </Button>
                                             </CommentButtonWrapper>
                                         )}
-
                                         <Button
                                             type={item.alreadyLikes ? 'primary' : 'default'}
                                             icon={
@@ -464,13 +552,34 @@ const Post = () => {
                                 }
                                 style={{ width: '100%' }}
                             >
-                                <Text>{item.text}</Text>
-                                {editComment !== '' && (
-                                    <Input
-                                        name="editComment"
-                                        value={editComment}
-                                        onChange={handleCommentEdit}
-                                    />
+                                {isEditComment !== item.commentId ? (
+                                    <Text>{item.text}</Text>
+                                ) : (
+                                    <CommentForm>
+                                        <TextArea
+                                            rows={3}
+                                            name="editComment"
+                                            value={editComment}
+                                            onChange={handleCommentEdit}
+                                        />
+                                        <ButtonWrapper>
+                                            <Button
+                                                type="primary"
+                                                onClick={handleSubmitEditComment}
+                                            >
+                                                확인
+                                            </Button>
+                                            <Button
+                                                danger
+                                                onClick={() => {
+                                                    setIsEditComment(0);
+                                                    setEditComment('');
+                                                }}
+                                            >
+                                                취소
+                                            </Button>
+                                        </ButtonWrapper>
+                                    </CommentForm>
                                 )}
                             </Card>
                         </CommentWrapper>
@@ -490,6 +599,3 @@ const Post = () => {
 };
 
 export default Post;
-
-// // export default Post;
-export {};

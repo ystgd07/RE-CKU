@@ -43,7 +43,7 @@ interface userDataRes {
     point: number;
 }
 
-const Resume = ({ resumeId }: any) => {
+const Resume = ({ resumeId, type }: any) => {
     const [careerData, setCareerData] = useState<careerDataRes[]>([]);
     const [projectData, setProjectData] = useState<projectDataRes[]>([]);
     const [resumeData, setResumeData] = useState<resumeDataRes>();
@@ -63,12 +63,14 @@ const Resume = ({ resumeId }: any) => {
     useEffect(() => {
         getResume();
     }, []);
-
     return (
         <S.MobileDiv>
-            <Typography>
-                <Title key={resumeData?.resumeId}>{resumeData?.resumeName}</Title>
-            </Typography>
+            {type !== 'post' && (
+                <Typography>
+                    <Title key={resumeData?.resumeId}>{resumeData?.resumeName}</Title>
+                </Typography>
+            )}
+
             <S.LineDiv>
                 <Title level={3}>Info</Title>
             </S.LineDiv>
