@@ -9,11 +9,30 @@ import userRoute from "./user.routes";
 //import { avatarImg, tokenValidator, validateBody } from "../middlewares";
 export const adminRoute = express();
 
-// 2-1. 전체 회원 목록 조회
-// TODO] 페이지네이션
+// 2-0. 페이지네이션
+adminRoute.get("/users/pages", async (req, res, next) => {
+  try {
+    const count = Number(req.query.count);
+
+    const pages = await adminService.findPages(count);
+
+    return res.status(200).json({
+      msg: "페이지 수 조회 성공",
+      data: pages,
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// 2-1. 전체 회원 목록 조회 (offset 페이지네이션)
 adminRoute.get("/users", async (req, res, next) => {
   try {
-    const users = await adminService.findUsers();
+    const count = Number(req.query.count);
+    const pages = Number(req.query.pages);
+    const offset = count * pages - count;
+
+    const users = await adminService.findUsers(count, offset);
 
     return res.status(200).json({
       msg: "회원 목록 조회 성공",
@@ -58,8 +77,11 @@ adminRoute.patch("/users/:userId", async (req, res, next) => {
   try {
     const userId = Number(req.params.userId);
     const updateInfo = req.body;
+    const count = Number(req.query.count);
+    const pages = Number(req.query.pages);
+    const offset = count * pages - count;
 
-    const updatedUser = await adminService.updateUser(userId, updateInfo);
+    const updatedUser = await adminService.updateUser(userId, updateInfo, count, offset);
 
     return res.status(203).json({
       msg: "회원 정보 변경 성공",

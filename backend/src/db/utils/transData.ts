@@ -31,6 +31,21 @@ export const insertData = (input: Record<string, string | number | boolean>) => 
   return data;
 };
 
+type Input = {
+  id: number;
+};
+export const selectByWhere = (input: Input[]) => {
+  const data = Object.entries(input).reduce(
+    (a, [nullable, value], index) => {
+      a[0].push(`${Object.keys(value)} != ?`);
+      const forValue = Object.values(value);
+      a[1].push(forValue[0]);
+      return a;
+    },
+    [[], []] as [string[], number[]]
+  );
+  return data;
+};
 // export const selectData = (input : Record<string,|number>)=>{
 //   const data = Object.entries(input).reduce(
 //     (a,[key,value])=>{
