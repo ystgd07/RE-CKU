@@ -91,22 +91,22 @@ const Login = () => {
                             <article>
                                 <ul>
                                     <li>
-                                        <button type="submit" className="loginBtn">
-                                            로그인
-                                        </button>
-                                    </li>
-                                    <li>
                                         <Link to="/join">회원가입 </Link>
                                     </li>
                                     <li>
                                         <Link to="/find-pw">비밀번호를 잊으셨나요?</Link>
+                                    </li>
+                                    <li>
+                                        <button type="submit" className="loginBtn">
+                                            로그인
+                                        </button>
                                     </li>
                                 </ul>
                             </article>
 
                             <ul>
                                 <li>
-                                    <button type="button" onClick={kakao}>
+                                    <button type="button" onClick={LoginByKakao}>
                                         카카오 로그인
                                     </button>
                                 </li>
