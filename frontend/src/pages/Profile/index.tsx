@@ -180,7 +180,7 @@ const Profile: React.FC = () => {
             <Content
                 style={{
                     padding: '0 50px',
-                    height: '768px',
+                    background: 'white',
                 }}
             >
                 <div
