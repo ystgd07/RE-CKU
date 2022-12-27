@@ -7,6 +7,109 @@ import jwt from "jsonwebtoken";
 import { send } from "../config/sendMail";
 import { EmailAuth, UserProfile } from "../db/schemas";
 
+// 매칭 관련
+export const getRotListOrMatchingStatus = async (
+  userId: number
+): Promise<userRepo.RotList | userRepo.MatchInfo | string> => {
+  try {
+    const mentee = await userRepo.unIncludePasswordUserInfoQ(userId);
+    // 매칭이 없을경우 리스트 O
+    console.log("어디서");
+    if (!mentee.matching) {
+      const list = await userRepo.getRotListQ(userId);
+      console.log("어디서");
+      return list;
+    }
+    // 이미 매칭중이라면 리스트 X 현재 매칭정보 O
+    const connect = await userRepo.findMatchQ(userId);
+    console.log(connect);
+    return connect;
+  } catch (err) {
+    console.log(err.message);
+    throw new Error(`500, 서버오류`);
+  }
+};
+export const createMatch = async (menteeId: number, mentoId: number): Promise<number> => {
+  const data = {
+    step: "요청중",
+    menteeId,
+    mentoId,
+  };
+  try {
+    const alreadyMatch = await userRepo.findMatchQ(menteeId);
+    if (alreadyMatch) throw new Error(`이미 요청한 고인물입니다.`);
+    const matchingId = await userRepo.createMatchQ(data);
+    return matchingId;
+  } catch (err) {
+    console.log(err.message);
+    if (err.message === "이미 요청한 고인물입니다.") throw new Error(`400, 이미 요청한 고인물입니다.`);
+    throw new Error(`500, 서버오류`);
+  }
+};
+export const cancelMatch = async (matchingId: number) => {
+  try {
+    const isMatch = await userRepo.findMatchByMatchingId(matchingId);
+    console.log(isMatch);
+    if (!isMatch) throw new Error("존재하지 않은 매칭입니다.");
+    const deleteMatch = await userRepo.cancelMatchQ(matchingId);
+    return deleteMatch;
+  } catch (err) {
+    console.log(err.message);
+    if (err.message === "존재하지 않은 매칭입니다.") throw new Error(`404, 존재하지 않은 매칭입니다.`);
+    throw new Error(`500, 서버 오류`);
+  }
+};
+export const acceptMatch = async (userId: number, matchingId: number, menteeId: number) => {
+  try {
+    const mentoInfo = await userRepo.unIncludePasswordUserInfoQ(userId);
+    if (mentoInfo.point < 200) throw new Error(`당신은 고이지 않았다.`);
+    const result = await userRepo.acceptMatchQ(matchingId, menteeId);
+    return result;
+  } catch (err) {
+    console.log(err.message);
+    if (err.message === "당신은 고이지 않았다.") throw new Error(`400, 당신은 고이지 않았따.`);
+    throw new Error(`500, 서버 오류`);
+  }
+};
+export const successMatch = async (matchingId: number, role: string): Promise<string> => {
+  const data: { role: string } = {
+    role: "",
+  };
+  switch (role) {
+    case "mento":
+      data.role = "mentoComplate";
+      break;
+    default:
+      data.role = "menteeComplate";
+      break;
+  }
+
+  try {
+    const success = await userRepo.successMatchQ(matchingId, data);
+    const matchInfo = await userRepo.findMatchByMatchingId(matchingId);
+    const menteeComplate = Number(matchInfo.menteeComplate);
+    const mentoComplate = Number(matchInfo.mentoComplate);
+    if (mentoComplate > 0 && menteeComplate > 0) {
+      console.log("ㅋㅋ");
+      const complateMatch = await userRepo.complateMatch(matchingId);
+      console.log(complateMatch);
+      return complateMatch;
+    }
+    return success;
+  } catch (err) {
+    console.log(err.message);
+    throw new Error(`500, 서버 오류`);
+  }
+};
+export const getRequestCorrection = async (userId: number) => {
+  try {
+    const list = await userRepo.getRequestCorrectionQ(userId);
+    return list;
+  } catch (err) {
+    throw new Error(`500, 서버 오류`);
+  }
+};
+
 export const getUserList = async () => {
   try {
     // 일반사용자가 회원조회하는 경우는 이력서 첨삭요청할때 고인물들 목록 보는것 뿐임

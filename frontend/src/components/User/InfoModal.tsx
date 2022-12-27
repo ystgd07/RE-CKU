@@ -1,18 +1,40 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Button, Modal, Form, Input } from 'antd';
 import { LockOutlined } from '@ant-design/icons';
-export const InfoModal: React.FC = () => {
-    const [open, setOpen] = useState(false);
-    const [newPass, setNewPass] = useState('');
-    const [checkPass, setCheckPass] = useState('');
+import axios from 'axios';
 
+export const InfoModal: React.FC = () => {
+    const [form] = Form.useForm();
+    const [open, setOpen] = useState(false);
+    const [newPass, setNewPass] = useState(''); //input1
+    const [checkPass, setCheckPass] = useState(''); //input2
+    const [valid, setValid] = useState(false);
     const [modalText, setModalText] = useState('비밀번호를 변경하시겠습니까?');
     const [loading, setLoading] = useState(false);
+    const passRef: any = useRef();
+    const newPassRef: any = useRef();
+    const onReset = () => {
+        form.resetFields();
+    };
     const showModal = () => {
         setOpen(true);
+        setValid(true);
     };
     const onFinish = (values: any) => {
         console.log('Received values of form: ', values);
+    };
+    const patchNewPass = async () => {
+        const token = localStorage.getItem('accessToken');
+        try {
+            const res = await axios.patch(
+                '/users/individuals',
+                { password: `${newPassRef.current.input.value}` },
+                { headers: { authorization: `Bearer ${token}` } },
+            );
+            console.log(res);
+        } catch (e) {
+            console.log(e);
+        }
     };
     const handleOk = () => {
         setLoading(true);
@@ -20,23 +42,48 @@ export const InfoModal: React.FC = () => {
         setTimeout(() => {
             setLoading(false);
             setOpen(false);
-            setModalText('비밀번호를 변경하시겠습니까?');
+            patchNewPass();
             onFinish(1);
+            setCheckPass('');
+            setNewPass('');
+            onReset();
         }, 2000);
+        console.log(checkPass, newPass);
     };
 
     const handleCancel = () => {
+        onReset();
         console.log('Clicked cancel button');
+        setCheckPass('');
+        setNewPass('');
         setOpen(false);
     };
     //FIXME: e:any-> 이부분 이벤트 타입 검색해서 수정하자!
     const newPasswordChange = (e: any) => {
         setNewPass(e.target.value);
-        console.log(newPass);
+        if (
+            newPass.trim() === '' ||
+            passRef.current.input.value !== newPassRef.current.input.value
+        ) {
+            setValid(true);
+        }
+        if (checkPass !== '') {
+            if (passRef.current.input.value === newPassRef.current.input.value) setValid(false);
+            else console.log('no correct');
+        }
     };
     const checkPasswordChnage = (e: any) => {
         setCheckPass(e.target.value);
-        console.log(checkPass);
+        if (
+            newPass.trim() === '' ||
+            passRef.current.input.value !== newPassRef.current.input.value
+        ) {
+            setValid(true);
+        }
+        if (checkPass !== '') {
+            if (passRef.current.input.value === newPassRef.current.input.value) setValid(false);
+            else console.log('no correct');
+        }
     };
 
     return (
@@ -49,16 +96,10 @@ export const InfoModal: React.FC = () => {
                 open={open}
                 onOk={handleOk}
                 onCancel={handleCancel}
-                footer={[
-                    <Button key="back" onClick={handleCancel}>
-                        취소
-                    </Button>,
-                    <Button key="submit" type="primary" loading={loading} onClick={handleOk}>
-                        확인
-                    </Button>,
-                ]}
+                okButtonProps={{ disabled: valid }}
+                confirmLoading={loading}
             >
-                <Form>
+                <Form form={form} name="control-hooks">
                     <Form.Item
                         name="newpassword"
                         rules={[{ required: true, message: 'Please input your Password!' }]}
@@ -68,6 +109,7 @@ export const InfoModal: React.FC = () => {
                             type="password"
                             placeholder="새비밀번호"
                             onChange={newPasswordChange}
+                            ref={passRef}
                         />
                     </Form.Item>
                     <Form.Item
@@ -79,11 +121,12 @@ export const InfoModal: React.FC = () => {
                             type="password"
                             placeholder="비밀번호확인"
                             onChange={checkPasswordChnage}
+                            ref={newPassRef}
                         />
                     </Form.Item>
                 </Form>
 
-                <p>{modalText}</p>
+                {valid && <p>비밀번호가 일치하지 않습니다!</p>}
             </Modal>
         </>
     );
