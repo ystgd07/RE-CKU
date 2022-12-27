@@ -36,7 +36,7 @@ export class Board {
   @Column()
   title: string;
 
-  @Column({ nullable: true, default: null })
+  @Column({ type: "mediumblob", nullable: true, default: null })
   content: string;
 
   @Column({ default: null, nullable: true })
