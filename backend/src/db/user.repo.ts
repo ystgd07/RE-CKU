@@ -215,7 +215,8 @@ export const getRotListQ = async (userId: number): Promise<RotList> => {
       id != ? AND
       point > 200 AND
       working = true
-    ORDER BY corrections DESC
+    ORDER BY rand()
+    LIMIT 6
   `,
     [userId]
   );
@@ -232,8 +233,8 @@ export type MatchInfo = {
     menteeId: number;
     created: "";
     rotId: number;
-    email: string;
-    username: string;
+    mentoEmail: string;
+    mentoName: string;
     point: number;
   };
   cancelAble: boolean;
@@ -265,7 +266,7 @@ export const findMatchByMatchingId = async (matchingId: number): Promise<Match> 
   return result;
 };
 
-export const findMatchQ = async (userId: number): Promise<MatchInfo | string> => {
+export const findMatchQ = async (userId: number): Promise<MatchInfo> => {
   const result: MatchInfo = {
     matchInfo: {
       matchingId: 0,
@@ -274,8 +275,8 @@ export const findMatchQ = async (userId: number): Promise<MatchInfo | string> =>
       menteeId: 0,
       created: "",
       rotId: 0,
-      email: "",
-      username: "",
+      mentoEmail: "",
+      mentoName: "",
       point: 0,
     },
     cancelAble: false,
@@ -289,8 +290,8 @@ export const findMatchQ = async (userId: number): Promise<MatchInfo | string> =>
         c.menteeId,
         c.created,
         u.id as rotId,
-        u.email,
-        u.username,
+        u.email as mentoEmail,
+        u.username as mentoName,
         u.point
       FROM connect c
       JOIN user u
@@ -302,13 +303,13 @@ export const findMatchQ = async (userId: number): Promise<MatchInfo | string> =>
   );
   const parseConnect = utils.jsonParse(connect)[0];
   console.log("이상이상", parseConnect);
-  if (!parseConnect) {
-    return "매칭중인것 없음";
-  }
   result.matchInfo = parseConnect;
   console.log(utils.jsonParse(connect)[0]);
-  if (result.matchInfo.step === "요청중") {
+  if (result.matchInfo?.step === "요청중") {
     result.cancelAble = true;
+  }
+  if (!parseConnect) {
+    return null;
   }
   return result;
 };
@@ -454,6 +455,14 @@ export const complateMatch = async (matchingId: number) => {
   return "매칭 종료";
 };
 
+type ZZ = {
+  matchingId: number;
+  step: string;
+  menteeId: number;
+  menteeName: string;
+  menteeEmail: string;
+  created: string;
+};
 // 고인물에게 들어온 요청
 export const getRequestCorrectionQ = async (userId: number) => {
   // step = 요청중, mentoId =userId , complate = 0인것들을 created DESC 로 뱉기
@@ -461,11 +470,15 @@ export const getRequestCorrectionQ = async (userId: number) => {
   const [list] = await db.query(
     `
     SELECT 
-      id as matchingId,
-      step,
-      menteeId,
-      created
-    FROM connect
+      c.id as matchingId,
+      c.step,
+      c.menteeId,
+      u.username as menteeName,
+      u.email as menteeEmail,
+      c.created,
+    FROM connect c
+    JOIN user u
+    ON u.id = menteeId 
     WHERE 
       step = '요청중' OR step = '진행중' AND
       
