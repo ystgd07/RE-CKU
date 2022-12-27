@@ -356,33 +356,50 @@ export {};
 //         fetchCommentData();
 //     }, []);
 
-//     const reportComfirm = async () => {
-//         try {
-//             const data = {
-//                 defendantUserId: boardData?.ownUserId,
-//                 reason: reportReason,
-//             };
-//             const res = await API.post('/users/report', data);
-//             console.log(res);
-//             setModalOpen(false);
-//         } catch (err) {
-//             openNotification('bottomRight', `문제가 발생했습니다 : ${err}`);
-//         }
-//     };
+// 신고하기 API
+// const reportComfirm = async () => {
+//     try {
+//         const data = {
+//             defendantUserId: reportUser,
+//             reason: reportReason,
+//         };
+//         await API.post('/users/report', data);
+//         setReportUser(0);
+//         setReportReason('');
+//         setModalOpen(false);
+//     } catch (err) {
+//         setReportUser(0);
+//         setReportReason('');
+//         openNotification('bottomRight', `문제가 발생했습니다 : ${err}`);
+//     }
+// };
 
-//     const showReportCancel = () => {
-//         confirm({
-//             title: '이미 신고한 유저입니다. 신고를 취소하시겠습니까?',
-//             onOk() {
-//                 console.log('hello');
-//             },
-//             onCancel() {
-//                 console.log('CANCEL');
-//             },
-//             okText: '신고 취소하기',
-//             cancelText: '취소',
-//         });
-//     };
+// const showReportCancel = (reportId: number) => {
+//     confirm({
+//         title: '이미 신고한 유저입니다. 신고를 취소하시겠습니까?',
+//         async onOk() {
+//             try {
+//                 const data = {
+//                     defendantUserId: reportId,
+//                 };
+//                 await API.patch('/users/report', '', data);
+//                 setReportUser(0);
+//                 setReportReason('');
+//             } catch (err) {
+//                 setReportUser(0);
+//                 setReportReason('');
+//                 openNotification('bottomRight', `문제가 발생했습니다 : ${err}`);
+//             }
+//         },
+//         onCancel() {
+//             setReportUser(0);
+//             setReportReason('');
+//             console.log('CANCEL');
+//         },
+//         okText: '신고 취소하기',
+//         cancelText: '취소',
+//     });
+// };
 
 //     const showBoardDeleteConfirm = () => {
 //         confirm({
@@ -398,29 +415,30 @@ export {};
 //         });
 //     };
 
-//     const checkReportBoardUser = async () => {
-//         // 본인 프로필 클릭 시 신고 버튼 동작 방지
-//         const user = Number(localStorage.getItem('userId'));
-//         const boardCreator = boardData?.ownUserId;
-//         if (boardCreator === user) {
-//             return;
-//         }
+// const checkReportBoardUser = async (reportId: any) => {
+//     setReportUser(reportId);
+//     // 본인 프로필 클릭 시 신고 버튼 동작 방지
+//     const user = Number(localStorage.getItem('userId'));
+//     if (reportId === user) {
+//         return;
+//     }
 
-//         try {
-//             const res = await API.get('/users/report', `?defendantUserId=${boardData?.id}`);
-//             console.log(res);
-//             if (res.reported) {
-//                 // 신고 취소 모달창
-//                 showReportCancel();
-//             } else {
-//                 // 신고 모달창
-//                 setModalOpen(true);
-//                 // showReportComfirm();
-//             }
-//         } catch (err) {
-//             openNotification('bottomRight', `문제가 발생했습니다 : ${err}`);
+//     try {
+//         const res = await API.get('/users/report', `?defendantUserId=${reportId}`);
+//         console.log(res);
+//         if (res.reported) {
+//             // 신고 취소 모달창
+//             showReportCancel(reportId);
+//         } else {
+//             // 신고 모달창
+//             setModalOpen(true);
 //         }
-//     };
+//     } catch (err) {
+//         setReportUser(0);
+//         setReportReason('');
+//         openNotification('bottomRight', `문제가 발생했습니다 : ${err}`);
+//     }
+// };
 
 //     const handleReportReason = (e: any) => {
 //         setReportReason(e.target.value);
@@ -433,7 +451,10 @@ export {};
 //                 centered
 //                 open={modalOpen}
 //                 onOk={reportComfirm}
-//                 onCancel={() => setModalOpen(false)}
+//                 onCancel={() => {
+//                     setModalOpen(false);
+//                     setReportReason('');
+//                 }}
 //                 okText="신고하기"
 //                 cancelText="취소"
 //             >
@@ -446,7 +467,7 @@ export {};
 //                     <Profile>
 //                         <ProfileImg
 //                             src={boardData?.avatarUrl}
-//                             onClick={checkReportBoardUser}
+//                             onClick={() => checkReportBoardUser(boardData?.ownUserId)}
 //                         ></ProfileImg>
 //                         <ProfileInfo>
 //                             <ProfileInfoName>{boardData?.email}</ProfileInfoName>
@@ -502,7 +523,10 @@ export {};
 //                                 size="small"
 //                                 title={
 //                                     <Profile>
-//                                         <ProfileImg src={item.avatarUrl}></ProfileImg>
+//                                         <ProfileImg
+//                                             src={item.avatarUrl}
+//                                             onClick={() => checkReportBoardUser(item.fromUserId)}
+//                                         ></ProfileImg>
 //                                         <ProfileInfo>
 //                                             <ProfileInfoName>{item.username}</ProfileInfoName>
 //                                             <Text>{calcElapsed(item.commentCreated)} 전</Text>
@@ -586,7 +610,7 @@ export {};
 //                         </CommentWrapper>
 //                     ))}
 
-//                     {boardData?.commentCnt && boardData?.commentCnt > commentData.length ? (
+// //                     {boardData?.commentCnt && boardData?.commentCnt > commentData.length ? (
 //                         <Button type="link" onClick={handleMoreComment}>
 //                             더보기
 //                         </Button>
