@@ -1,16 +1,33 @@
 import React, { useEffect, useState } from 'react';
-import { UserData, ResumeData, WorkFormData, ProjectFormData } from 'models/resume-model';
+import {
+    UserData,
+    ResumeData,
+    WorkFormData,
+    ProjectFormData,
+    FormStore,
+} from 'models/resume-model';
 import axios, { AxiosResponse } from 'axios';
 import { useParams } from 'react-router-dom';
 import { GiCancel } from '@react-icons/all-files/gi/GiCancel';
 
-const Project = () => {
+type ProjectFormState = {
+    setIsProjectFormToggle: React.Dispatch<React.SetStateAction<boolean>>;
+    setAddProjectElement: React.Dispatch<React.SetStateAction<FormStore[]>>;
+    addProjectElement: FormStore[];
+    idx: number;
+};
+
+const Project = ({
+    setIsProjectFormToggle,
+    addProjectElement,
+    setAddProjectElement,
+    idx,
+}: ProjectFormState) => {
     const [searchStackToggle, setSearchStackToggle] = useState<boolean>(false);
     const [AllStacks, setAllStacks] = useState([]);
     const [stackInputValue, setStackInputValue] = useState<string>('');
     const [tagListItem, setTagListItem] = useState<string[]>([]);
     const [tagItemActive, setTagItemActive] = useState<boolean>(false);
-    const [projectFormToggle, setProjectFormToggle] = useState<boolean>(false);
     const [projectFormDataState, setProjectFormDataState] = useState<ProjectFormData>({
         projectName: '',
         year: '',
@@ -86,8 +103,21 @@ const Project = () => {
         });
     }, [tagListItem]);
 
-    const createProjectForm = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    const deleteProjectForm = (e: React.MouseEvent<HTMLButtonElement>) => {
+        const deleteFilter = addProjectElement.filter((tem: FormStore) => tem.list !== idx);
+        setAddProjectElement(deleteFilter);
+        if (deleteFilter.length === 0) setIsProjectFormToggle(e => !e);
+        console.log(deleteFilter, 'fil');
+    };
+
+    const validationForm = async (e: React.FormEvent) => {
         e.preventDefault();
+
+        if (projectFormDataState.year === '') {
+            alert('필수 정보를 입력해주세요.');
+            return;
+        }
+
         try {
             const res = await axios.post(`/my-portfolio/resumes/${resumeIds}/new-project`, {
                 projectName: projectFormDataState.projectName,
@@ -97,6 +127,11 @@ const Project = () => {
                 link2: projectFormDataState.link2,
                 skills: projectFormDataState.stacks,
             });
+
+            if (res.status === 200) {
+                // onCareerCreated(workFormDataState);
+                setIsProjectFormToggle(false);
+            }
             console.log(res, ' project sususususususususuussusu');
         } catch (err: unknown) {
             console.log(err);
@@ -104,7 +139,7 @@ const Project = () => {
     };
 
     return (
-        <form>
+        <form onSubmit={validationForm}>
             <div className="formWrap">
                 <ul>
                     <li>
@@ -116,6 +151,7 @@ const Project = () => {
                                     placeholder="프로젝트 이름을 입력해주세요."
                                     name="projectName"
                                     onChange={projectFormHandler}
+                                    required
                                 />
                             </dd>
                         </dl>
@@ -177,7 +213,10 @@ const Project = () => {
                             onKeyPress={enterKeyPress}
                             onChange={changeStackValue}
                         />
-                        <article className={searchStackToggle ? 'block' : 'none'}>
+                        <article
+                            className={searchStackToggle ? 'block' : 'none'}
+                            onBlur={searchStackBlur}
+                        >
                             {stackFilter.length === 0 &&
                                 AllStacks.map((stack: { name: string }, idx: number) => {
                                     return (
@@ -238,12 +277,10 @@ const Project = () => {
                 </section>
 
                 <div className="formBtn">
-                    <button type="button" onClick={() => setProjectFormToggle(!projectFormToggle)}>
+                    <button type="button" onClick={deleteProjectForm}>
                         취소
                     </button>
-                    <button type="submit" onClick={createProjectForm}>
-                        저장
-                    </button>
+                    <button type="submit">저장</button>
                 </div>
             </div>
         </form>
