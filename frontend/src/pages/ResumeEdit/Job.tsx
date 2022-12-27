@@ -4,12 +4,27 @@ import { FormStore, WorkFormData } from 'models/resume-model';
 import axios, { AxiosResponse } from 'axios';
 import { useParams } from 'react-router-dom';
 
-type StateToggle = {
+// export type FunctionType={
+//     onCareerCreated((value: any) =>  void);
+// }
+
+type WorkFormState = {
     setIsWorkFormToggle: React.Dispatch<React.SetStateAction<boolean>>;
-    setAddJob: React.Dispatch<React.SetStateAction<FormStore[]>>;
+    setAddJobElement: React.Dispatch<React.SetStateAction<FormStore[]>>;
+    addJobElement: FormStore[];
+    jobItem: React.Dispatch<React.SetStateAction<FormStore[]>>;
+    idx: number;
+    onCareerCreated: (state: any) => void;
 };
 
-const Job = ({ setIsWorkFormToggle, setAddJob }: StateToggle) => {
+const Job = ({
+    setIsWorkFormToggle,
+    setAddJobElement,
+    jobItem,
+    addJobElement,
+    idx,
+    onCareerCreated,
+}: WorkFormState) => {
     const [isStilWork, setIsStilWork] = useState<boolean>(true);
 
     const [workFormDataState, setWorkFormDataState] = useState<WorkFormData>({
@@ -27,12 +42,15 @@ const Job = ({ setIsWorkFormToggle, setAddJob }: StateToggle) => {
     const token = localStorage.getItem('accessToken');
 
     const workFormHandler = (
-        e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement>,
+        e: React.ChangeEvent<HTMLTextAreaElement> | React.ChangeEvent<HTMLInputElement>,
     ) => {
         const target = e.target;
+        const checked = isStilWork ? false : true;
+        console.log(checked, 'state');
 
         setWorkFormDataState({
             ...workFormDataState,
+            workNow: checked,
             [target.name]: target.value,
         });
     };
@@ -51,8 +69,22 @@ const Job = ({ setIsWorkFormToggle, setAddJob }: StateToggle) => {
         });
     };
 
-    const createWorkForm = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    const deleteWorkForm = (e: React.MouseEvent<HTMLButtonElement>) => {
+        const deleteFilter = addJobElement.filter((tem: FormStore) => tem.list !== idx);
+        setAddJobElement(deleteFilter);
+        if (deleteFilter.length === 0) setIsWorkFormToggle(e => !e);
+        console.log(deleteFilter, 'fil');
+    };
+
+    const validationForm = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (
+            workFormDataState.startDate === '' || isStilWork ? workFormDataState.endDate === '' : ''
+        ) {
+            alert('필수정보를 입력해주세요.');
+            return;
+        }
+
         try {
             const res = await axios.post(`/my-portfolio/resumes/${resumeIds}/new-career`, {
                 company: workFormDataState.company,
@@ -60,21 +92,25 @@ const Job = ({ setIsWorkFormToggle, setAddJob }: StateToggle) => {
                 startDate: workFormDataState.startDate,
                 endDate: workFormDataState.endDate,
                 reward: workFormDataState.reward,
+                notDevlop: workFormDataState.notDevlop,
+                workNow: workFormDataState.workNow,
             });
-            console.log(res, ' data');
+
+            if (res.status === 200) {
+                onCareerCreated(workFormDataState);
+                setIsWorkFormToggle(false);
+            }
+
+            console.log(res, ' data state');
         } catch (err: unknown) {
             console.log(err);
         }
     };
 
-    const deleteWorkForm = () => {
-        console.log(
-            setAddJob(e => e),
-            'asd',
-        );
-    };
+    console.log(workFormDataState, 'state');
+
     return (
-        <form>
+        <form onSubmit={validationForm}>
             <div className="formWrap">
                 <ul>
                     <li>
@@ -87,6 +123,7 @@ const Job = ({ setIsWorkFormToggle, setAddJob }: StateToggle) => {
                                     placeholder="회사 이름"
                                     value={workFormDataState.company}
                                     onChange={workFormHandler}
+                                    required
                                 />
                             </dd>
                         </dl>
@@ -99,12 +136,22 @@ const Job = ({ setIsWorkFormToggle, setAddJob }: StateToggle) => {
                                     placeholder="프론트엔드"
                                     value={workFormDataState.position}
                                     onChange={workFormHandler}
+                                    required
                                 />
                             </dd>
                         </dl>
                         <dl className="noneDevelop">
                             <dt>
-                                <input type="checkbox" name="noneDevelop" />
+                                <input
+                                    type="checkbox"
+                                    name="notDevlop"
+                                    onChange={e =>
+                                        setWorkFormDataState({
+                                            ...workFormDataState,
+                                            notDevlop: e.target.checked,
+                                        })
+                                    }
+                                />
                             </dt>
                             <dd>
                                 <label>비개발 경력</label>
@@ -123,7 +170,8 @@ const Job = ({ setIsWorkFormToggle, setAddJob }: StateToggle) => {
                                     <input
                                         type="checkbox"
                                         checked={isStilWork ? true : false}
-                                        onChange={(): void => setIsStilWork(!isStilWork)}
+                                        onClick={(): void => setIsStilWork(!isStilWork)}
+                                        onChange={workFormHandler}
                                     />
                                     <span className="slider"></span>
                                 </label>
@@ -173,9 +221,7 @@ const Job = ({ setIsWorkFormToggle, setAddJob }: StateToggle) => {
                 <button type="button" onClick={deleteWorkForm}>
                     취소
                 </button>
-                <button type="submit" onClick={createWorkForm}>
-                    저장
-                </button>
+                <button type="submit">저장</button>
             </div>
         </form>
     );

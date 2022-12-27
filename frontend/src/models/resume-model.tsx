@@ -59,3 +59,13 @@ export interface CareerData {
     endDate: string;
     reward: string;
 }
+
+export interface ProjectData {
+    projectId: number;
+    projectName: string;
+    year: string;
+    information: string;
+    link1: string;
+    link2: string;
+    stacks: string[];
+}
