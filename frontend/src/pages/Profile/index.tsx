@@ -1,22 +1,10 @@
-import { Bar } from './style';
 import { useEffect, useRef, useState } from 'react';
-import {
-    Breadcrumb,
-    Layout,
-    Menu,
-    theme,
-    Avatar,
-    Divider,
-    Space,
-    Progress,
-    Tabs,
-    Upload,
-    Modal,
-} from 'antd';
+import { Layout, theme, Avatar, Space, Progress, Tabs, Modal } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
 import { UserInfo } from 'components/User/UserInfo';
 import { Proofread } from 'components/User/Proofread';
 import axios from 'axios';
+import './index.css';
 const token = localStorage.getItem('accessToken');
 
 //TODO:코드라인이 심각하게 많아지고 있다 컴포넌트의 필요성을 절실하게 느끼는 중..
