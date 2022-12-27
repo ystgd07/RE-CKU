@@ -37,7 +37,6 @@ const Login = () => {
             localStorage.setItem('refreshToken', refreshToken);
             localStorage.setItem('userId', userId);
             localStorage.setItem('isAdmin', isAdmin);
-            localStorage.setItem('email', data.email);
             navigate('/');
         } catch (err: any) {
             console.error(err.stack);
@@ -45,7 +44,7 @@ const Login = () => {
         }
     };
 
-    const kakao = async () => {
+    const LoginByKakao = async () => {
         try {
             const baseUrl = 'https://kauth.kakao.com/oauth/authorize?';
 
@@ -98,7 +97,7 @@ const Login = () => {
                             autoComplete="new-password"
                         />
                         <button type="submit">로그인</button>
-                        <div onClick={kakao}>
+                        <div onClick={LoginByKakao}>
                             <img src={Kakao} alt={'카카오로그인'}></img>
                         </div>
 

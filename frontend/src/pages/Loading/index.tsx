@@ -48,13 +48,14 @@ const Loading = () => {
     const locaiton = useLocation();
     useEffect(() => {
         console.log('locaiton.search', locaiton.search);
-        b();
+        getToken();
     }, []);
 
-    const a = new URLSearchParams(window.location.search).get('code');
-    const b = async () => {
+    const getCode = new URLSearchParams(window.location.search).get('code');
+    // 유효성 검사... 어케 하지...?
+    const getToken = async () => {
         try {
-            const res = await axios.get(`sosial/kakao/auth?code=${a}`);
+            const res = await axios.get(`sosial/kakao/auth?code=${getCode}`);
             console.log(res);
             const accessToken = res.data.accessToken;
             const refreshToken = res.data.refreshToken;
