@@ -1,5 +1,6 @@
 import React from 'react';
 import { Card, List, Switch } from 'antd';
+import axios from 'axios';
 const data = [
     {
         title: 'Title 1',
@@ -26,6 +27,9 @@ const data = [
         title: 'Title 6',
     },
 ];
+const getMentoReq = async () => {
+    await axios.get('/req');
+};
 export const Proofread = () => {
     return (
         <div
@@ -51,7 +55,7 @@ export const Proofread = () => {
                 }}
                 dataSource={data}
                 renderItem={item => (
-                    <List.Item>
+                    <List.Item style={{ background: 'white' }}>
                         <Card
                             style={{
                                 cursor: 'pointer',
@@ -59,6 +63,11 @@ export const Proofread = () => {
                                 boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)',
                             }}
                             title={item.title}
+                            extra={
+                                <div>
+                                    <button>수락하기</button>
+                                </div>
+                            }
                         >
                             Card content
                         </Card>

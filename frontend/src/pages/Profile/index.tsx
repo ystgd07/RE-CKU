@@ -144,26 +144,27 @@ const Profile: React.FC = () => {
     arr.map((e: number, idx: number): void => {
         if (e <= res.point) {
             upperLimit = arr[idx + 1];
-            if (lowerLimit === 40) {
+            if (upperLimit === 60) {
                 tier = 'Silver';
                 tierColor = tierColors.silver;
-            } else if (lowerLimit === 60) {
+            } else if (upperLimit === 200) {
                 tier = 'Gold';
                 tierColor = tierColors.gold;
-            } else if (lowerLimit === 200) {
+            } else if (upperLimit === 1000) {
                 tier = 'Platinum';
                 tierColor = tierColors.platinum;
-            } else if (lowerLimit === 1000) {
+            } else if (upperLimit === 10000) {
                 tier = 'Diamond';
                 tierColor = tierColors.diamond;
-            } else if (lowerLimit === 10000) {
+            } else if (res.point >= 10000) {
                 tier = 'Challenger';
                 tierColor = tierColors.challenger;
             }
             if (upperLimit === arr[0]) {
                 lowerLimit = 0;
             } else {
-                lowerLimit = arr[idx];
+                if (res.point >= 10000) lowerLimit = 10000;
+                else lowerLimit = arr[idx];
             }
         }
     });
@@ -172,6 +173,7 @@ const Profile: React.FC = () => {
     let testWidth: number = ((res.point - lowerLimit) / (upperLimit - lowerLimit)) * 100;
     testWidth = Math.floor(testWidth);
     if (testWidth === 100) testWidth = 0;
+    if (lowerLimit === 10000) testWidth = 100;
     res.tierColor = tierColor;
     console.log(testWidth);
 
@@ -245,7 +247,7 @@ const Profile: React.FC = () => {
                         }}
                     />
                     {/* //TODO: 추후 Tabs 이부분 컴포넌트화 해야함^^ */}
-                    {tier === 'Platinum' ? (
+                    {upperLimit >= 1000 ? (
                         <Tabs
                             tabBarStyle={{
                                 color: '#c0c0c0',
@@ -295,11 +297,13 @@ const Profile: React.FC = () => {
                                 },
                             ]}
                             tabBarStyle={{
-                                color: `${tierColor}`,
+                                color: '#c0c0c0',
                                 fontWeight: 'bold',
                                 border: 'solid',
                                 borderRadius: '6px',
-                                borderColor: `${tierColor}`,
+                                borderColor: '#c0c0c0',
+                                marginLeft: '10px',
+                                marginRight: '10px',
                             }}
                         />
                     )}

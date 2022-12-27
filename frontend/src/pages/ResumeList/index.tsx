@@ -126,11 +126,12 @@ const ResumeMain = () => {
                                             cursor: 'pointer',
                                             border: '1px solid #dbdbdb',
                                             boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)',
+                                            backgroundColor: 'white',
                                         }}
                                         title={e.resumeName}
                                         bordered={true}
                                         extra={
-                                            <div>
+                                            <div style={{ display: 'flex' }}>
                                                 <Button
                                                     type="primary"
                                                     shape="round"
