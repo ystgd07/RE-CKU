@@ -52,6 +52,17 @@ async function realLoadItem(
   };
 }
 
+async function test() {
+  const BASE_URL = "http://localhost:3000";
+  await axios
+    .get(
+      `http://localhost:3000/board/community?firstRequest=1&type=created&count=3`
+    )
+    .then(function (response) {
+      console.log(response);
+    });
+}
+
 function ResumeLounge() {
   const [jobFilter, setJobFilter] = useState("ALL");
   const [typeFilter, setTypeFilter] = useState("new");
@@ -60,6 +71,8 @@ function ResumeLounge() {
     () => ({ jobFilter, typeFilter }),
     [jobFilter, typeFilter]
   );
+
+  test();
 
   return (
     <FilterContext.Provider value={filterContextValue}>
