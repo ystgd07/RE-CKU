@@ -162,6 +162,7 @@ const Post = () => {
     const [editComment, setEditComment] = useState<string>('');
     const [isEditComment, setIsEditComment] = useState<number>(0);
     const [reportReason, setReportReason] = useState<string>('');
+    const [reportUser, setReportUser] = useState<number>(0);
     // 모달 제어
     const [modalOpen, setModalOpen] = useState(false);
     const { postId } = useParams<{ postId: string }>();
@@ -355,27 +356,44 @@ const Post = () => {
         fetchCommentData();
     }, []);
 
+    // 신고하기 API
     const reportComfirm = async () => {
         try {
             const data = {
-                defendantUserId: boardData?.ownUserId,
+                defendantUserId: reportUser,
                 reason: reportReason,
             };
-            const res = await API.post('/users/report', data);
-            console.log(res);
+            await API.post('/users/report', data);
+            setReportUser(0);
+            setReportReason('');
             setModalOpen(false);
         } catch (err) {
+            setReportUser(0);
+            setReportReason('');
             openNotification('bottomRight', `문제가 발생했습니다 : ${err}`);
         }
     };
 
-    const showReportCancel = () => {
+    const showReportCancel = (reportId: number) => {
         confirm({
             title: '이미 신고한 유저입니다. 신고를 취소하시겠습니까?',
-            onOk() {
-                console.log('hello');
+            async onOk() {
+                try {
+                    const data = {
+                        defendantUserId: reportId,
+                    };
+                    await API.patch('/users/report', '', data);
+                    setReportUser(0);
+                    setReportReason('');
+                } catch (err) {
+                    setReportUser(0);
+                    setReportReason('');
+                    openNotification('bottomRight', `문제가 발생했습니다 : ${err}`);
+                }
             },
             onCancel() {
+                setReportUser(0);
+                setReportReason('');
                 console.log('CANCEL');
             },
             okText: '신고 취소하기',
@@ -397,26 +415,27 @@ const Post = () => {
         });
     };
 
-    const checkReportBoardUser = async () => {
+    const checkReportBoardUser = async (reportId: any) => {
+        setReportUser(reportId);
         // 본인 프로필 클릭 시 신고 버튼 동작 방지
         const user = Number(localStorage.getItem('userId'));
-        const boardCreator = boardData?.ownUserId;
-        if (boardCreator === user) {
+        if (reportId === user) {
             return;
         }
 
         try {
-            const res = await API.get('/users/report', `?defendantUserId=${boardData?.id}`);
+            const res = await API.get('/users/report', `?defendantUserId=${reportId}`);
             console.log(res);
             if (res.reported) {
                 // 신고 취소 모달창
-                showReportCancel();
+                showReportCancel(reportId);
             } else {
                 // 신고 모달창
                 setModalOpen(true);
-                // showReportComfirm();
             }
         } catch (err) {
+            setReportUser(0);
+            setReportReason('');
             openNotification('bottomRight', `문제가 발생했습니다 : ${err}`);
         }
     };
@@ -432,7 +451,10 @@ const Post = () => {
                 centered
                 open={modalOpen}
                 onOk={reportComfirm}
-                onCancel={() => setModalOpen(false)}
+                onCancel={() => {
+                    setModalOpen(false);
+                    setReportReason('');
+                }}
                 okText="신고하기"
                 cancelText="취소"
             >
@@ -445,7 +467,7 @@ const Post = () => {
                     <Profile>
                         <ProfileImg
                             src={boardData?.avatarUrl}
-                            onClick={checkReportBoardUser}
+                            onClick={() => checkReportBoardUser(boardData?.ownUserId)}
                         ></ProfileImg>
                         <ProfileInfo>
                             <ProfileInfoName>{boardData?.email}</ProfileInfoName>
@@ -501,7 +523,10 @@ const Post = () => {
                                 size="small"
                                 title={
                                     <Profile>
-                                        <ProfileImg src={item.avatarUrl}></ProfileImg>
+                                        <ProfileImg
+                                            src={item.avatarUrl}
+                                            onClick={() => checkReportBoardUser(item.fromUserId)}
+                                        ></ProfileImg>
                                         <ProfileInfo>
                                             <ProfileInfoName>{item.username}</ProfileInfoName>
                                             <Text>{calcElapsed(item.commentCreated)} 전</Text>
