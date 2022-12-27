@@ -129,20 +129,21 @@ interface ICareer {
     updatedAt: Date;
 }
 
-interface ICommentData {
-    MARK: string;
-    alreadyLikes: boolean;
-    avatarUrl: string;
-    commentCreated: Date;
-    commentId: number;
-    fixed: number;
-    fromUserId: number;
-    likes: number;
-    myComment: boolean;
-    text: string;
-    username: string;
-    // 신고
-}
+// // interface ICareer {
+// //     id: number;
+// //     company: string;
+// //     reward: string;
+// //     position: string;
+// //     usedResumeId: number;
+// //     notDevelop: number;
+// //     workNow: number;
+// //     startDate: number;
+// //     endDate: number;
+// //     name: string;
+// //     usedUserId: number;
+// //     information: null;
+// //     updatedAt: Date;
+// // }
 
 const Post = () => {
     // const [postData, setPostData] = useState<IPostData | null>(null);
@@ -158,14 +159,19 @@ const Post = () => {
     const [modalOpen, setModalOpen] = useState(false);
     const { postId } = useParams<{ postId: string }>();
 
-    const viewerRef = useRef<Viewer>(null);
+// const Post = () => {
+//     // const [postData, setPostData] = useState<IPostData | null>(null);
+//     const [boardData, setBoardData] = useState<IBoardInfo | null>(null);
+//     const [resumeData, setResumeData] = useState<IResumeInfo | null>(null);
+//     const [commentData, setCommentData] = useState<ICommentData[] | []>([]);
+//     const [alreadyLike, setAlreadyLike] = useState<boolean>(false);
+//     const [ownBoard, setOwnBoard] = useState<boolean>(false);
+//     const [comment, setComment] = useState<string>('');
+//     const { postId } = useParams<{ postId: string }>();
 
-    const navigate = useNavigate();
+//     const viewerRef = useRef<Viewer>(null);
 
-    // 마크다운 뷰어 내용 업데이트
-    const updateViewerContent = (content: string) => {
-        viewerRef.current?.getInstance().setMarkdown(content);
-    };
+//     const navigate = useNavigate();
 
     // 게시물 데이터 가져오기
     const fetchBoardData = async () => {
@@ -216,20 +222,19 @@ const Post = () => {
         }
     };
 
-    // 댓글 작성
-    const handleCommentSubmit = async () => {
-        const data = {
-            text: comment,
-        };
-        try {
-            await API.post(`/board/${postId}/comments`, data);
-            setComment('');
-            fetchBoardData();
-            fetchCommentData();
-        } catch (err) {
-            console.log(err);
-        }
-    };
+//     // 게시물 좋아요 동작
+//     const handleBoardLike = async () => {
+//         try {
+//             const data = {
+//                 likesStatus: alreadyLike,
+//             };
+//             await API.patch(`/board/${postId}/like`, '', data);
+//             // Refresh
+//             fetchBoardData();
+//         } catch (err) {
+//             console.log('ERROR:', err);
+//         }
+//     };
 
     // 댓글 좋아요
     const handleCommentLike = async (id: number, likesStatus: boolean) => {
@@ -258,9 +263,23 @@ const Post = () => {
         }
     };
 
-    const handleOnChangeComment = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-        setComment(e.target.value);
-    };
+//             const newCommentData = commentData.map(item => {
+//                 if (item.commentId === id) {
+//                     if (item.alreadyLikes) {
+//                         item.likes = item.likes - 1;
+//                         item.alreadyLikes = false;
+//                     } else {
+//                         item.likes = item.likes + 1;
+//                         item.alreadyLikes = true;
+//                     }
+//                 }
+//                 return item;
+//             });
+//             setCommentData(newCommentData);
+//         } catch (err) {
+//             console.log(err);
+//         }
+//     };
 
     // 댓글 더 불러오기
     const handleMoreComment = async () => {
@@ -471,3 +490,6 @@ const Post = () => {
 };
 
 export default Post;
+
+// // export default Post;
+export {};

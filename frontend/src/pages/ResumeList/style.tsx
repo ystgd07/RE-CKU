@@ -1,6 +1,6 @@
 import styled from '@emotion/styled';
 
-export const Layout = styled.div`
+export const ContentElement = styled.div`
     display: flex;
     justify-content: flex-start;
     flex-direction: row;
