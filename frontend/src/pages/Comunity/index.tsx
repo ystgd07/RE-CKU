@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ComunityFrame } from './style';
+import { ComunityFrame, Post } from './style';
 import Layout from 'components/Layout';
 import API from 'utils/api';
 import axios from 'axios';
@@ -53,7 +53,12 @@ const Comunity = () => {
 
                 <section className="postWrap">
                     {boardResumes.map((tem: BoardResume, idx: number) => {
-                        return <></>;
+                        return (
+                            <Post key={idx}>
+                                <strong>{tem.postTitle}</strong>
+                                <p>{tem.postDescription}</p>
+                            </Post>
+                        );
                     })}
                 </section>
             </ComunityFrame>

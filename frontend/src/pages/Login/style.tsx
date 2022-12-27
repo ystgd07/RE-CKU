@@ -1,33 +1,23 @@
 import styled from '@emotion/styled';
 
-export const Div = styled.div`
-    display: flex;
-    justify-content: center;
-    align-content: center;
-    flex-direction: column;
-
-    .block {
-        display: block;
-        color: red;
-        font-size: 1rem;
-        text-align: start;
-        padding: 0px 3rem;
-    }
-
-    .none {
-        display: none;
-    }
-`;
-
 export const MobileDiv = styled.div`
     display: flex;
     flex-direction: column;
     width: 100%;
     justify-content: center;
-    margin: 0 auto;
     text-align: center;
     align-items: center;
-    border-radius: 0.4rem;
+
+    .block {
+        display: block;
+        color: red;
+        font-size: 1.4rem;
+        text-align: start;
+    }
+
+    .none {
+        display: none;
+    }
 
     & form {
         max-width: 46rem;
@@ -111,19 +101,26 @@ export const MobileDiv = styled.div`
                 & .kakaoLogin {
                     margin-top: 1rem;
                     & li {
-                        & button[type='button'] {
-                            border: 0;
-                            background-color: #fff115;
-                            width: 100%;
-                            font-size: 1.4rem;
-                            font-weight: 600;
-                            padding: 1.9rem 2rem;
-                            border-radius: 0.4rem;
+                        background-color: #fee500;
+                        width: 100%;
+                        font-size: 1.4rem;
+                        font-weight: 600;
+                        padding: 1.6rem 0;
+                        border-radius: 1.2rem;
 
-                            &:hover {
-                                cursor: pointer;
-                                background-color: yellow;
-                            }
+                        &:hover {
+                            cursor: pointer;
+                            background-color: yellow;
+                        }
+
+                        & span {
+                            vertical-align: middle;
+                        }
+
+                        & button[type='button'] {
+                            color: rgba(0, 0, 0, 0.85);
+                            background: none;
+                            border: 0;
                         }
                     }
                 }

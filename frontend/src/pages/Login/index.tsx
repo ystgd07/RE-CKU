@@ -5,6 +5,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useForm } from 'react-hook-form';
 import Layout from 'components/Layout';
+import Kakao from 'assets/images/kakao.png';
 
 const Login = () => {
     const navigate = useNavigate();
@@ -56,62 +57,63 @@ const Login = () => {
     };
     return (
         <Layout>
-            <S.Div>
-                <S.MobileDiv>
-                    <form onSubmit={handleSubmit(onSubmitHandler)}>
-                        <div className="loginWrap">
-                            <h1>LOGIN</h1>
+            <S.MobileDiv>
+                <form onSubmit={handleSubmit(onSubmitHandler)}>
+                    <div className="loginWrap">
+                        <h1>LOGIN</h1>
 
-                            <input
-                                type="email"
-                                {...register('email', {
-                                    required: '이메일을 입력해주세요',
-                                    pattern: {
-                                        value: /^[A-Za-z0-9._%+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/,
-                                        message: '이메일 형식만 가능합니다.',
-                                    },
-                                })}
-                                placeholder="이메일 입력"
-                                autoComplete="off"
-                            />
+                        <input
+                            type="email"
+                            {...register('email', {
+                                required: '이메일을 입력해주세요',
+                                pattern: {
+                                    value: /^[A-Za-z0-9._%+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/,
+                                    message: '이메일 형식만 가능합니다.',
+                                },
+                            })}
+                            placeholder="이메일 입력"
+                            autoComplete="off"
+                        />
 
-                            <label className={`${errors.email ? 'block' : 'none'}`}>
-                                {errors?.email?.message}
-                            </label>
+                        <label className={`${errors.email ? 'block' : 'none'}`}>
+                            {errors?.email?.message}
+                        </label>
 
-                            <input
-                                {...register('password', {
-                                    required: '비밀번호를 입력해주세요',
-                                })}
-                                type="password"
-                                placeholder="비밀번호 입력"
-                                autoComplete="new-password"
-                            />
-                            <div className="util">
-                                <Link to="/join">회원가입 </Link>
-                                <Link to="/find-pw">비밀번호 찾기</Link>
-                            </div>
-
-                            <article>
-                                <ul>
-                                    <li>
-                                        <button type="submit" className="loginBtn">
-                                            로그인
-                                        </button>
-                                    </li>
-                                </ul>
-                                <ul className="kakaoLogin">
-                                    <li>
-                                        <button type="button" onClick={LoginByKakao}>
-                                            KAKAO
-                                        </button>
-                                    </li>
-                                </ul>
-                            </article>
+                        <input
+                            {...register('password', {
+                                required: '비밀번호를 입력해주세요',
+                            })}
+                            type="password"
+                            placeholder="비밀번호 입력"
+                            autoComplete="new-password"
+                        />
+                        <div className="util">
+                            <Link to="/join">회원가입 </Link>
+                            <Link to="/find-pw">비밀번호 찾기</Link>
                         </div>
-                    </form>
-                </S.MobileDiv>
-            </S.Div>
+
+                        <article>
+                            <ul>
+                                <li>
+                                    <button type="submit" className="loginBtn">
+                                        로그인
+                                    </button>
+                                </li>
+                            </ul>
+                            <ul className="kakaoLogin">
+                                <li>
+                                    <span>
+                                        <img src={Kakao} alt="kakao" />
+                                    </span>
+                                    <button type="button" onClick={LoginByKakao}>
+                                        카카오 로그인
+                                    </button>
+                                </li>
+                            </ul>
+                        </article>
+                    </div>
+                </form>
+            </S.MobileDiv>
         </Layout>
     );
 };
