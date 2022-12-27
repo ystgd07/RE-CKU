@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, List, Switch } from 'antd';
+import { Card, List, Switch, Button, Divider } from 'antd';
 import axios from 'axios';
 const data = [
     {
@@ -27,10 +27,19 @@ const data = [
         title: 'Title 6',
     },
 ];
+const token = localStorage.getItem('accessToken');
 const getMentoReq = async () => {
-    await axios.get('/req');
+    try {
+        const res = await axios.get('/req', {
+            headers: { authorization: `Bearer ${token}` },
+        });
+        console.log(res);
+    } catch (e) {
+        console.log(e);
+    }
 };
 export const Proofread = () => {
+    getMentoReq();
     return (
         <div
             style={{
@@ -43,6 +52,9 @@ export const Proofread = () => {
             <div style={{ marginBottom: '20px', display: 'flex', flexDirection: 'row-reverse' }}>
                 <Switch defaultChecked />
             </div>
+            <Divider orientation="left" orientationMargin="0">
+                <p style={{ fontWeight: 'bold' }}>요청 ({data.length})</p>
+            </Divider>
             <List
                 grid={{
                     gutter: 16,
@@ -65,7 +77,45 @@ export const Proofread = () => {
                             title={item.title}
                             extra={
                                 <div>
-                                    <button>수락하기</button>
+                                    <Button style={{ marginRight: '10px' }}>수락하기</Button>
+
+                                    <Button>취소</Button>
+                                </div>
+                            }
+                        >
+                            Card content
+                        </Card>
+                    </List.Item>
+                )}
+            />
+            <Divider orientation="left" orientationMargin="0">
+                <p style={{ fontWeight: 'bold' }}>진행중 ({data.length})</p>
+            </Divider>
+            <List
+                grid={{
+                    gutter: 16,
+                    xs: 1,
+                    sm: 2,
+                    md: 4,
+                    lg: 4,
+                    xl: 6,
+                    xxl: 3,
+                }}
+                dataSource={data}
+                renderItem={item => (
+                    <List.Item style={{ background: 'white' }}>
+                        <Card
+                            style={{
+                                cursor: 'pointer',
+                                border: ' solid #dbdbdb',
+                                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)',
+                            }}
+                            title={item.title}
+                            extra={
+                                <div>
+                                    <Button style={{ marginRight: '10px' }}>수락하기</Button>
+
+                                    <Button>취소</Button>
                                 </div>
                             }
                         >

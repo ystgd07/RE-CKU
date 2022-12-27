@@ -99,7 +99,7 @@ export const UserInfo = ({ user, getEvent }: UserProps) => {
                     <Button
                         icon={<GithubOutlined />}
                         type="primary"
-                        style={{ backgroundColor: 'black' }}
+                        style={{ backgroundColor: 'black', position: 'static' }}
                         onClick={() => {
                             setPropsOpen(true);
                         }}
