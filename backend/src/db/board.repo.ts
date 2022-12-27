@@ -569,3 +569,45 @@ export const savePointByBoard = async (data: { userId: number; boardId: number }
     [50, userId]
   );
 };
+
+export const randomBoardsQ = async (userId: number) => {
+  const [boards] = await db.query(
+    `
+    SELECT 
+      boardId as id
+    FROM board_like_maping
+    WHERE userId = ?
+  `,
+    [userId]
+  );
+  const parseBoardList = utils.jsonParse(boards);
+  console.log(parseBoardList);
+  const [keys, values] = utils.selectByWhere(parseBoardList);
+
+  const [find] = await db.query(
+    `
+    SELECT
+      id
+    FROM board
+    WHERE 
+      ${keys.join(" AND ")}
+    ORDER BY rand()
+    LIMIT 1
+  `,
+    [...values]
+  );
+  console.log(parseBoardList);
+  console.log(
+    `
+    SELECT
+      id
+    FROM board
+    WHERE 
+      ${keys.join(" AND ")}
+    ORDER BY rand()
+    LIMIT 1
+  `,
+    [...values]
+  );
+  return utils.jsonParse(find)[0];
+};

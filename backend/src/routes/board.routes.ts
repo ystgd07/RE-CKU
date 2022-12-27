@@ -2,10 +2,24 @@ import { CreateBoardDto } from "./dto/create-board.dto";
 import express from "express";
 import * as boardService from "../services/board.service";
 import * as commentService from "../services/comment.service";
+import * as userService from "../services/user.service";
 import { validateBody, tokenValidator } from "../middlewares";
 import { CreateCommentDto } from "./dto";
 
 export const boardRoute = express();
+
+boardRoute.get("/random", tokenValidator, async (req, res, next) => {
+  const userId = Number(req.body.jwtDecoded.id);
+  try {
+    const board = await boardService.randomBoards(userId);
+    return res.status(200).json({
+      msg: "오늘의 조회에~",
+      data: board,
+    });
+  } catch (err) {
+    next(err);
+  }
+});
 /**type으로 최신,좋아요,댓글 순으로 리스트 반환 */
 boardRoute.get("/", async (req, res, next) => {
   const filter = String(req.query.filter);
