@@ -17,17 +17,21 @@ export class Comment {
 
   @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP" })
   created: Date;
-
+  @Column({ type: "datetime", default: null, nullable: true })
+  updated: Date;
   @Column({ default: 0 })
   likes: number;
 
   @Column({ default: 0 })
   alreadyLikes: number;
 
+  @Column({ default: 1 })
+  active: number;
+
   @OneToMany((type) => CommentLikeMaping, (table) => table.comment)
   ownLikes: CommentLikeMaping;
 
-  @OneToMany((type) => PointFromComment, (point) => point.commentId)
+  @OneToMany((type) => PointFromComment, (point) => point.comment)
   getPoint: PointFromComment;
 
   @ManyToOne((type) => User, (user) => user.writeComments)
@@ -36,3 +40,16 @@ export class Comment {
   @ManyToOne((type) => Board, (board) => board.ownComments)
   board: Board[];
 }
+
+export type AlreadyLikesComments = {
+  push(comment: AlreadyLikesComments): unknown;
+  alreadyLikes: boolean;
+  commentId: number;
+  username: string;
+  avatarUrl: string;
+  text: string;
+  commentCreated: Date;
+  likes: number;
+  fromUserId: number;
+  fixed: boolean;
+};

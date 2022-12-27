@@ -1,6 +1,8 @@
 import express, { Request, Response, NextFunction } from "express";
 import { errorHandler } from "./middlewares/error-handdler";
-import { userRoute, boardRoute, rootRoute, commentRoute } from "./routes/index.routes";
+
+import { userRoute, adminRoute, boardRoute, rootRoute, commentRoute, sosialRoute } from "./routes";
+
 import cors from "cors";
 import resumeRoute from "./routes/resume.routes";
 const app = express();
@@ -16,9 +18,11 @@ app.use(express.urlencoded({ extended: false }));
 // routes
 app.use("/", rootRoute);
 app.use("/users", userRoute);
-app.use("/myportfolio", resumeRoute);
+app.use("/admin", adminRoute);
+app.use("/my-portfolio", resumeRoute);
 app.use("/board", boardRoute);
 app.use("/comments", commentRoute);
+app.use("/sosial", sosialRoute);
 
 // 에러 미들웨어
 app.use(errorHandler);

@@ -1,70 +1,311 @@
 import { Bar } from './style';
-import { useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import {
+    Breadcrumb,
+    Layout,
+    Menu,
+    theme,
+    Avatar,
+    Divider,
+    Space,
+    Progress,
+    Tabs,
+    Upload,
+    Modal,
+} from 'antd';
+import { UserOutlined } from '@ant-design/icons';
+import { UserInfo } from 'components/User/UserInfo';
+import { Proofread } from 'components/User/Proofread';
 import axios from 'axios';
-const Profile = () => {
-    let mock: {
-        name: string;
-        tier: string;
-        point: number;
-    }[];
-    mock = [
-        {
-            name: 'sungsoo',
-            tier: 'bronze',
-            point: 15,
-        },
-    ];
+const token = localStorage.getItem('accessToken');
 
+//TODO:코드라인이 심각하게 많아지고 있다 컴포넌트의 필요성을 절실하게 느끼는 중..
+const { Header, Content, Footer } = Layout;
+const tierColors = {
+    bronze: '#964b00',
+    silver: '#c0c0c0',
+    gold: '#ffbd1b',
+    platinum: '#005666',
+    diamond: '#00a3d2',
+    challenger: '#dc143c',
+};
+
+const onChange = (key: string) => {
+    console.log(key);
+};
+type Mock = {
+    id: string;
+    email: string;
+    password: string;
+    phoneNumber: string;
+    point: number;
+    username: string;
+    created: string;
+    avatarUrl: string;
+    gitHubUrl: string;
+    tierColor: string;
+};
+const Profile: React.FC = () => {
+    const [open, setOpen] = useState(false);
+    const [confirmLoading, setConfirmLoading] = useState(false);
+    const [modalText, setModalText] = useState('Content of the modal');
+    const [imgUrl, setImgUrl] = useState('');
+    const imgLoadRef: any = useRef();
+    //TODO: imgUrl update 500 ERR 백엔드와 상의
+    const imgFileSend = async (body: any) => {
+        try {
+            const res = await await axios.post('/file/url', body);
+            if (res.status === 200) {
+                await axios.patch(
+                    '/users/individuals',
+                    { avatarUrl: `${res.data.imageUrl}` },
+                    { headers: { authorization: `Bearer ${token}` } },
+                );
+            }
+            setImgUrl(res.data.imageUrl);
+        } catch (e) {
+            console.log(e);
+        }
+    };
+    const showModal = () => {
+        setOpen(true);
+    };
+
+    const handleOk = (e: any) => {
+        const formData1: any = new FormData();
+        // const blob = new Blob(, { type: 'image/png' });
+        // console.log(blob);
+
+        formData1.append('image', imgLoadRef.current.files[0]);
+        setModalText('The modal will be closed after two seconds');
+        setConfirmLoading(true);
+        setTimeout(() => {
+            setOpen(false);
+            setConfirmLoading(false);
+            imgFileSend(formData1);
+            e.target.parentElement.parentElement.parentElement.children[1].children[0].value = '';
+            console.log(imgLoadRef.current.files[0]);
+        }, 2000);
+    };
+
+    const handleCancel = (e: any) => {
+        // console.log(
+        //     e.target.parentElement.parentElement.parentElement.children[1].children[0].value,
+        // );
+        e.target.parentElement.parentElement.parentElement.children[1].children[0].value = '';
+        console.log('Clicked cancel button');
+        setOpen(false);
+    };
+    const {
+        token: { colorBgContainer },
+    } = theme.useToken();
+
+    const [res, setRes] = useState<Mock>({
+        id: '',
+        email: '',
+        password: '',
+        phoneNumber: '',
+        point: 0,
+        username: '',
+        created: '',
+        avatarUrl: '',
+        gitHubUrl: '',
+        tierColor: '',
+    });
     async function getProfile() {
         try {
             const token = localStorage.getItem('accessToken');
-            // const res = await axios.post(
-            //   "https://reactproject-test-78fcd-default-rtdb.firebaseio.com/mock.json",
-            //   { mocksPortfolio }
-            // );
-            const mocks = await axios.get('users/individual', {
-                headers: { authorization: `Bearer ${token}` },
-            });
+
+            const mocks = await axios
+                .get('/users/individuals', {
+                    headers: { authorization: `Bearer ${token}` },
+                })
+                .then(res => res.data)
+                .then(res => res.data);
 
             console.log(mocks);
-            // console.log(mocks.data["-NJJR5a9003Z0Qw6WOzB"]);
-            // const mock = mocks.data["-NJJR5a9003Z0Qw6WOzB"].mocksPortfolio;
-            // setRes(mock);
+
+            setRes(mocks);
         } catch (e) {
             console.log(e);
         }
     }
+
     useEffect(() => {
         getProfile();
     }, []);
-    const arr = [20, 40, 100];
+
+    const arr = [40, 60, 200, 1000, 10000];
     let upperLimit = arr[0];
     let lowerLimit = 0;
-    // arr.map((e, idx) => {
-    //     if (e <= mock[0].point) {
-    //         upperLimit = arr[idx + 1];
-    //         if (upperLimit === arr[0]) {
-    //             lowerLimit = 0;
-    //         } else {
-    //             lowerLimit = upperLimit - arr[idx];
-    //         }
-    //     }
-    // });
+    let tier = 'Bronze';
+    let tierColor = tierColors.bronze;
 
+    arr.map((e: number, idx: number): void => {
+        if (e <= res.point) {
+            upperLimit = arr[idx + 1];
+            if (lowerLimit === 40) {
+                tier = 'Silver';
+                tierColor = tierColors.silver;
+            } else if (lowerLimit === 60) {
+                tier = 'Gold';
+                tierColor = tierColors.gold;
+            } else if (lowerLimit === 200) {
+                tier = 'Platinum';
+                tierColor = tierColors.platinum;
+            } else if (lowerLimit === 1000) {
+                tier = 'Diamond';
+                tierColor = tierColors.diamond;
+            } else if (lowerLimit === 10000) {
+                tier = 'Challenger';
+                tierColor = tierColors.challenger;
+            }
+            if (upperLimit === arr[0]) {
+                lowerLimit = 0;
+            } else {
+                lowerLimit = arr[idx];
+            }
+        }
+    });
     console.log(upperLimit, lowerLimit);
-    const testWidth = `${((mock[0].point - lowerLimit) / (upperLimit - lowerLimit)) * 100}`;
 
+    let testWidth: number = ((res.point - lowerLimit) / (upperLimit - lowerLimit)) * 100;
+    testWidth = Math.floor(testWidth);
+    if (testWidth === 100) testWidth = 0;
+    res.tierColor = tierColor;
     console.log(testWidth);
 
     return (
-        <>
-            <h1>profile page</h1>
-            <Bar>
-                <div>
-                    <div style={{ width: `${testWidth}%` }}></div>
+        <Layout className="layout">
+            <Content
+                style={{
+                    padding: '0 50px',
+                    background: 'white',
+                }}
+            >
+                <div
+                    className="site-layout-content"
+                    style={{
+                        background: colorBgContainer,
+                        height: '100%',
+                        border: 'solid',
+                        borderRadius: '6px',
+                        borderColor: '#c0c0c0',
+                    }}
+                >
+                    <div>
+                        <Space direction="vertical">
+                            <div>
+                                <Modal
+                                    title="Title"
+                                    open={open}
+                                    onOk={handleOk}
+                                    confirmLoading={confirmLoading}
+                                    onCancel={handleCancel}
+                                    maskClosable={false}
+                                    keyboard={false}
+                                    closable={false}
+                                >
+                                    <input type="file" ref={imgLoadRef}></input>
+                                </Modal>
+                                <Avatar
+                                    size={120}
+                                    icon={<UserOutlined />}
+                                    src={`${imgUrl === '' ? res.avatarUrl : imgUrl}`}
+                                    style={{ cursor: 'pointer' }}
+                                    onClick={showModal}
+                                />
+                            </div>
+                            <div style={{ height: '38px' }}>
+                                <span style={{ fontSize: '35px' }}>{res.username}</span>
+                            </div>
+                            <div>
+                                <div style={{ width: `${testWidth}%` }}></div>
+                            </div>
+                            <p
+                                style={{
+                                    color: `${tierColor}`,
+                                    fontWeight: 'bold',
+                                    marginLeft: '10px',
+                                    marginRight: '10px',
+                                }}
+                            >
+                                {tier}
+                            </p>
+                        </Space>
+                    </div>
+                    <Progress
+                        percent={testWidth}
+                        status="active"
+                        strokeColor={{ '0%': `${tierColor}`, '100%': `${tierColor}` }}
+                        style={{
+                            marginLeft: '1px',
+                            marginRight: '10px',
+                            fontWeight: 'bold',
+                        }}
+                    />
+                    {/* //TODO: 추후 Tabs 이부분 컴포넌트화 해야함^^ */}
+                    {tier === 'Platinum' ? (
+                        <Tabs
+                            tabBarStyle={{
+                                color: '#c0c0c0',
+                                fontWeight: 'bold',
+                                border: 'solid',
+                                borderRadius: '6px',
+                                borderColor: '#c0c0c0',
+                                marginLeft: '10px',
+                                marginRight: '10px',
+                            }}
+                            defaultActiveKey="1"
+                            onChange={onChange}
+                            items={[
+                                {
+                                    label: `유저정보`,
+                                    key: '1',
+                                    children: (
+                                        <UserInfo user={res} getEvent={getProfile}></UserInfo>
+                                    ),
+                                },
+
+                                {
+                                    label: `첨삭(플레티넘)`,
+                                    key: '2',
+                                    children: <Proofread></Proofread>,
+                                },
+                            ]}
+                        />
+                    ) : (
+                        <Tabs
+                            defaultActiveKey="1"
+                            onChange={onChange}
+                            items={[
+                                {
+                                    label: `유저정보`,
+                                    key: '1',
+                                    children: (
+                                        <UserInfo user={res} getEvent={getProfile}></UserInfo>
+                                    ),
+                                },
+
+                                {
+                                    label: `첨삭(플레티넘)`,
+                                    key: '2',
+                                    children: <Proofread></Proofread>,
+                                    disabled: true,
+                                },
+                            ]}
+                            tabBarStyle={{
+                                color: `${tierColor}`,
+                                fontWeight: 'bold',
+                                border: 'solid',
+                                borderRadius: '6px',
+                                borderColor: `${tierColor}`,
+                            }}
+                        />
+                    )}
                 </div>
-            </Bar>
-        </>
+            </Content>
+        </Layout>
     );
 };
 

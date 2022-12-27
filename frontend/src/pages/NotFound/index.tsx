@@ -1,7 +1,6 @@
 import styled from '@emotion/styled';
 import { Link } from 'react-router-dom';
 import Err from 'assets/images/404.png';
-import Header from './../../components/Header/index';
 
 const Image = styled.img`
     width: 80%;

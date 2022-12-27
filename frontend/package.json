@@ -6,10 +6,6 @@
         "@emotion/styled": "^11.10.5",
         "@react-icons/all-files": "^4.1.0",
         "@reduxjs/toolkit": "^1.9.1",
-        "@testing-library/jest-dom": "^5.16.5",
-        "@testing-library/react": "^13.4.0",
-        "@testing-library/user-event": "^13.5.0",
-        "@toast-ui/editor-plugin-color-syntax": "^3.1.0",
         "@types/jest": "^27.5.2",
         "@types/node": "^16.18.8",
         "@types/react": "^18.0.26",
@@ -19,6 +15,7 @@
         "react": "^18.2.0",
         "react-dom": "^18.2.0",
         "react-hook-form": "^7.40.0",
+        "react-infinite-scroll-component": "^6.1.0",
         "react-redux": "^8.0.5",
         "react-router-dom": "^6.4.5",
         "react-scripts": "5.0.1",
@@ -27,7 +24,7 @@
         "web-vitals": "^2.1.4"
     },
     "scripts": {
-        "start": "react-scripts start",
+        "start": "set 'GENERATE_SOURCEMAP=false' && react-scripts start",
         "build": "react-scripts build",
         "test": "react-scripts test",
         "eject": "react-scripts eject"
@@ -50,5 +47,5 @@
             "last 1 safari version"
         ]
     },
-    "proxy": "http://localhost:5000"
+    "proxy": "http://localhost:3001"
 }

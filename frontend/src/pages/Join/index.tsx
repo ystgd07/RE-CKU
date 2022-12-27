@@ -2,11 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import * as S from './style';
-import Logo from 'assets/images/iogo.png';
+import Logo from 'assets/images/logo.png';
 import { useForm } from 'react-hook-form';
 
 const Join = () => {
     const [email, setEmail] = useState();
+    const [code, setCode] = useState();
     const navigate = useNavigate();
     const {
         register,
@@ -25,13 +26,6 @@ const Join = () => {
         passwordCheck: string;
     }
 
-    // useEffect(() => {
-    //     console.log('이동?');
-    //     if (localStorage.getItem('accessToken')) {
-    //         navigate('/');
-    //     }
-    // }, []);
-
     const onValid = async (data: FormData) => {
         if (data.password !== data.passwordCheck) {
             setError('passwordCheck', { message: '비밀번호가 일치하지 않습니다.' });
@@ -46,7 +40,7 @@ const Join = () => {
 
         try {
             console.log('data', jsondata);
-            const res = await axios.post('/users/individual', jsondata);
+            const res = await axios.post('/users/individuals', jsondata);
             console.log(res, '성공');
 
             alert('회원가입이 완료되었습니다.');
@@ -63,6 +57,7 @@ const Join = () => {
     const onChange = (e: any) => {
         setEmail(e.target.value);
     };
+
     const sendEmail = async (e: any) => {
         e.preventDefault();
         const jsondata = {
@@ -78,10 +73,11 @@ const Join = () => {
         }
     };
 
-    const emailAuth = async (data: FormData) => {
+    const emailAuth = async (e: any) => {
+        e.preventDefault();
         const jsondata = {
-            email: data.email,
-            code: Number(data.code),
+            email: email,
+            code: Number(code),
         };
 
         console.log('data', jsondata);
@@ -93,7 +89,7 @@ const Join = () => {
             const reqConfirm = res.data.msg;
 
             sessionStorage.setItem('reqConfirm', reqConfirm);
-            sessionStorage.setItem('email', data.email);
+            sessionStorage.setItem('email', res.data.email);
             alert('인증 완료');
         } catch (err: any) {
             console.error(err.stack);
@@ -103,14 +99,14 @@ const Join = () => {
     return (
         <S.Div>
             <S.MobileDiv>
-                <p>
-                    <div>
+                <div>
+                    <article>
                         <Link to="/">
                             {' '}
                             <S.Image src={Logo} alt="로고" />
                         </Link>
-                    </div>
-                </p>
+                    </article>
+                </div>
                 <form onSubmit={handleSubmit(onValid)} autoComplete="off">
                     <div
                         style={{
@@ -146,8 +142,12 @@ const Join = () => {
                             <input
                                 placeholder="인증번호를 입력해주세요"
                                 {...register('code')}
+                                value={code}
+                                onChange={(e: any) => {
+                                    setCode(e.target.value);
+                                }}
                             ></input>
-                            <button onClick={handleSubmit(emailAuth)}>인증하기</button>
+                            <button onClick={emailAuth}>인증하기</button>
                         </div>
                         <p>비밀번호</p>
                         <input
@@ -189,6 +189,7 @@ const Join = () => {
                                 required: '비밀번호를 입력해주세요 ',
                             })}
                             placeholder="- 빼고 입력해주세요"
+                            maxLength={13}
                         />
                         <button formAction="">회원가입</button>
                         <Link

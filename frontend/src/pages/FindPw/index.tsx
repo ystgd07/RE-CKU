@@ -2,21 +2,23 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import * as S from './style';
-import Logo from 'assets/images/iogo.png';
+import Logo from 'assets/images/logo.png';
+import { useForm } from 'react-hook-form';
 
 const FindPw = () => {
-    const [Email, setEmail] = useState('');
+    // const [Email, setEmail] = useState('');
     const navigate = useNavigate();
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+    } = useForm<FormData>();
+    interface FormData {
+        email: string;
+    }
 
-    // useEffect(() => {
-    //     console.log('이동?');
-    //     if (localStorage.getItem('accessToken')) {
-    //         navigate('/');
-    //     }
-    // }, []);
-
-    const onSubmitHandler = async (e: any) => {
-        e.preventDefault();
+    const onSubmitHandler = async (data: FormData) => {
+        // e.preventDefault();
         try {
             const res = await axios.post('/');
             console.log(res, '성공');
@@ -37,20 +39,23 @@ const FindPw = () => {
                         <S.Image src={Logo} alt="로고" />
                     </Link>
                 </p>
-                <form onSubmit={onSubmitHandler}>
+                <form onSubmit={handleSubmit(onSubmitHandler)}>
                     <div style={{ width: '400px', minWidth: '320px', textAlign: 'center' }}>
                         <h1>임시 비밀번호 보내기</h1>
                         <div style={{ height: '30px' }}></div>
                         <p>이메일</p>
                         <input
-                            type="email"
-                            value={Email}
+                            {...register('email', {
+                                required: '이메일을 입력해주세요',
+                                pattern: {
+                                    value: /^[A-Za-z0-9._%+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/,
+                                    message: '이메일 형식만 가능합니다.',
+                                },
+                            })}
                             placeholder="이메일 입력"
-                            onChange={e => {
-                                setEmail(e.currentTarget.value);
-                            }}
+                            // autoComplete="off"
                         />
-
+                        <label>{errors?.email?.message}</label>
                         <button formAction="">이메일로 임시 비밀번호 보내기</button>
                     </div>
                 </form>
