@@ -32,7 +32,7 @@ export const unIncludePasswordUserInfoQ = async (
   userIdOrEmail: number | string
 ): Promise<UserProfile> => {
   const queryResultCoulmns =
-    "id,matching,username,point,email,phoneNumber,created,avatarUrl,clickedLikes,gitHubUrl,howToLogin,role,working";
+    "id,matching,username,point,email,phoneNumber,created,avatarUrl,clickedLikes,gitHubUrl,howToLogin,role,working,chance";
   let [userInfoRows, fields] = [[], []];
 
   // 파라미터로 들어온 data 값이 num이면 id로 찾고, 아니면 email로 찾음

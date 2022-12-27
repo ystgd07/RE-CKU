@@ -22,6 +22,7 @@ export type UserProfile = {
   howToLogin?: string;
   active: number;
   matching: number;
+  chance: number;
 };
 
 export enum sosialEnum {
