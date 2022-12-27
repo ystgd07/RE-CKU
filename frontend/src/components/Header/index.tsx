@@ -32,7 +32,9 @@ const Header = () => {
                         <ul>
                             <li>상점</li>
                             <li>이력서</li>
-                            <li>커뮤니티</li>
+                            <li>
+                                <Link to="/comunity">커뮤니티</Link>
+                            </li>
                         </ul>
                     </nav>
 
