@@ -60,12 +60,6 @@ const Login = () => {
             <S.Div>
                 <S.MobileDiv>
                     <form onSubmit={handleSubmit(onSubmitHandler)}>
-                        <p>
-                            <Link to="/">
-                                {' '}
-                                <img src={Logo} alt="로고" />
-                            </Link>
-                        </p>
                         <div>
                             <h1>로그인</h1>
 
