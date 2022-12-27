@@ -62,7 +62,11 @@ export const UserInfo = ({ user, getEvent }: UserProps) => {
             >
                 <Descriptions title="User Info">
                     <Descriptions.Item label="UserName">{username}</Descriptions.Item>
-                    <Descriptions.Item label="Telephone">{phoneNumber}</Descriptions.Item>
+                    <Descriptions.Item label="Telephone">
+                        {phoneNumber
+                            .replace(/[^0-9]/g, '')
+                            .replace(/^(\d{2,3})(\d{3,4})(\d{4})$/, `$1-$2-$3`)}
+                    </Descriptions.Item>
 
                     <Descriptions.Item label="email">{email}</Descriptions.Item>
                     <Descriptions.Item label="gitHub">
