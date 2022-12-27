@@ -8,9 +8,7 @@ import { send } from "../config/sendMail";
 import { EmailAuth, UserProfile } from "../db/schemas";
 
 // 매칭 관련
-export const getRotListOrMatchingStatus = async (
-  userId: number
-): Promise<userRepo.RotList | userRepo.MatchInfo | string> => {
+export const getRotListOrMatchingStatus = async (userId: number): Promise<userRepo.RotList | userRepo.MatchInfo> => {
   try {
     const mentee = await userRepo.unIncludePasswordUserInfoQ(userId);
     // 매칭이 없을경우 리스트 O
@@ -29,7 +27,7 @@ export const getRotListOrMatchingStatus = async (
     throw new Error(`500, 서버오류`);
   }
 };
-export const createMatch = async (menteeId: number, mentoId: number): Promise<number> => {
+export const createMatch = async (menteeId: number, mentoId: number): Promise<any> => {
   const data = {
     step: "요청중",
     menteeId,
@@ -326,6 +324,7 @@ export const authEmail = async (email: string, code: number) => {
 export const checkReported = async (reporter: number, defendant: number): Promise<boolean> => {
   try {
     const checked = await userRepo.checkReportedQ(reporter, defendant);
+    console.log(checked);
     if (checked) return true;
     return false;
   } catch (err) {

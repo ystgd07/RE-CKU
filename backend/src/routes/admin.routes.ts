@@ -25,7 +25,21 @@ adminRoute.get("/users/pages", async (req, res, next) => {
   }
 });
 
-// 2-1. 전체 회원 목록 조회 (offset 페이지네이션)
+// 2-1. 전체 회원 목록 조회
+adminRoute.get("/users-all", async (req, res, next) => {
+  try {
+    const users = await adminService.findUsersAll();
+
+    return res.status(200).json({
+      msg: "회원 목록 조회 성공",
+      data: users,
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// 2-2. 전체 회원 목록 조회 (offset 페이지네이션)
 adminRoute.get("/users", async (req, res, next) => {
   try {
     const count = Number(req.query.count);
@@ -43,7 +57,7 @@ adminRoute.get("/users", async (req, res, next) => {
   }
 });
 
-// 2-2. 신고 TOP 20 회원 목록 조회
+// 2-3. 신고 TOP 20 회원 목록 조회
 adminRoute.get("/worst-users", async (req, res, next) => {
   try {
     const worstUsers = await adminService.findWorstUsers();
@@ -57,7 +71,7 @@ adminRoute.get("/worst-users", async (req, res, next) => {
   }
 });
 
-// 2-3. 신고 내역 조회
+// 2-4. 신고 내역 조회
 adminRoute.get("/worst-users/:userId", async (req, res, next) => {
   const userId = Number(req.params.userId);
   try {
