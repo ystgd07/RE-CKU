@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Col, Row, Slider, Modal, List } from 'antd';
+import { Col, Row, Slider, Modal, List, Button } from 'antd';
 import axios from 'axios';
 import * as S from './style';
 import API from 'utils/api';
@@ -23,11 +23,11 @@ const Matched = () => {
         try {
             const res = await API.get(`/users/rots`);
             console.log(res.matchInfo);
-            if (res.matchInfo) {
-                setData(res.matchInfo);
-            } else {
-                navigate('/match');
-            }
+            // if (res.matchInfo) {
+            setData(res.matchInfo);
+            // } else {
+            //     navigate('/match');
+            // }
         } catch (e) {
             console.log(e);
         }
@@ -35,6 +35,14 @@ const Matched = () => {
     useEffect(() => {
         getMatching();
     }, []);
+
+    async function calcelMatching(matchingId: any) {
+        try {
+            const res = await API.delete(`/users/match`, matchingId);
+        } catch (e) {
+            console.log(e);
+        }
+    }
     return (
         <>
             <Header />
@@ -45,14 +53,23 @@ const Matched = () => {
                     <h3>
                         {data?.username}({data?.email})
                     </h3>
-                    <p>
+                    <S.P>
                         <strong>상태 :</strong>
                         {data?.step}
-                    </p>
-                    <p>
+                    </S.P>
+                    <S.P>
                         <strong>point :</strong>
                         {data?.point}
-                    </p>
+                    </S.P>
+                    <Button
+                        type="primary"
+                        style={{ margin: '10px' }}
+                        onClick={() => {
+                            calcelMatching(data?.matchingId);
+                        }}
+                    >
+                        매칭 취소하기
+                    </Button>
                 </div>
             </S.MobileDiv>
         </>

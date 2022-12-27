@@ -11,7 +11,9 @@ import {
     Row,
     Skeleton,
     Divider,
+    Pagination,
 } from 'antd';
+import type { PaginationProps } from 'antd';
 // import InfiniteScroll from 'react-infinite-scroll-component';
 import axios from 'axios';
 import styled from '@emotion/styled';
@@ -76,21 +78,45 @@ interface userDataRes {
 const AdminContent: React.FC = () => {
     const [userData, setUserData] = useState<userDataRes[]>([]);
     const [searchEmail, setSearchEmail] = useState('');
+    const [current, setCurrent] = useState<number>(1);
+    const [totalpages, setTotalPages] = useState<number>();
     const [point, setPoint] = useState();
+    const [count, setCount] = useState<number>(4);
+
     const {
         token: { colorBgContainer },
     } = theme.useToken();
 
-    async function getUserId() {
+    async function getPages() {
         try {
-            const res = await axios.get(`/admin/users`);
+            const cnt = 4;
+            setCount(cnt);
+            const res = await axios.get(`/admin/users/pages?count=${count}`);
             console.log('😀');
-            console.log(res.data.data);
+            setTotalPages(res.data.data);
+            getCountPage(current);
+        } catch (e) {
+            console.log(e);
+        }
+    }
+    async function getCountPage(page: number) {
+        try {
+            const res = await axios.get(`/admin/users?count=${count}&pages=${page}`);
+            console.log('😀');
+            // console.log('current', current);
+            console.log(res);
             setUserData(res.data.data);
         } catch (e) {
             console.log(e);
         }
     }
+
+    const onChange: PaginationProps['onChange'] = page => {
+        console.log(page);
+        setCurrent(page);
+        getCountPage(page);
+    };
+
     async function updatePoint(userId: any) {
         try {
             console.log(point);
@@ -106,13 +132,13 @@ const AdminContent: React.FC = () => {
     }
 
     useEffect(() => {
-        getUserId();
+        getPages();
     }, []);
 
     function onSearchUser(searchEmail: string) {
-        if (searchEmail === '') {
-            getUserId();
-        }
+        // if (searchEmail === '') {
+        //     getUserId();
+        // }
         const searchUser = userData.filter((data: any) => data.email.includes(searchEmail));
         setUserData(searchUser);
     }
@@ -250,6 +276,14 @@ const AdminContent: React.FC = () => {
                     )}
                 />
                 {/* </InfiniteScroll> */}
+                <div
+                    style={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                    }}
+                >
+                    <Pagination defaultCurrent={current} total={50} onChange={onChange} />
+                </div>
             </Content>
         </>
     );
