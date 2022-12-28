@@ -78,12 +78,9 @@ const CommentButtonWrapper = styled.div`
 `;
 
 const ResumeWrapper = styled.div`
-    padding-bottom: 2rem;
+    padding: 2rem;
     border-radius: 1rem;
     border: 1px solid black;
-    h3 {
-        margin-left: 4rem;
-    }
 `;
 
 interface IBoardInfo {

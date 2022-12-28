@@ -514,7 +514,7 @@ export const getRequestCorrectionQ = async (userId: number) => {
     return { ...req };
   });
   console.log(zz);
-  if (result.step === "진행중") {
+  if (result.step !== "요청중") {
     result.cancelAble = false;
   }
   result.cancelAble = true;
