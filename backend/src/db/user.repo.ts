@@ -266,7 +266,7 @@ export const findMatchByMatchingId = async (matchingId: number): Promise<Match> 
   return result;
 };
 
-export const findMatchQ = async (userId: number): Promise<MatchInfo | false> => {
+export const findMatchQ = async (userId: number): Promise<MatchInfo> => {
   const result: MatchInfo = {
     matchInfo: {
       matchingId: 0,
@@ -307,9 +307,9 @@ export const findMatchQ = async (userId: number): Promise<MatchInfo | false> => 
   if (result.matchInfo?.step === "요청중") {
     result.cancelAble = true;
   }
-  if (!parseConnect) {
-    return false;
-  }
+  // if (!parseConnect) {
+  //   return false;
+  // }
   return result;
 };
 
@@ -319,7 +319,7 @@ export const createMatchQ = async (data: { step: string; menteeId: number; mento
   const conn = await db.getConnection();
   conn.beginTransaction();
   try {
-    const [create] = await db.query(
+    const [create] = await conn.query(
       `
       INSERT INTO 
       connect (${keys.join(", ")})
@@ -330,7 +330,7 @@ export const createMatchQ = async (data: { step: string; menteeId: number; mento
     const parseCreate = utils.jsonParse(create);
     const matchingId = parseCreate.insertId;
     // 만들어진 매칭 id 값으로 멘티의 유저정보 업데이트
-    await db.query(
+    await conn.query(
       `
       UPDATE user
       SET 
@@ -340,6 +340,7 @@ export const createMatchQ = async (data: { step: string; menteeId: number; mento
     `,
       [matchingId, data.menteeId]
     );
+    conn.commit();
     return matchingId;
   } catch (err) {
     conn.rollback();
@@ -355,14 +356,14 @@ export const cancelMatchQ = async (matchingId: number): Promise<boolean> => {
   const conn = await db.getConnection();
   conn.beginTransaction();
   try {
-    const [zz] = await db.query(
+    const [zz] = await conn.query(
       `
       DELETE FROM connect
       WHERE id = ? 
     `,
       [matchingId]
     );
-    await db.query(
+    await conn.query(
       `
       UPDATE user
       SET
@@ -372,6 +373,7 @@ export const cancelMatchQ = async (matchingId: number): Promise<boolean> => {
     `,
       [matchingId]
     );
+    conn.commit();
     // 여기도 트렌젝션
     return true;
   } catch (err) {
@@ -409,7 +411,7 @@ export const successMatchQ = async (
   try {
     if (data.deleteMenteeIdQuery) {
       console.log("멘티제거");
-      await db.query(
+      await conn.query(
         `
       UPDATE user 
       SET 
@@ -422,7 +424,7 @@ export const successMatchQ = async (
         [matchingId]
       );
     }
-    const [updated] = await db.query(
+    const [updated] = await conn.query(
       `
     UPDATE connect
     SET
@@ -433,6 +435,7 @@ export const successMatchQ = async (
       [matchingId]
     );
     const result = data.role === "menteeComplate" ? "멘티가 종료누름" : "멘토가 종료누름";
+    conn.commit();
     return result;
   } catch (err) {
     console.log(err.message);
@@ -450,7 +453,7 @@ export const complateMatch = async (matchingId: number) => {
   const conn = await db.getConnection();
   conn.beginTransaction();
   try {
-    const [match] = await db.query(
+    const [match] = await conn.query(
       `
       SELECT 
         mentoId,
@@ -466,7 +469,7 @@ export const complateMatch = async (matchingId: number) => {
     const menteeId = parseMatch.menteeId;
     console.log(parseMatch);
     await Promise.all([
-      db.query(
+      conn.query(
         `
       UPDATE connect
       SET
@@ -477,7 +480,7 @@ export const complateMatch = async (matchingId: number) => {
     `,
         [matchingId]
       ),
-      db.query(
+      conn.query(
         `
       UPDATE user
       SET
@@ -488,7 +491,7 @@ export const complateMatch = async (matchingId: number) => {
     `,
         [mentoId]
       ),
-      db.query(
+      conn.query(
         `
       UPDATE user
       SET
@@ -500,7 +503,7 @@ export const complateMatch = async (matchingId: number) => {
         [menteeId]
       ),
     ]);
-
+    conn.commit();
     return "매칭 종료";
   } catch (err) {
     conn.rollback();
@@ -526,7 +529,7 @@ export const getRequestCorrectionQ = async (userId: number) => {
   const conn = await db.getConnection();
   conn.beginTransaction();
   try {
-    const [list] = await db.query(
+    const [list] = await conn.query(
       `
       SELECT 
         c.id as matchingId,
@@ -553,18 +556,113 @@ export const getRequestCorrectionQ = async (userId: number) => {
       cancelAble: boolean;
     };
     const addCancelAble = result.map((req: Req) => {
-      req.cancelAble = req.step === "진행중" ? false : true;
+      req.cancelAble = req.step !== "요청중" ? false : true;
       return { ...req };
     });
-    if (result.step !== "요청중") {
-      result.cancelAble = false;
-    }
-    result.cancelAble = true;
+    conn.commit();
+    // if (result.step !== "요청중") {
+    //   result.cancelAble = false;
+    // }
+    // result.cancelAble = true;
     return result;
   } catch (err) {
     conn.rollback();
     console.log(err.message);
     throw new Error(`500, 서버 오류`);
+  } finally {
+    conn.release();
+  }
+};
+
+// 일퀘 포인트+ 기회 -1
+export const savePointByDayQuestQ = async (userId: number) => {
+  const conn = await db.getConnection();
+  conn.beginTransaction();
+  try {
+    await conn.query(
+      `
+      UPDATE user
+      SET 
+      chance = chance- 1,
+      point = point + 2
+      WHERE
+      id = ?
+      `,
+      [userId]
+    );
+    console.log("여기?");
+    const [updateChance] = await conn.query(
+      `
+        SELECT 
+          id,
+          point,
+          chance
+        FROM user
+        WHERE
+        id = ?
+        `,
+      [userId]
+    );
+    console.log("여기?");
+    conn.commit();
+    const result = utils.jsonParse(updateChance)[0];
+    return result;
+  } catch (err) {
+    conn.rollback();
+    console.log(err.message);
+    throw new Error(err);
+  } finally {
+    conn.release();
+  }
+};
+
+// 회원탈퇴  유저정보 업뎃 + 이메일인증기록삭제 + 매칭중인거 삭제
+export const offUserQ = async (userId: number) => {
+  const conn = await db.getConnection();
+  const text = "탈퇴한 회원";
+  conn.beginTransaction();
+  console.log("들옴?");
+  try {
+    await Promise.all([
+      conn.query(
+        `
+      DELETE
+      FROM email_auth
+      WHERE 
+        email in (SELECT email from user where ?)
+      `,
+        [userId]
+      ),
+      conn.query(
+        `
+        UPDATE user
+        SET
+          email = '${text}',
+          username = '${text}',
+          avatarUrl = '${"https://url.kr/7h42va"}',
+          phoneNumber = "",
+          gitHubUrl = ""
+        WHERE 
+          id = ?
+      `,
+        [userId]
+      ),
+      conn.query(
+        `
+        DELETE 
+        FROM connect
+        WHERE
+          mentoId = ?
+        `,
+        [userId]
+      ),
+    ]);
+    console.log("되어야는데..");
+    conn.commit();
+    return true;
+  } catch (err) {
+    console.log(err.message);
+    conn.rollback();
   } finally {
     conn.release();
   }

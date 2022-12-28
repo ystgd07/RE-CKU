@@ -7,6 +7,19 @@ import { createIndiUser, findOneUser } from "../db/user.repo";
 import { avatarImg, tokenValidator, validateBody } from "../middlewares";
 import { CreateReportDto } from "./dto/create-report.dto";
 export const userRoute = express();
+// 일퀘 - 랜덤 이력서 열람시 포인트 적립
+userRoute.get("/point", tokenValidator, async (req, res, next) => {
+  const userId = Number(req.body.jwtDecoded.id);
+  try {
+    const result = await userService.savePointByDayQuest(userId);
+    return res.status(200).json({
+      msg: "일퀘 완료 현재상태 : ",
+      data: result,
+    });
+  } catch (err) {
+    next(err);
+  }
+});
 
 /**고인물 관련 */
 // 포인트 상점 -
@@ -89,6 +102,19 @@ userRoute.get("/req", tokenValidator, async (req, res, next) => {
     return res.status(200).json({
       msg: "도움이 필요한 뉴비들",
       data: nubList,
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+userRoute.patch("/off", tokenValidator, async (req, res, next) => {
+  const userId = Number(req.body.jwtDecoded.id);
+  try {
+    await userService.offUser(userId);
+    return res.status(200).json({
+      msg: "그동안 감사했습니다.",
+      data: "삭제 완료",
     });
   } catch (err) {
     next(err);
@@ -182,6 +208,7 @@ userRoute.patch("/individuals", tokenValidator, async (req, res, next) => {
     const update = await userService.updateInfo(id, toUpdate);
     return res.status(200).json({
       msg: "회원정보가 수정되었습니다.",
+      data: update,
     });
   } catch (err) {
     next(err);
