@@ -168,7 +168,7 @@ const Profile: React.FC = () => {
     console.log(testWidth);
 
     return (
-        <Layout className="layout">
+        <Layout className="layout" style={{ background: 'white' }}>
             <Header />
             <Content
                 style={{

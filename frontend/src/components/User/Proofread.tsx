@@ -70,6 +70,18 @@ export const Proofread = () => {
             console.log(e);
         }
     };
+    const deleteMatchData = async (e: any) => {
+        const matchingid = e.currentTarget.id;
+        try {
+            const res = await axios.delete('users/match', {
+                data: { matchingId: matchingid },
+                headers: { authorization: `Bearer ${token}` },
+            });
+            if (res.status === 200) getMentoReq();
+        } catch (e) {
+            console.log(e);
+        }
+    };
     useEffect(() => {
         getMentoReq();
     }, []);
@@ -126,7 +138,13 @@ export const Proofread = () => {
                                             수락하기
                                         </Button>
 
-                                        <Button>취소</Button>
+                                        <Button
+                                            id={item.matchingId}
+                                            value={item.menteeId}
+                                            onClick={deleteMatchData}
+                                        >
+                                            취소
+                                        </Button>
                                     </div>
                                 }
                             >
@@ -166,7 +184,13 @@ export const Proofread = () => {
                                 title={item.menteeEmail}
                                 extra={
                                     <div>
-                                        <Button>취소</Button>
+                                        <Button
+                                            id={item.matchingId}
+                                            value={item.menteeId}
+                                            onClick={deleteMatchData}
+                                        >
+                                            취소
+                                        </Button>
                                     </div>
                                 }
                             >

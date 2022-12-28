@@ -172,6 +172,9 @@ const ResumeMain = () => {
                                     }
                                 >
                                     {e.updatedAt.split('T')[0]}
+                                    <div>
+                                        <h4>{e.resumeName}</h4>
+                                    </div>
                                 </Card>
                             </List.Item>
                         )}
