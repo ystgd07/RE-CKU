@@ -129,7 +129,7 @@ export const firstGetResumeNoticesQ = async (type: string, count: number) => {
       `,
     [count]
   );
-  const [boardList] = await db.query(`SELECT id FROM board`);
+  const [boardList] = await db.query(`SELECT id FROM board WHERE hasResumeId = IS NOT NULL`);
   const boardListCount = utils.jsonParse(boardList).length;
   const result = {
     boardList: utils.jsonParse(boards),
@@ -182,7 +182,7 @@ export const moreGetResumeNoticesQ = async (type: string, count: number, mark: s
 };
 
 // 메인페이지 애서 활용됨
-export const findAllBoardForMainpage = async (filter: string, perPage: number): Promise<Board[]> => {
+export const findAllBoardForMainpage = async (filter: string, perPage: number) => {
   const [boards] = await db.query(
     `
     SELECT 
@@ -205,7 +205,12 @@ export const findAllBoardForMainpage = async (filter: string, perPage: number): 
   `,
     [perPage]
   );
-  const result = utils.jsonParse(boards);
+  const [boardList] = await db.query(`SELECT id FROM board WHERE hasResumeId = IS NOT NULL`);
+  const boardListCount = utils.jsonParse(boardList).length;
+  const result = {
+    boardList: utils.jsonParse(boards),
+    boardListCount,
+  };
   return result;
 };
 

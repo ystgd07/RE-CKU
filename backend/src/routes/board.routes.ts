@@ -59,7 +59,7 @@ boardRoute.get("/resumes", async (req, res, next) => {
     const result = await boardService.getResumeNotices(firstRequest, type, count, mark);
     return res.status(200).json({
       msg: "이력서 게시물 조회",
-      data: result,
+      data: { boardCount: result.boardListCount, boardList: result.boardList },
     });
   } catch (err) {
     next(err);
