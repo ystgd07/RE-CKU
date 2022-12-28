@@ -93,8 +93,8 @@ const Job = ({
                 workNow: workFormDataState.workNow,
             });
 
-            const sertId = res.data.data[0].insertId;
-            const result = await axios.get(`/my-portfolio/careers/${sertId}`);
+            const insertId = res.data.data[0].insertId;
+            const result = await axios.get(`/my-portfolio/careers/${insertId}`);
 
             if (res.status === 200) {
                 onCareerCreated(result.data.data);

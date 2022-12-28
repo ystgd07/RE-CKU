@@ -28,11 +28,9 @@ const Resume = () => {
     const [addJobElement, setAddJobElement] = useState<FormStore[]>([]);
     const [addProjectElement, setAddProjectElement] = useState<FormStore[]>([]);
 
-    const [carrerIds, setCarrerIds] = useState<number[]>([]);
     const [createCareerData, setCreateCareerData] = useState<CareerData[]>([]);
 
-    const [getProjectComponents, setGetProjectComponents] = useState<ProjectData[]>([]);
-    const [projectIds, setProjectIds] = useState<number[]>([]);
+    const [createProjectData, setCreateProjectData] = useState<ProjectData[]>([]);
 
     const params = useParams();
     const resumeIds = params.id;
@@ -60,9 +58,8 @@ const Resume = () => {
             setResumeTitle(resumeTitle);
             setUserInfo(userInfoData);
             setCreateCareerData(careerData);
+            setCreateProjectData(projectData);
 
-            const projectId = projectData.map(e => e.projectId);
-            setProjectIds(projectId);
             console.log(
                 careerData,
                 'carrerData',
@@ -75,28 +72,9 @@ const Resume = () => {
         }
     };
 
-    const getProjectData = async (ids: number[]) => {
-        const res = await Promise.all(
-            ids.map(id => {
-                return axios.get(`/my-portfolio/projects/${id}`).then(res => res.data.data);
-            }),
-        );
-        return res;
-    };
-
     useEffect(() => {
         fetchDatas();
     }, [resumeIds, token]);
-
-    useEffect(() => {
-        getProjectData(projectIds).then(result => {
-            const newData = [];
-            for (let i = 0; i < result.length; i++) {
-                newData.push(...result[i]);
-                setGetProjectComponents(newData);
-            }
-        });
-    }, [carrerIds]);
 
     const choiceJob = async (e: React.ChangeEvent<HTMLSelectElement>) => {
         const posionValue = e.target.value;
@@ -142,23 +120,16 @@ const Resume = () => {
     };
     // console.log(addProject, ' addProject list');
 
-    const handleJobComponent = async (e: React.MouseEvent<HTMLButtonElement>, carrerId: number) => {
-        const name = e.currentTarget.name;
+    const deleteJobComponent = async (carrerId: number) => {
+        await axios.delete(`/my-portfolio/careers/${carrerId}`);
+        const flteredId = createCareerData.filter(e => e.careerId !== carrerId);
+        setCreateCareerData(flteredId);
+    };
 
-        switch (name) {
-            case 'update':
-                await axios.patch(`/my-portfolio/careers/${carrerId}`);
-                break;
-            case 'delete': {
-                const fltered = createCareerData.filter(e => e.careerId !== carrerId);
-                await axios.delete(`/my-portfolio/careers/${carrerId}`);
-                setCreateCareerData(fltered);
-                break;
-            }
-
-            default:
-                return;
-        }
+    const deleteProjectComponent = async (projectId: number) => {
+        await axios.delete(`/my-portfolio/projects/${projectId}`);
+        const flteredId = createProjectData.filter(e => e.projectId !== projectId);
+        setCreateProjectData(flteredId);
     };
 
     return (
@@ -254,12 +225,8 @@ const Resume = () => {
                                                         <li>
                                                             <button
                                                                 type="button"
-                                                                name="delete"
-                                                                onClick={e =>
-                                                                    handleJobComponent(
-                                                                        e,
-                                                                        tem.careerId,
-                                                                    )
+                                                                onClick={() =>
+                                                                    deleteJobComponent(tem.careerId)
                                                                 }
                                                             >
                                                                 삭제
@@ -267,7 +234,7 @@ const Resume = () => {
                                                         </li>
                                                     </ul>
                                                 </div>
-                                                <div className="existDiv">
+                                                <div className="careerContent">
                                                     <ul>
                                                         <li>
                                                             {`${tem.startDate}~${
@@ -320,6 +287,49 @@ const Resume = () => {
                                             />
                                         </span>
                                     </FormTitle>
+
+                                    {createProjectData.map((tem: ProjectData, idx: number) => {
+                                        return (
+                                            <ExistForm key={idx}>
+                                                <div>
+                                                    <h1>프로젝트 {tem.projectId}</h1>
+
+                                                    <ul className="customBtn">
+                                                        <li>
+                                                            <button
+                                                                type="button"
+                                                                name="projectDelete"
+                                                                onClick={() =>
+                                                                    deleteProjectComponent(
+                                                                        tem.projectId,
+                                                                    )
+                                                                }
+                                                            >
+                                                                삭제
+                                                            </button>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                                <div className="projectContent">
+                                                    <ul>
+                                                        <li>
+                                                            <strong>{tem.projectName}</strong>{' '}
+                                                            <span>{tem.year}</span>
+                                                        </li>
+                                                        <li>{tem.stacks}</li>
+                                                        <li>
+                                                            <span>Link: {tem.link1}</span>
+                                                            <span>Link: {tem.link2}</span>
+                                                        </li>
+                                                    </ul>
+
+                                                    <dl>
+                                                        <dt>{tem.information}</dt>
+                                                    </dl>
+                                                </div>
+                                            </ExistForm>
+                                        );
+                                    })}
                                     {isprojectFormToggle &&
                                         addProjectElement.map((projectTem: any, idx: number) => {
                                             return (
@@ -328,9 +338,12 @@ const Resume = () => {
                                                     setIsProjectFormToggle={setIsProjectFormToggle}
                                                     setAddProjectElement={setAddProjectElement}
                                                     addProjectElement={addProjectElement}
-                                                    // onProjectCreated={state => {
-
-                                                    // }}
+                                                    onProjectCreated={state => {
+                                                        setCreateProjectData([
+                                                            ...createProjectData,
+                                                            ...state,
+                                                        ]);
+                                                    }}
                                                     idx={idx}
                                                 />
                                             );
