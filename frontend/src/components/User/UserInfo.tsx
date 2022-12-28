@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { GithubOutlined, UserOutlined } from '@ant-design/icons';
-import { Descriptions, Tag, Col, Row, Button } from 'antd';
+import { Descriptions, Tag, Col, Row, Button, Badge } from 'antd';
 import { InfoModal } from './InfoModal';
 import GitHubModal from './GitHubModal';
 import axios from 'axios';

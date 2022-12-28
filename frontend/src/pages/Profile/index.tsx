@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { theme, Avatar, Space, Progress, Tabs, Modal, Tag } from 'antd';
+import { theme, Avatar, Space, Progress, Tabs, Modal, Tag, Badge } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
 import { UserInfo } from 'components/User/UserInfo';
 import { Proofread } from 'components/User/Proofread';
@@ -169,36 +169,37 @@ const Profile: React.FC = () => {
 
     return (
         <Layout>
-            <div>
-                <Space direction="vertical">
-                    <div>
-                        <Modal
-                            title="Title"
-                            open={open}
-                            onOk={handleOk}
-                            confirmLoading={confirmLoading}
-                            onCancel={handleCancel}
-                            maskClosable={false}
-                            keyboard={false}
-                            closable={false}
-                        >
-                            <input type="file" ref={imgLoadRef}></input>
-                        </Modal>
-                        <Avatar
-                            size={120}
-                            icon={<UserOutlined />}
-                            src={`${imgUrl === '' ? res.avatarUrl : imgUrl}`}
-                            style={{ cursor: 'pointer' }}
-                            onClick={showModal}
-                        />
-                    </div>
-                    <div style={{ height: '38px' }}>
-                        <span style={{ fontSize: '35px' }}>{res.username}</span>
-                    </div>
-                    <div>
-                        <div style={{ width: `${testWidth}%` }}></div>
-                    </div>
-                    {/* <p
+            <Badge.Ribbon text={tier} color={tierColor}>
+                <div>
+                    <Space direction="vertical">
+                        <div>
+                            <Modal
+                                title="Title"
+                                open={open}
+                                onOk={handleOk}
+                                confirmLoading={confirmLoading}
+                                onCancel={handleCancel}
+                                maskClosable={false}
+                                keyboard={false}
+                                closable={false}
+                            >
+                                <input type="file" ref={imgLoadRef}></input>
+                            </Modal>
+                            <Avatar
+                                size={120}
+                                icon={<UserOutlined />}
+                                src={`${imgUrl === '' ? res.avatarUrl : imgUrl}`}
+                                style={{ cursor: 'pointer' }}
+                                onClick={showModal}
+                            />
+                        </div>
+                        <div style={{ height: '38px' }}>
+                            <span style={{ fontSize: '35px' }}>{res.username}</span>
+                        </div>
+                        <div>
+                            <div style={{ width: `${testWidth}%` }}></div>
+                        </div>
+                        {/* <p
                         style={{
                             color: `${tierColor}`,
                             fontWeight: 'bold',
@@ -208,75 +209,76 @@ const Profile: React.FC = () => {
                     >
                         {tier}
                     </p> */}
-                    <Tag color={tierColor}>{tier}</Tag>
-                </Space>
-            </div>
-            <Progress
-                percent={testWidth}
-                status="active"
-                strokeColor={{ '0%': `${tierColor}`, '100%': `${tierColor}` }}
-                style={{
-                    fontWeight: 'bold',
-                    width: '98%',
-                }}
-            />
-            {/* //TODO: 추후 Tabs 이부분 컴포넌트화 해야함^^ */}
-            {upperLimit >= 1000 ? (
-                <Tabs
-                    tabBarStyle={{
-                        color: '#c0c0c0',
+                        <Tag color={tierColor}>{tier}</Tag>
+                    </Space>
+                </div>
+                <Progress
+                    percent={testWidth}
+                    status="active"
+                    strokeColor={{ '0%': `${tierColor}`, '100%': `${tierColor}` }}
+                    style={{
                         fontWeight: 'bold',
-                        border: 'solid',
-                        borderRadius: '6px',
-                        borderColor: '#c0c0c0',
-                        marginLeft: '10px',
-                        marginRight: '10px',
-                    }}
-                    defaultActiveKey="1"
-                    onChange={onChange}
-                    items={[
-                        {
-                            label: '유저정보',
-                            key: '1',
-                            children: <UserInfo user={res} getEvent={getProfile}></UserInfo>,
-                        },
-
-                        {
-                            label: `첨삭`,
-                            key: '2',
-                            children: <Proofread></Proofread>,
-                        },
-                    ]}
-                />
-            ) : (
-                <Tabs
-                    defaultActiveKey="1"
-                    onChange={onChange}
-                    items={[
-                        {
-                            label: `유저정보`,
-                            key: '1',
-                            children: <UserInfo user={res} getEvent={getProfile}></UserInfo>,
-                        },
-
-                        {
-                            label: `첨삭(플레티넘 이상)`,
-                            key: '2',
-                            children: <Proofread></Proofread>,
-                            disabled: true,
-                        },
-                    ]}
-                    tabBarStyle={{
-                        color: '#c0c0c0',
-                        fontWeight: 'bold',
-                        border: 'solid',
-                        borderRadius: '6px',
-                        borderColor: '#c0c0c0',
-                        marginLeft: '10px',
-                        marginRight: '10px',
+                        width: '98%',
                     }}
                 />
-            )}
+                {/* //TODO: 추후 Tabs 이부분 컴포넌트화 해야함^^ */}
+                {upperLimit >= 1000 ? (
+                    <Tabs
+                        tabBarStyle={{
+                            color: '#c0c0c0',
+                            fontWeight: 'bold',
+                            border: 'solid',
+                            borderRadius: '6px',
+                            borderColor: '#c0c0c0',
+                            marginLeft: '10px',
+                            marginRight: '10px',
+                        }}
+                        defaultActiveKey="1"
+                        onChange={onChange}
+                        items={[
+                            {
+                                label: '유저정보',
+                                key: '1',
+                                children: <UserInfo user={res} getEvent={getProfile}></UserInfo>,
+                            },
+
+                            {
+                                label: `첨삭`,
+                                key: '2',
+                                children: <Proofread></Proofread>,
+                            },
+                        ]}
+                    />
+                ) : (
+                    <Tabs
+                        defaultActiveKey="1"
+                        onChange={onChange}
+                        items={[
+                            {
+                                label: `유저정보`,
+                                key: '1',
+                                children: <UserInfo user={res} getEvent={getProfile}></UserInfo>,
+                            },
+
+                            {
+                                label: `첨삭(플레티넘 이상)`,
+                                key: '2',
+                                children: <Proofread></Proofread>,
+                                disabled: true,
+                            },
+                        ]}
+                        tabBarStyle={{
+                            color: '#c0c0c0',
+                            fontWeight: 'bold',
+                            border: 'solid',
+                            borderRadius: '6px',
+                            borderColor: '#c0c0c0',
+                            marginLeft: '10px',
+                            marginRight: '10px',
+                        }}
+                    />
+                )}
+            </Badge.Ribbon>
         </Layout>
     );
 };
