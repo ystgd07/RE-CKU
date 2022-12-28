@@ -19,6 +19,9 @@ const Wrapper = styled.div`
     display: flex;
     flex-direction: column;
     width: 100%;
+    :last-child {
+        margin-bottom: 5rem;
+    }
 `;
 const Profile = styled.div`
     width: 100%;

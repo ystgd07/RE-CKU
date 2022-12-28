@@ -14,6 +14,8 @@ const Header = () => {
             axios.patch(`/users/sign-out`, {}, { headers: { authorization: `Bearer ${token}` } });
 
             localStorage.clear();
+            setLogin(!login);
+            window.location.replace('/');
         } catch (err: unknown) {
             console.log(err);
         }
