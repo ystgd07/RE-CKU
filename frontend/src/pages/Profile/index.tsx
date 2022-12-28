@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { theme, Avatar, Space, Progress, Tabs, Modal } from 'antd';
+import { theme, Avatar, Space, Progress, Tabs, Modal, Tag } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
 import { UserInfo } from 'components/User/UserInfo';
 import { Proofread } from 'components/User/Proofread';
@@ -198,7 +198,7 @@ const Profile: React.FC = () => {
                     <div>
                         <div style={{ width: `${testWidth}%` }}></div>
                     </div>
-                    <p
+                    {/* <p
                         style={{
                             color: `${tierColor}`,
                             fontWeight: 'bold',
@@ -207,7 +207,8 @@ const Profile: React.FC = () => {
                         }}
                     >
                         {tier}
-                    </p>
+                    </p> */}
+                    <Tag color={tierColor}>{tier}</Tag>
                 </Space>
             </div>
             <Progress
@@ -235,7 +236,7 @@ const Profile: React.FC = () => {
                     onChange={onChange}
                     items={[
                         {
-                            label: `유저정보`,
+                            label: '유저정보',
                             key: '1',
                             children: <UserInfo user={res} getEvent={getProfile}></UserInfo>,
                         },

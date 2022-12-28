@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { GithubOutlined } from '@ant-design/icons';
+import { GithubOutlined, UserOutlined } from '@ant-design/icons';
 import { Descriptions, Tag, Col, Row, Button } from 'antd';
 import { InfoModal } from './InfoModal';
 import GitHubModal from './GitHubModal';
@@ -59,16 +59,37 @@ export const UserInfo = ({ user, getEvent }: UserProps) => {
                     marginBottom: '20px',
                 }}
             >
-                <Descriptions title="User Info">
-                    <Descriptions.Item label="UserName">{username}</Descriptions.Item>
-                    <Descriptions.Item label="Telephone">
+                <UserOutlined />
+                <Descriptions title="User Info" size="middle" bordered={true}>
+                    <Descriptions.Item
+                        label="UserName"
+                        contentStyle={{ fontWeight: '500', fontSize: '1.5rem' }}
+                        labelStyle={{ fontWeight: '600', fontSize: '1.5rem' }}
+                    >
+                        {username}
+                    </Descriptions.Item>
+                    <Descriptions.Item
+                        label="Telephone"
+                        contentStyle={{ fontWeight: '500', fontSize: '1.5rem' }}
+                        labelStyle={{ fontWeight: '600', fontSize: '1.5rem' }}
+                    >
                         {phoneNumber
                             .replace(/[^0-9]/g, '')
                             .replace(/^(\d{2,3})(\d{3,4})(\d{4})$/, `$1-$2-$3`)}
                     </Descriptions.Item>
 
-                    <Descriptions.Item label="email">{email}</Descriptions.Item>
-                    <Descriptions.Item label="gitHub">
+                    <Descriptions.Item
+                        label="email"
+                        contentStyle={{ fontWeight: '500', fontSize: '1.5rem' }}
+                        labelStyle={{ fontWeight: '600', fontSize: '1.5rem' }}
+                    >
+                        {email}
+                    </Descriptions.Item>
+                    <Descriptions.Item
+                        label="gitHub"
+                        contentStyle={{ fontWeight: '500', fontSize: '1.5rem' }}
+                        labelStyle={{ fontWeight: '600', fontSize: '1.5rem' }}
+                    >
                         <Tag
                             icon={<GithubOutlined />}
                             color="black"
@@ -84,6 +105,29 @@ export const UserInfo = ({ user, getEvent }: UserProps) => {
                             </a>
                         </Tag>
                     </Descriptions.Item>
+                    <Descriptions.Item
+                        label="gitHub Url 수정"
+                        contentStyle={{ fontWeight: '500', fontSize: '1.5rem' }}
+                        labelStyle={{ fontWeight: '600', fontSize: '1.5rem' }}
+                    >
+                        <Button
+                            icon={<GithubOutlined />}
+                            type="primary"
+                            style={{ backgroundColor: 'black' }}
+                            onClick={() => {
+                                setPropsOpen(true);
+                            }}
+                        >
+                            GitHub Url 변경
+                        </Button>
+                    </Descriptions.Item>
+                    <Descriptions.Item
+                        label="비밀번호 변경"
+                        contentStyle={{ fontWeight: '500', fontSize: '1.5rem' }}
+                        labelStyle={{ fontWeight: '600', fontSize: '1.5rem' }}
+                    >
+                        <InfoModal></InfoModal>
+                    </Descriptions.Item>
                 </Descriptions>
             </div>
 
@@ -98,21 +142,8 @@ export const UserInfo = ({ user, getEvent }: UserProps) => {
                     justifyContent: 'center',
                 }}
             >
-                <Col xs={{ span: 5, offset: 1 }} lg={{ span: 6, offset: 2 }}>
-                    <Button
-                        icon={<GithubOutlined />}
-                        type="primary"
-                        style={{ backgroundColor: 'black', position: 'static' }}
-                        onClick={() => {
-                            setPropsOpen(true);
-                        }}
-                    >
-                        GitHub Url 변경
-                    </Button>
-                </Col>
-                <Col xs={{ span: 11, offset: 1 }} lg={{ span: 6, offset: 2 }}>
-                    <InfoModal></InfoModal>
-                </Col>
+                <Col xs={{ span: 5, offset: 1 }} lg={{ span: 6, offset: 2 }}></Col>
+                <Col xs={{ span: 11, offset: 1 }} lg={{ span: 6, offset: 2 }}></Col>
             </Row>
 
             <GitHubModal
