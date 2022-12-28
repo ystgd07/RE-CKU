@@ -39,7 +39,7 @@ export const firstGetCommunityNoticesQ = async (type: string, count: number) => 
       `,
     [count]
   );
-  const [boardList] = await db.query(`SELECT id FROM board WHERE hasResumeId IS NOT NULL`);
+  const [boardList] = await db.query(`SELECT id FROM board WHERE hasResumeId IS NULL`);
   const boardListCount = utils.jsonParse(boardList).length;
   const result = {
     boardList: utils.jsonParse(boards),
