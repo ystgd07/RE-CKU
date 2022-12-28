@@ -33,7 +33,8 @@ export const firstGetCommunityNoticesQ = async (type: string, count: number) => 
       JOIN user u
       ON b.fromUserId = u.id
       WHERE
-          b.hasResumeId IS NULL
+        b.active = 1 AND
+        b.hasResumeId IS NULL
       ORDER BY b.${type} DESC , b.id DESC
       LIMIT ?
       `,
@@ -76,6 +77,7 @@ export const moreGetCommunityNoticesQ = async (type: string, count: number, mark
       ON 
         b.fromUserId = u.id
       WHERE 
+        b.active = 1 AND
         ${mark} >  CONCAT (
             LPAD (${asType}(b.${type}),12,0),
             LPAD (b.id,8,0)
@@ -126,7 +128,8 @@ export const firstGetResumeNoticesQ = async (type: string, count: number) => {
       JOIN resume r
       ON b.hasResumeId = r.id
       WHERE
-          b.hasResumeId IS NOT NULL 
+        b.active = 1 AND
+        b.hasResumeId IS NOT NULL 
       ORDER BY b.${type} DESC , b.id DESC
       LIMIT ?
       `,
@@ -169,12 +172,12 @@ export const moreGetResumeNoticesQ = async (type: string, count: number, mark: s
       JOIN resume r
       ON b.hasResumeId = r.id
       WHERE
-          b.hasResumeId IS NOT NULL 
-        AND
-          ${mark} > CONCAT (
-              LPAD (${asType}(b.${type}),12,0),
-              LPAD (b.id,8,0)     
-            )
+        b.active = 1 AND
+        b.hasResumeId IS NOT NULL AND
+        ${mark} > CONCAT (
+            LPAD (${asType}(b.${type}),12,0),
+            LPAD (b.id,8,0)     
+          )
       ORDER BY b.${type} DESC , b.id DESC
       LIMIT ?
       `,
@@ -206,7 +209,9 @@ export const findAllBoardForMainpage = async (filter: string, perPage: number) =
     FROM board b
     JOIN user u
     ON b.fromUserId = u.id
-    WHERE b.hasResumeId IS NOT NULL  
+    WHERE
+      b.hasResumeId IS NOT NULL  AND
+      b.active = 1
     ORDER BY b.${filter} DESC
     LIMIT ?
   `,
