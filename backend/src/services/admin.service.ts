@@ -18,20 +18,27 @@ export const findPages = async (count: number) => {
 };
 
 // 2-1. 전체 회원 목록 조회
+export const findUsersAll = async () => {
+  const users = await adminRepo.findUsersAllQ();
+
+  return users;
+};
+
+// 2-2. 전체 회원 목록 조회 (페이지네이션)
 export const findUsers = async (count: number, offset: number) => {
   const users = await adminRepo.findUsersQ(count, offset);
 
   return users;
 };
 
-// 2-2. 최악의 전체 회원 목록 조회
+// 2-3. 최악의 전체 회원 목록 조회
 export const findWorstUsers = async () => {
   const worstUsers = await adminRepo.findWorstUsersQ();
 
   return worstUsers;
 };
 
-// 2-3. 신고 내역 조회
+// 2-4. 신고 내역 조회
 export const findReport = async (userId: number) => {
   const reportInfo = await adminRepo.findReportQ(userId);
 

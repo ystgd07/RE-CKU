@@ -73,8 +73,8 @@ const Match = () => {
                 <Row gutter={[0, 0]}>
                     {data.map((data: any) => (
                         <>
-                            <Col span={12} key={data.id}>
-                                <div onClick={() => onClickModal(data)}>
+                            <Col span={12} key={data.id} className="col">
+                                <div className="div" onClick={() => onClickModal(data)}>
                                     <div>
                                         <h3>{data.username}</h3>
                                         <p>

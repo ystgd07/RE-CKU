@@ -20,10 +20,10 @@ const FindPw = () => {
     const onSubmitHandler = async (data: FormData) => {
         // e.preventDefault();
         try {
-            const res = await axios.post('/');
+            const res = await axios.post('/users/eamil/password', data);
             console.log(res, '성공');
 
-            alert('회원가입이 완료되었습니다.');
+            alert('비밀번호를 메일로 보냈습니다.');
             navigate('/login');
         } catch (err: any) {
             console.error(err.stack);

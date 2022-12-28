@@ -10,7 +10,7 @@ import { EmailAuth, UserProfile } from "../db/schemas";
 // 매칭 관련
 export const getRotListOrMatchingStatus = async (
   userId: number
-): Promise<userRepo.RotList | userRepo.MatchInfo | string> => {
+): Promise<userRepo.RotList | userRepo.MatchInfo> => {
   try {
     const mentee = await userRepo.unIncludePasswordUserInfoQ(userId);
     // 매칭이 없을경우 리스트 O
@@ -370,6 +370,7 @@ export const checkReported = async (
 ): Promise<boolean> => {
   try {
     const checked = await userRepo.checkReportedQ(reporter, defendant);
+    console.log(checked);
     if (checked) return true;
     return false;
   } catch (err) {
