@@ -213,7 +213,6 @@ const Comunity = () => {
                 url,
                 `?firstRequest=0&type=created&count=8&mark=${mark}&position=ALL`,
             );
-            console.log(res);
             setBoardList([...boardList, ...res.boardList]);
         } catch (err) {
             console.log(err);

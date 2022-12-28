@@ -4,8 +4,8 @@ import styled from '@emotion/styled';
 import Layout from 'components/Layout';
 import { calcElapsed } from 'utils/format';
 import { Link } from 'react-router-dom';
-import { Skeleton, Carousel } from 'antd';
-import { LikeOutlined, CommentOutlined, LikeFilled } from '@ant-design/icons';
+import { Skeleton, Carousel, Card } from 'antd';
+import { LikeOutlined, CommentOutlined, RightOutlined } from '@ant-design/icons';
 import API from 'utils/api';
 import carousel1 from 'assets/images/carousel1.png';
 import carousel2 from 'assets/images/carousel2.png';
@@ -110,6 +110,32 @@ const PostsIcon = styled.span`
     justify-content: space-evenly;
 `;
 
+const QuestWrapper = styled.div`
+    width: 100%;
+    height: 15rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+`;
+
+const QuestText = styled.p`
+    font-size: 1.8rem;
+    margin: 1rem 0;
+`;
+
+const Quest = styled.div`
+    width: 10rem;
+    height: 10rem;
+    border: 1px solid #fffbe3;
+    background-color: #fffbe3;
+    border-radius: 1rem;
+    font-size: 10rem;
+    cursor: pointer;
+    :hover {
+        border-color: #ccb94c;
+    }
+`;
+
 interface IBoardList {
     commentCount: number;
     createdAt: Date;
@@ -142,11 +168,16 @@ const SkeletonPosts = () => {
     );
 };
 
+interface IQuestData {
+    id: number;
+    chance: number;
+}
+
 const Main = () => {
     const [latestBoardList, setLatestBoardList] = useState<IBoardList[]>([]);
     const [hotLikesBoardList, setHotLikesBoardList] = useState<IBoardList[]>([]);
     const [hotCommentBoardList, setHotCommentBoardList] = useState<IBoardList[]>([]);
-
+    const [questData, setQuestData] = useState<IQuestData | null>(null);
     const navigate = useNavigate();
 
     const fetchLatestBoard = async () => {
@@ -176,15 +207,23 @@ const Main = () => {
         }
     };
 
+    const fetchQuestData = async () => {
+        try {
+            const res = await API.get('/board/random');
+            console.log(res);
+        } catch (err) {
+            console.log(err);
+        }
+    };
+
     useEffect(() => {
         fetchLatestBoard();
         fetchHotLikesBoard();
         fetchHotCommentBoard();
+        fetchQuestData();
     }, []);
 
-    const onChange = (currentSlide: number) => {
-        console.log(currentSlide);
-    };
+    const onChange = (currentSlide: number) => {};
     // \[?(!)(?'alt'\[[^\]\[]*\[?[^\]\[]*\]?[^\]\[]*)\]\((?'url'[^\s]+?)(?:\s+(["'])(?'title'.*?)\4)?\)
 
     return (
@@ -301,6 +340,14 @@ const Main = () => {
                 </Posts>
 
                 <Title>오늘의 일일 퀘스트</Title>
+                <QuestWrapper onClick={() => navigate(`/post/${questData?.id}`)}>
+                    <QuestText>{`오늘 잔여 횟수 : ${
+                        questData === null ? '' : questData?.chance
+                    }`}</QuestText>
+                    <Quest>
+                        <RightOutlined />
+                    </Quest>
+                </QuestWrapper>
             </Wrapper>
         </Layout>
     );
