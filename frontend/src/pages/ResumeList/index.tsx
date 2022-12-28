@@ -48,7 +48,7 @@ const ResumeMain = () => {
         navigate(`/resume/${e.currentTarget.value}/edit`);
     };
     const gotoPost = (e: any) => {
-        navigate(`/resume/${e.currentTarget.id}`);
+        window.open(`/resume/${e.currentTarget.id}`, '_blank');
     };
     async function getPortfolio() {
         try {

@@ -1,14 +1,14 @@
-import React from 'react';
-import * as S from './style';
+import React, { useEffect } from 'react';
+import { LoginSection, Container, ImgSection } from './style';
 import Logo from 'assets/images/logo.png';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useForm } from 'react-hook-form';
-import Layout from 'components/Layout';
 import Kakao from 'assets/images/kakao.png';
 
 const Login = () => {
     const navigate = useNavigate();
+    const token = localStorage.getItem('accessToken');
 
     const {
         register,
@@ -38,6 +38,7 @@ const Login = () => {
             localStorage.setItem('refreshToken', refreshToken);
             localStorage.setItem('userId', userId);
             localStorage.setItem('isAdmin', isAdmin);
+
             navigate('/');
         } catch (err: any) {
             console.error(err.stack);
@@ -56,8 +57,14 @@ const Login = () => {
         }
     };
     return (
-        <Layout>
-            <S.MobileDiv>
+        <Container>
+            <ImgSection>
+                <article>
+                    <img src={Logo} alt="logo" />
+                </article>
+            </ImgSection>
+
+            <LoginSection>
                 <form onSubmit={handleSubmit(onSubmitHandler)}>
                     <div className="loginWrap">
                         <h1>LOGIN</h1>
@@ -113,8 +120,8 @@ const Login = () => {
                         </article>
                     </div>
                 </form>
-            </S.MobileDiv>
-        </Layout>
+            </LoginSection>
+        </Container>
     );
 };
 

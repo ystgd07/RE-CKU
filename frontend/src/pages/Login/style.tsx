@@ -1,12 +1,53 @@
 import styled from '@emotion/styled';
 
-export const MobileDiv = styled.div`
+export const Container = styled.section`
     display: flex;
-    flex-direction: column;
-    width: 100%;
+    flex-direction: row;
+    min-height: 100vh;
+
+    @media all and (max-width: 960px) {
+        display: unset;
+        flex-direction: column;
+    }
+`;
+
+export const ImgSection = styled.figure`
+    box-sizing: border-box;
+    width: 50%;
+    background-color: #b0e0e6;
+
+    @media all and (max-width: 960px) {
+        width: 100%;
+        height: 50vh;
+    }
+
+    & article {
+        transform: translate(10vw, 40vh);
+
+        @media all and (max-width: 960px) {
+            transform: unset;
+            text-align: center;
+            transform: translateY(10vh);
+        }
+
+        & img {
+            height: 200px;
+        }
+    }
+`;
+
+export const LoginSection = styled.div`
+    width: 50%;
+    display: flex;
     justify-content: center;
-    text-align: center;
-    align-items: center;
+
+    @media all and (max-width: 960px) {
+        justify-content: center;
+        display: flex;
+        flex-direction: column;
+        width: 100vw;
+        align-items: center;
+    }
 
     .block {
         display: block;
@@ -20,8 +61,18 @@ export const MobileDiv = styled.div`
     }
 
     & form {
+        text-align: center;
+        transform: translateY(30vh);
         max-width: 46rem;
         width: 100%;
+        height: 50%;
+
+        @media all and (max-width: 960px) {
+            text-align: center;
+            transform: unset;
+            transform: translateY(4vh);
+        }
+
         & p {
             display: flex;
             justify-content: center;
