@@ -87,15 +87,13 @@ export const moreGetCommunityNoticesQ = async (type: string, count: number, mark
 };
 
 // type에 따라 이력서 게시판 목록
-export const firstGetResumeNoticesQ = async (type: string, position: string, count: number) => {
+export const firstGetResumeNoticesQ = async (type: string, count: number) => {
   let asType = "";
   let wherePosition = "r.position Is not null";
   if (type === "created") {
     asType = "unix_timestamp";
   }
-  if (position !== "ALL") {
-    wherePosition = "r.position =" + `'${position}'`;
-  }
+
   console.log(wherePosition);
   const [boards] = await db.query(
     `
@@ -131,19 +129,19 @@ export const firstGetResumeNoticesQ = async (type: string, position: string, cou
       `,
     [count]
   );
-  const result = utils.jsonParse(boards);
+  const [boardList] = await db.query(`SELECT id FROM board WHERE hasResumeId = IS NOT NULL`);
+  const boardListCount = utils.jsonParse(boardList).length;
+  const result = {
+    boardList: utils.jsonParse(boards),
+    boardListCount,
+  };
   return result;
 };
-export const moreGetResumeNoticesQ = async (type: string, position: string, count: number, mark: string) => {
+export const moreGetResumeNoticesQ = async (type: string, count: number, mark: string) => {
   let asType = "";
-  let wherePosition = "r.position Is not null";
   if (type === "created") {
     asType = "unix_timestamp";
   }
-  if (position !== "ALL") {
-    wherePosition = "r.position =" + `'${position}'`;
-  }
-  console.log(wherePosition);
   const [boards] = await db.query(
     `
       SELECT 
@@ -170,8 +168,6 @@ export const moreGetResumeNoticesQ = async (type: string, position: string, coun
       WHERE
           b.hasResumeId IS NOT NULL 
         AND
-          ${wherePosition}
-        AND
           ${mark} > CONCAT (
               LPAD (${asType}(b.${type}),12,0),
               LPAD (b.id,8,0)     
@@ -186,7 +182,7 @@ export const moreGetResumeNoticesQ = async (type: string, position: string, coun
 };
 
 // 메인페이지 애서 활용됨
-export const findAllBoardForMainpage = async (filter: string, perPage: number): Promise<Board[]> => {
+export const findAllBoardForMainpage = async (filter: string, perPage: number) => {
   const [boards] = await db.query(
     `
     SELECT 
@@ -209,7 +205,12 @@ export const findAllBoardForMainpage = async (filter: string, perPage: number): 
   `,
     [perPage]
   );
-  const result = utils.jsonParse(boards);
+  const [boardList] = await db.query(`SELECT id FROM board WHERE hasResumeId = IS NOT NULL`);
+  const boardListCount = utils.jsonParse(boardList).length;
+  const result = {
+    boardList: utils.jsonParse(boards),
+    boardListCount,
+  };
   return result;
 };
 
