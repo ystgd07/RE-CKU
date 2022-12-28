@@ -87,15 +87,13 @@ export const moreGetCommunityNoticesQ = async (type: string, count: number, mark
 };
 
 // type에 따라 이력서 게시판 목록
-export const firstGetResumeNoticesQ = async (type: string, position: string, count: number) => {
+export const firstGetResumeNoticesQ = async (type: string, count: number) => {
   let asType = "";
   let wherePosition = "r.position Is not null";
   if (type === "created") {
     asType = "unix_timestamp";
   }
-  if (position !== "ALL") {
-    wherePosition = "r.position =" + `'${position}'`;
-  }
+
   console.log(wherePosition);
   const [boards] = await db.query(
     `
@@ -131,19 +129,19 @@ export const firstGetResumeNoticesQ = async (type: string, position: string, cou
       `,
     [count]
   );
-  const result = utils.jsonParse(boards);
+  const [boardList] = await db.query(`SELECT id FROM board`);
+  const boardListCount = utils.jsonParse(boardList).length;
+  const result = {
+    boardList: utils.jsonParse(boards),
+    boardListCount,
+  };
   return result;
 };
-export const moreGetResumeNoticesQ = async (type: string, position: string, count: number, mark: string) => {
+export const moreGetResumeNoticesQ = async (type: string, count: number, mark: string) => {
   let asType = "";
-  let wherePosition = "r.position Is not null";
   if (type === "created") {
     asType = "unix_timestamp";
   }
-  if (position !== "ALL") {
-    wherePosition = "r.position =" + `'${position}'`;
-  }
-  console.log(wherePosition);
   const [boards] = await db.query(
     `
       SELECT 
@@ -169,8 +167,6 @@ export const moreGetResumeNoticesQ = async (type: string, position: string, coun
       ON b.hasResumeId = r.id
       WHERE
           b.hasResumeId IS NOT NULL 
-        AND
-          ${wherePosition}
         AND
           ${mark} > CONCAT (
               LPAD (${asType}(b.${type}),12,0),
