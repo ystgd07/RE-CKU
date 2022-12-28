@@ -1,37 +1,78 @@
 import styled from '@emotion/styled';
 
-export const Div = styled.div`
+export const Container = styled.section`
+    display: flex;
+    flex-direction: row;
+    min-height: 100vh;
+
+    @media all and (max-width: 960px) {
+        display: unset;
+        flex-direction: column;
+    }
+`;
+
+export const ImgSection = styled.figure`
+    box-sizing: border-box;
+    width: 50%;
+    background-color: #b0e0e6;
+
+    @media all and (max-width: 960px) {
+        width: 100%;
+        height: 50vh;
+    }
+
+    & article {
+        transform: translate(10vw, 40vh);
+
+        @media all and (max-width: 960px) {
+            transform: unset;
+            text-align: center;
+            transform: translateY(10vh);
+        }
+
+        & img {
+            height: 200px;
+        }
+    }
+`;
+
+export const LoginSection = styled.div`
+    width: 50%;
     display: flex;
     justify-content: center;
-    align-content: center;
-    flex-direction: column;
+
+    @media all and (max-width: 960px) {
+        justify-content: center;
+        display: flex;
+        flex-direction: column;
+        width: 100vw;
+        align-items: center;
+    }
 
     .block {
         display: block;
         color: red;
-        font-size: 1rem;
+        font-size: 1.4rem;
         text-align: start;
-        padding: 0px 3rem;
     }
 
     .none {
         display: none;
     }
-`;
-
-export const MobileDiv = styled.div`
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    justify-content: center;
-    margin: 0 auto;
-    text-align: center;
-    align-items: center;
-    border-radius: 0.4rem;
 
     & form {
-        max-width: 28rem;
+        text-align: center;
+        transform: translateY(30vh);
+        max-width: 46rem;
         width: 100%;
+        height: 50%;
+
+        @media all and (max-width: 960px) {
+            text-align: center;
+            transform: unset;
+            transform: translateY(4vh);
+        }
+
         & p {
             display: flex;
             justify-content: center;
@@ -46,7 +87,7 @@ export const MobileDiv = styled.div`
             }
         }
 
-        & div {
+        & .loginWrap {
             display: flex;
             flex-direction: column;
             gap: 2rem;
@@ -54,12 +95,13 @@ export const MobileDiv = styled.div`
             & h1 {
                 text-align: center;
                 font-weight: bold;
-                font-size: 3.2rem;
+                font-size: 4rem;
                 padding-bottom: 1rem;
+                font-family: 'Viga', sans-serif;
             }
 
             & input {
-                padding: 2rem;
+                padding: 1.6rem 2rem;
                 border: 1px solid #c9cacc;
                 border-radius: 0.4rem;
                 font-size: 1.4rem;
@@ -68,21 +110,68 @@ export const MobileDiv = styled.div`
                 width: calc(100% - 4rem);
             }
 
+            & .util {
+                display: flex;
+                gap: 1rem;
+                padding-left: 1rem;
+                border-left: 1rem solid #e2e2e2;
+                text-align: left;
+                font-size: 1.2rem;
+                font-weight: 400;
+
+                & a {
+                    &:hover {
+                        font-weight: 600;
+                        color: black;
+                    }
+                }
+            }
+
             & article {
                 & ul {
-                    & li {
-                        font-size: 1.4rem;
+                    font-size: 1.4rem;
+                    font-weight: 600;
 
-                        & .loginBtn {
-                            padding: 2rem;
-                            border: 1px solid #c9cacc;
-                            border-radius: 0.4rem;
-                            font-size: 1.4rem;
-                            line-height: 2.2rem;
-                            width: 100%;
-                            background-color: none;
-                            outline: none;
-                            apperance: none;
+                    & .loginBtn {
+                        padding: 1.6rem 2rem;
+                        border: 0;
+                        background-color: #d3d3d3;
+                        border-radius: 0.4rem;
+                        font-size: 1.4rem;
+                        line-height: 2.2rem;
+                        width: 100%;
+                        font-weight: 600;
+
+                        &:hover {
+                            cursor: pointer;
+                            background-color: gray;
+                        }
+                    }
+                }
+
+                & .kakaoLogin {
+                    margin-top: 1rem;
+                    & li {
+                        background-color: #fee500;
+                        width: 100%;
+                        font-size: 1.4rem;
+                        font-weight: 600;
+                        padding: 1.6rem 0;
+                        border-radius: 1.2rem;
+
+                        &:hover {
+                            cursor: pointer;
+                            background-color: yellow;
+                        }
+
+                        & span {
+                            vertical-align: middle;
+                        }
+
+                        & button[type='button'] {
+                            color: rgba(0, 0, 0, 0.85);
+                            background: none;
+                            border: 0;
                         }
                     }
                 }
