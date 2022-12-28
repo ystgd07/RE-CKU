@@ -50,8 +50,8 @@ const Resume = ({ resumeId }: any) => {
                     <Title level={2}>Project</Title>
                 </S.LineDiv>
 
-                {projectData.map((data: any) => (
-                    <S.BorderDiv key={data.id}>
+                {projectData.map((data: any, index) => (
+                    <S.BorderDiv key={index}>
                         <Title level={2}>{data.projectName}</Title>
                         <div>
                             <div>
@@ -86,8 +86,8 @@ const Resume = ({ resumeId }: any) => {
                 <S.LineDiv>
                     <Title level={2}>Career</Title>
                 </S.LineDiv>
-                {careerData.map((data: any) => (
-                    <S.BorderDiv key={data.id}>
+                {careerData.map((data: any, index) => (
+                    <S.BorderDiv key={index}>
                         <h2>{data.company}</h2>
                         <h4>{data.notDevlop ? '개발자' : '비개발자'}</h4>
                         <div>
