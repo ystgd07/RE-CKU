@@ -4,8 +4,8 @@ import styled from '@emotion/styled';
 import Layout from 'components/Layout';
 import { calcElapsed } from 'utils/format';
 import { Link } from 'react-router-dom';
-import { Skeleton, Carousel } from 'antd';
-import { LikeOutlined, CommentOutlined, LikeFilled } from '@ant-design/icons';
+import { Skeleton, Carousel, Card } from 'antd';
+import { LikeOutlined, CommentOutlined, RightOutlined } from '@ant-design/icons';
 import API from 'utils/api';
 import carousel1 from 'assets/images/carousel1.png';
 import carousel2 from 'assets/images/carousel2.png';
@@ -56,6 +56,9 @@ const Title = styled.h2`
     font-size: 2.2rem;
     font-weight: 700;
     margin: 2rem 0;
+    :last-child {
+        margin-top: 5rem;
+    }
 `;
 
 const PostTitle = styled.h3`
@@ -107,6 +110,38 @@ const PostsIcon = styled.span`
     justify-content: space-evenly;
 `;
 
+const QuestWrapper = styled.div`
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+`;
+
+const QuestText = styled.p`
+    font-size: 1.8rem;
+    margin: 1rem 0;
+`;
+
+const Quest = styled.div`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 70%;
+    height: 20rem;
+    border: 1px solid #fffbe3;
+    background-color: #fffbe3;
+    border-radius: 1rem;
+    font-size: 10rem;
+    cursor: pointer;
+    :hover {
+        border-color: #ccb94c;
+    }
+    h3 {
+        font-size: 4rem;
+    }
+`;
+
 interface IBoardList {
     commentCount: number;
     createdAt: Date;
@@ -139,26 +174,22 @@ const SkeletonPosts = () => {
     );
 };
 
-const contentStyle: React.CSSProperties = {
-    margin: 0,
-    height: '28rem',
-    color: '#fff',
-    lineHeight: '160px',
-    textAlign: 'center',
-    background: '#364d79',
-};
+interface IQuestData {
+    boardId: number;
+    chance: number;
+}
 
 const Main = () => {
     const [latestBoardList, setLatestBoardList] = useState<IBoardList[]>([]);
     const [hotLikesBoardList, setHotLikesBoardList] = useState<IBoardList[]>([]);
     const [hotCommentBoardList, setHotCommentBoardList] = useState<IBoardList[]>([]);
-
+    const [questData, setQuestData] = useState<IQuestData | null>(null);
     const navigate = useNavigate();
 
     const fetchLatestBoard = async () => {
         try {
             const res = await API.get('/board', '?filter=created&perPage=4');
-            setLatestBoardList(res);
+            setLatestBoardList(res.boardList);
         } catch (err) {
             console.log(err);
         }
@@ -167,7 +198,7 @@ const Main = () => {
     const fetchHotLikesBoard = async () => {
         try {
             const res = await API.get('/board', '?filter=likeCnt&perPage=4');
-            setHotLikesBoardList(res);
+            setHotLikesBoardList(res.boardList);
         } catch (err) {
             console.log(err);
         }
@@ -176,21 +207,39 @@ const Main = () => {
     const fetchHotCommentBoard = async () => {
         try {
             const res = await API.get('/board', '?filter=commentCnt&perPage=4');
-            setHotCommentBoardList(res);
+            setHotCommentBoardList(res.boardList);
         } catch (err) {
             console.log(err);
         }
+    };
+
+    const fetchQuestData = async () => {
+        try {
+            const res = await API.get('/board/random');
+            setQuestData(res);
+        } catch (err) {
+            console.log(err);
+        }
+    };
+
+    const handleQuestClick = async () => {
+        //Users/individuals patch
+        try {
+            // const res = await API.patch("/users/individuals")
+        } catch (err) {
+            console.log(err);
+        }
+        navigate(`/post/${questData?.boardId}`);
     };
 
     useEffect(() => {
         fetchLatestBoard();
         fetchHotLikesBoard();
         fetchHotCommentBoard();
+        fetchQuestData();
     }, []);
 
-    const onChange = (currentSlide: number) => {
-        console.log(currentSlide);
-    };
+    const onChange = (currentSlide: number) => {};
     // \[?(!)(?'alt'\[[^\]\[]*\[?[^\]\[]*\]?[^\]\[]*)\]\((?'url'[^\s]+?)(?:\s+(["'])(?'title'.*?)\4)?\)
 
     return (
@@ -306,7 +355,15 @@ const Main = () => {
                     )}
                 </Posts>
 
-                <Title></Title>
+                <Title>오늘의 일일 퀘스트</Title>
+                <QuestWrapper>
+                    <QuestText>{`오늘 잔여 횟수 : ${
+                        questData === null ? '' : questData?.chance
+                    }`}</QuestText>
+                    <Quest onClick={handleQuestClick}>
+                        <h3>이력서 보고 포인트 얻기!</h3>
+                    </Quest>
+                </QuestWrapper>
             </Wrapper>
         </Layout>
     );
