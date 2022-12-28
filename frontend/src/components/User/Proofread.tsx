@@ -39,6 +39,7 @@ let matchData: [];
 const token = localStorage.getItem('accessToken');
 let lengthReq = 0;
 let lengthPro = 0;
+let test = 1;
 export const Proofread = () => {
     const [res, setRes] = useState<Mock[]>([]);
     const getMentoReq = async () => {
@@ -97,7 +98,19 @@ export const Proofread = () => {
             console.log(e);
         }
     };
-
+    const toggleChange = async () => {
+        test === 1 ? (test = 0) : (test = 1);
+        try {
+            const res = await axios.patch(
+                '/users/individuals',
+                { working: test },
+                { headers: { authorization: `Bearer ${token}` } },
+            );
+            console.log(res);
+        } catch (e) {
+            console.log(e);
+        }
+    };
     useEffect(() => {
         getMentoReq();
     }, []);
@@ -115,7 +128,7 @@ export const Proofread = () => {
             }}
         >
             <div style={{ marginBottom: '20px', display: 'flex', flexDirection: 'row-reverse' }}>
-                <Switch defaultChecked />
+                <Switch defaultChecked onChange={toggleChange} />
             </div>
             <Divider orientation="left" orientationMargin="0">
                 <p style={{ fontWeight: 'bold' }}>
