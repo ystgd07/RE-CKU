@@ -4,9 +4,12 @@ import styled from '@emotion/styled';
 import Layout from 'components/Layout';
 import { calcElapsed } from 'utils/format';
 import { Link } from 'react-router-dom';
-import { Skeleton } from 'antd';
+import { Skeleton, Carousel } from 'antd';
 import { LikeOutlined, CommentOutlined, LikeFilled } from '@ant-design/icons';
 import API from 'utils/api';
+import carousel1 from 'assets/images/carousel1.png';
+import carousel2 from 'assets/images/carousel2.png';
+import carousel3 from 'assets/images/carousel3.png';
 
 const Wrapper = styled.div`
     display: flex;
@@ -136,6 +139,15 @@ const SkeletonPosts = () => {
     );
 };
 
+const contentStyle: React.CSSProperties = {
+    margin: 0,
+    height: '28rem',
+    color: '#fff',
+    lineHeight: '160px',
+    textAlign: 'center',
+    background: '#364d79',
+};
+
 const Main = () => {
     const [latestBoardList, setLatestBoardList] = useState<IBoardList[]>([]);
     const [hotLikesBoardList, setHotLikesBoardList] = useState<IBoardList[]>([]);
@@ -176,10 +188,24 @@ const Main = () => {
         fetchHotCommentBoard();
     }, []);
 
+    const onChange = (currentSlide: number) => {
+        console.log(currentSlide);
+    };
     // \[?(!)(?'alt'\[[^\]\[]*\[?[^\]\[]*\]?[^\]\[]*)\]\((?'url'[^\s]+?)(?:\s+(["'])(?'title'.*?)\4)?\)
 
     return (
         <Layout>
+            <Carousel autoplay afterChange={onChange}>
+                <div>
+                    <img src={carousel1} alt="carousel" />
+                </div>
+                <div>
+                    <img src={carousel2} alt="carousel" />
+                </div>
+                <div>
+                    <img src={carousel3} alt="carousel" />
+                </div>
+            </Carousel>
             <Wrapper>
                 <Title>최근 등록된 게시물</Title>
                 <Posts>
@@ -280,7 +306,7 @@ const Main = () => {
                     )}
                 </Posts>
 
-                <Title>일일 퀘스트</Title>
+                <Title></Title>
             </Wrapper>
         </Layout>
     );
