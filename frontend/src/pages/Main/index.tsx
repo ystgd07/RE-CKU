@@ -112,10 +112,10 @@ const PostsIcon = styled.span`
 
 const QuestWrapper = styled.div`
     width: 100%;
-    height: 15rem;
     display: flex;
     flex-direction: column;
     justify-content: center;
+    align-items: center;
 `;
 
 const QuestText = styled.p`
@@ -124,8 +124,11 @@ const QuestText = styled.p`
 `;
 
 const Quest = styled.div`
-    width: 10rem;
-    height: 10rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 70%;
+    height: 20rem;
     border: 1px solid #fffbe3;
     background-color: #fffbe3;
     border-radius: 1rem;
@@ -133,6 +136,9 @@ const Quest = styled.div`
     cursor: pointer;
     :hover {
         border-color: #ccb94c;
+    }
+    h3 {
+        font-size: 4rem;
     }
 `;
 
@@ -169,7 +175,7 @@ const SkeletonPosts = () => {
 };
 
 interface IQuestData {
-    id: number;
+    boardId: number;
     chance: number;
 }
 
@@ -210,10 +216,20 @@ const Main = () => {
     const fetchQuestData = async () => {
         try {
             const res = await API.get('/board/random');
-            console.log(res);
+            setQuestData(res);
         } catch (err) {
             console.log(err);
         }
+    };
+
+    const handleQuestClick = async () => {
+        //Users/individuals patch
+        try {
+            // const res = await API.patch("/users/individuals")
+        } catch (err) {
+            console.log(err);
+        }
+        navigate(`/post/${questData?.boardId}`);
     };
 
     useEffect(() => {
@@ -340,12 +356,12 @@ const Main = () => {
                 </Posts>
 
                 <Title>오늘의 일일 퀘스트</Title>
-                <QuestWrapper onClick={() => navigate(`/post/${questData?.id}`)}>
+                <QuestWrapper>
                     <QuestText>{`오늘 잔여 횟수 : ${
                         questData === null ? '' : questData?.chance
                     }`}</QuestText>
-                    <Quest>
-                        <RightOutlined />
+                    <Quest onClick={handleQuestClick}>
+                        <h3>이력서 보고 포인트 얻기!</h3>
                     </Quest>
                 </QuestWrapper>
             </Wrapper>
