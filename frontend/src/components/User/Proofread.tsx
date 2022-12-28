@@ -39,6 +39,7 @@ let matchData: [];
 const token = localStorage.getItem('accessToken');
 let lengthReq = 0;
 let lengthPro = 0;
+let test = true;
 export const Proofread = () => {
     const [res, setRes] = useState<Mock[]>([]);
     const getMentoReq = async () => {
@@ -55,6 +56,7 @@ export const Proofread = () => {
             console.log(e);
         }
     };
+
     const patchMatchSatus = async (e: any) => {
         const matchingid = e.currentTarget.id;
         const menteeid = e.currentTarget.value;
@@ -66,6 +68,45 @@ export const Proofread = () => {
             );
             console.log(res);
             getMentoReq();
+        } catch (e) {
+            console.log(e);
+        }
+    };
+    const deleteMatchData = async (e: any) => {
+        const matchingid = e.currentTarget.id;
+        try {
+            const res = await axios.delete('users/match', {
+                data: { matchingId: matchingid },
+                headers: { authorization: `Bearer ${token}` },
+            });
+            if (res.status === 200) getMentoReq();
+        } catch (e) {
+            console.log(e);
+        }
+    };
+    const updateMatchData = async (e: any) => {
+        const matchingid = e.currentTarget.id;
+        try {
+            const res = await axios.post(
+                'users/match/success',
+                { matchingId: matchingid * 1, role: 'mento' },
+                { headers: { authorization: `Bearer ${token}` } },
+            );
+            console.log(res);
+            if (res.status === 200) getMentoReq();
+        } catch (e) {
+            console.log(e);
+        }
+    };
+    const toggleChange = async () => {
+        test === true ? (test = false) : (test = true);
+        try {
+            const res = await axios.patch(
+                '/users/individuals',
+                { working: test },
+                { headers: { authorization: `Bearer ${token}` } },
+            );
+            console.log(res);
         } catch (e) {
             console.log(e);
         }
@@ -87,7 +128,10 @@ export const Proofread = () => {
             }}
         >
             <div style={{ marginBottom: '20px', display: 'flex', flexDirection: 'row-reverse' }}>
-                <Switch defaultChecked />
+                <div>
+                    <h5 style={{ marginBottom: '0px', marginTop: '0px' }}>첨삭ON/OFF</h5>
+                    <Switch defaultChecked onChange={toggleChange} style={{ marginLeft: '10px' }} />
+                </div>
             </div>
             <Divider orientation="left" orientationMargin="0">
                 <p style={{ fontWeight: 'bold' }}>
@@ -126,7 +170,13 @@ export const Proofread = () => {
                                             수락하기
                                         </Button>
 
-                                        <Button>취소</Button>
+                                        <Button
+                                            id={item.matchingId}
+                                            value={item.menteeId}
+                                            onClick={deleteMatchData}
+                                        >
+                                            취소
+                                        </Button>
                                     </div>
                                 }
                             >
@@ -166,7 +216,13 @@ export const Proofread = () => {
                                 title={item.menteeEmail}
                                 extra={
                                     <div>
-                                        <Button>취소</Button>
+                                        <Button
+                                            id={item.matchingId}
+                                            value={item.menteeId}
+                                            onClick={updateMatchData}
+                                        >
+                                            완료
+                                        </Button>
                                     </div>
                                 }
                             >
