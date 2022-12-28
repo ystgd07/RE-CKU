@@ -416,59 +416,69 @@ export const successMatchQ = async (
 };
 
 // 매칭 종료 ( 멘티id 비우고, 멘토id 만 남기기)
+// 트렌젝션 완료
 export const complateMatch = async (matchingId: number) => {
   console.log("??");
-  const [match] = await db.query(
-    `
-    SELECT 
-      mentoId,
-      menteeId
-    FROM connect
-    WHERE
-      id = ?
-  `,
-    [matchingId]
-  );
-  const parseMatch = utils.jsonParse(match)[0];
-  const mentoId = parseMatch.mentoId;
-  const menteeId = parseMatch.menteeId;
-  console.log(parseMatch);
-  await db.query(
-    `
-    UPDATE connect
-    SET
-      menteeId = 0 ,
-      step = "완료"
-    WHERE 
-      id = ?
-  `,
-    [matchingId]
-  );
-  await db.query(
-    `
-    UPDATE user
-    SET
-      corrections=corrections+1 ,
-      point = point +50
-    WHERE
-      id = ?
-  `,
-    [mentoId]
-  );
-  await db.query(
-    `
-    UPDATE user
-    SET
-      matching = 0,
-      point = point -50
-    WHERE
-      id = ?
-  `,
-    [menteeId]
-  );
-  // 트렌젝션 해야할듯
+  const conn = await db.getConnection();
+  conn.beginTransaction();
+  try {
+    const [match] = await db.query(
+      `
+      SELECT 
+        mentoId,
+        menteeId
+      FROM connect
+      WHERE
+        id = ?
+    `,
+      [matchingId]
+    );
+    const parseMatch = utils.jsonParse(match)[0];
+    const mentoId = parseMatch.mentoId;
+    const menteeId = parseMatch.menteeId;
+    console.log(parseMatch);
+    await Promise.all([
+      db.query(
+        `
+      UPDATE connect
+      SET
+        menteeId = 0 ,
+        step = "완료"
+      WHERE 
+        id = ?
+    `,
+        [matchingId]
+      ),
+      db.query(
+        `
+      UPDATE user
+      SET
+        corrections=corrections+1 ,
+        point = point +50
+      WHERE
+        id = ?
+    `,
+        [mentoId]
+      ),
+      db.query(
+        `
+      UPDATE user
+      SET
+        matching = 0,
+        point = point -50
+      WHERE
+        id = ?
+    `,
+        [menteeId]
+      ),
+    ]);
 
-  return "매칭 종료";
+    return "매칭 종료";
+  } catch (err) {
+    conn.rollback();
+  } finally {
+    conn.release();
+  }
 };
 
 type ZZ = {
@@ -483,40 +493,48 @@ type ZZ = {
 export const getRequestCorrectionQ = async (userId: number) => {
   // step = 요청중, mentoId =userId , complate = 0인것들을 created DESC 로 뱉기
   console.log("이까진 오나?", userId);
-  const [list] = await db.query(
-    `
-    SELECT 
-      c.id as matchingId,
-      c.step,
-      c.menteeId,
-      u.username as menteeName,
-      u.email as menteeEmail,
-      c.created
-    FROM connect c
-    JOIN user u
-    ON u.id = c.menteeId
-    WHERE 
-      c.step != '완료' AND mentoId = ? AND mentoComplate = 0 
-    ORDER BY created DESC
-  `,
-    [userId]
-  );
-  const result = utils.jsonParse(list);
-  type Req = {
-    matchingId: number;
-    step: string;
-    menteeId: number;
-    created: string;
-    cancelAble: boolean;
-  };
-  const zz = result.map((req: Req) => {
-    req.cancelAble = req.step === "진행중" ? false : true;
-    return { ...req };
-  });
-  console.log(zz);
-  if (result.step !== "요청중") {
-    result.cancelAble = false;
+  const conn = await db.getConnection();
+  conn.beginTransaction();
+  try {
+    const [list] = await db.query(
+      `
+      SELECT 
+        c.id as matchingId,
+        c.step,
+        c.menteeId,
+        u.username as menteeName,
+        u.email as menteeEmail,
+        c.created
+      FROM connect c
+      JOIN user u
+      ON u.id = c.menteeId
+      WHERE 
+        c.step != '완료' AND mentoId = ? AND mentoComplate = 0 
+      ORDER BY created DESC
+    `,
+      [userId]
+    );
+    const result = utils.jsonParse(list);
+    type Req = {
+      matchingId: number;
+      step: string;
+      menteeId: number;
+      created: string;
+      cancelAble: boolean;
+    };
+    const addCancelAble = result.map((req: Req) => {
+      req.cancelAble = req.step === "진행중" ? false : true;
+      return { ...req };
+    });
+    if (result.step !== "요청중") {
+      result.cancelAble = false;
+    }
+    result.cancelAble = true;
+    return result;
+  } catch (err) {
+    conn.rollback();
+    throw new Error(`500, 서버 오류`);
+  } finally {
+    conn.release();
   }
-  result.cancelAble = true;
-  return result;
 };
