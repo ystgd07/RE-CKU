@@ -28,9 +28,10 @@ const data = [
     },
 ];
 const token = localStorage.getItem('accessToken');
+
 const getMentoReq = async () => {
     try {
-        const res = await axios.get('req', {
+        const res = await axios.get('users/req', {
             headers: { authorization: `Bearer ${token}` },
         });
         console.log(res);
@@ -38,6 +39,7 @@ const getMentoReq = async () => {
         console.log(e);
     }
 };
+
 export const Proofread = () => {
     getMentoReq();
     return (

@@ -76,9 +76,6 @@ const Profile: React.FC = () => {
     };
 
     const handleCancel = (e: any) => {
-        // console.log(
-        //     e.target.parentElement.parentElement.parentElement.children[1].children[0].value,
-        // );
         e.target.parentElement.parentElement.parentElement.children[1].children[0].value = '';
         console.log('Clicked cancel button');
         setOpen(false);
@@ -150,8 +147,12 @@ const Profile: React.FC = () => {
             if (upperLimit === arr[0]) {
                 lowerLimit = 0;
             } else {
-                if (res.point >= 10000) lowerLimit = 10000;
-                else lowerLimit = arr[idx];
+                if (res.point >= 10000) {
+                    lowerLimit = 10000;
+                    upperLimit = 10000;
+                } else {
+                    lowerLimit = arr[idx];
+                }
             }
         }
     });
@@ -228,9 +229,8 @@ const Profile: React.FC = () => {
                         status="active"
                         strokeColor={{ '0%': `${tierColor}`, '100%': `${tierColor}` }}
                         style={{
-                            marginLeft: '1px',
-                            marginRight: '10px',
                             fontWeight: 'bold',
+                            width: '98%',
                         }}
                     />
                     {/* //TODO: 추후 Tabs 이부분 컴포넌트화 해야함^^ */}
@@ -257,7 +257,7 @@ const Profile: React.FC = () => {
                                 },
 
                                 {
-                                    label: `첨삭(플레티넘)`,
+                                    label: `첨삭`,
                                     key: '2',
                                     children: <Proofread></Proofread>,
                                 },
@@ -277,7 +277,7 @@ const Profile: React.FC = () => {
                                 },
 
                                 {
-                                    label: `첨삭(플레티넘)`,
+                                    label: `첨삭(플레티넘 이상)`,
                                     key: '2',
                                     children: <Proofread></Proofread>,
                                     disabled: true,
