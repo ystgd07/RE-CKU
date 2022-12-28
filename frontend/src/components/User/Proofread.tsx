@@ -55,6 +55,7 @@ export const Proofread = () => {
             console.log(e);
         }
     };
+
     const patchMatchSatus = async (e: any) => {
         const matchingid = e.currentTarget.id;
         const menteeid = e.currentTarget.value;
@@ -82,6 +83,21 @@ export const Proofread = () => {
             console.log(e);
         }
     };
+    const updateMatchData = async (e: any) => {
+        const matchingid = e.currentTarget.id;
+        try {
+            const res = await axios.post(
+                'users/match/success',
+                { matchingId: matchingid * 1, role: 'mento' },
+                { headers: { authorization: `Bearer ${token}` } },
+            );
+            console.log(res);
+            if (res.status === 200) getMentoReq();
+        } catch (e) {
+            console.log(e);
+        }
+    };
+
     useEffect(() => {
         getMentoReq();
     }, []);
@@ -187,9 +203,9 @@ export const Proofread = () => {
                                         <Button
                                             id={item.matchingId}
                                             value={item.menteeId}
-                                            onClick={deleteMatchData}
+                                            onClick={updateMatchData}
                                         >
-                                            취소
+                                            완료
                                         </Button>
                                     </div>
                                 }
