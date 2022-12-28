@@ -97,12 +97,9 @@ export const moreGetCommunityNoticesQ = async (type: string, count: number, mark
 // type에 따라 이력서 게시판 목록
 export const firstGetResumeNoticesQ = async (type: string, count: number) => {
   let asType = "";
-  let wherePosition = "r.position Is not null";
   if (type === "created") {
     asType = "unix_timestamp";
   }
-
-  console.log(wherePosition);
   const [boards] = await db.query(
     `
       SELECT 
@@ -130,8 +127,6 @@ export const firstGetResumeNoticesQ = async (type: string, count: number) => {
       ON b.hasResumeId = r.id
       WHERE
           b.hasResumeId IS NOT NULL 
-        AND
-          ${wherePosition}
       ORDER BY b.${type} DESC , b.id DESC
       LIMIT ?
       `,
@@ -185,6 +180,7 @@ export const moreGetResumeNoticesQ = async (type: string, count: number, mark: s
       `,
     [count]
   );
+  console.log("으악시바", boards);
   const result = {
     boardList: utils.jsonParse(boards),
     boardListCount: null,
