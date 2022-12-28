@@ -77,7 +77,7 @@ const CommentButtonWrapper = styled.div`
 const ResumeWrapper = styled.div`
     padding-bottom: 2rem;
     border-radius: 1rem;
-    background-color: rgba(0, 0, 0, 0.1);
+    border: 1px solid black;
     h3 {
         margin-left: 4rem;
     }
