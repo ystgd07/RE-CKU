@@ -580,12 +580,29 @@ export const savePointByBoard = async (data: { userId: number; boardId: number }
 
 export const randomBoardsQ = async (userId: number) => {
   const [random] = await db.query(
-    `SELECT id FROM board 
+    `SELECT id 
+     FROM board 
         WHERE id not in (
             SELECT boardId FROM board_like_maping WHERE userId = ?
             )
         ORDER BY RAND() LIMIT 1`,
     [userId]
   );
-  return utils.jsonParse(random)[0];
+  const [user] = await db.query(
+    `
+    SELECT 
+      chance
+    FROM user
+    WHERE 
+      id = ?
+  `,
+    [userId]
+  );
+  const boardId = utils.jsonParse(random)[0].id;
+  const chance = utils.jsonParse(user)[0].chance;
+  const result = {
+    boardId,
+    chance,
+  };
+  return result;
 };
