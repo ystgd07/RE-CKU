@@ -5,6 +5,7 @@ import { UserInfo } from 'components/User/UserInfo';
 import { Proofread } from 'components/User/Proofread';
 import axios from 'axios';
 import Layout from 'components/Layout';
+import { useNavigate } from 'react-router-dom';
 
 const token = localStorage.getItem('accessToken');
 
@@ -40,7 +41,8 @@ const Profile: React.FC = () => {
     const [modalText, setModalText] = useState('Content of the modal');
     const [imgUrl, setImgUrl] = useState('');
     const imgLoadRef: any = useRef();
-    //TODO: imgUrl update 500 ERR 백엔드와 상의
+    const navigate = useNavigate();
+
     const imgFileSend = async (body: any) => {
         try {
             const res = await await axios.post('/file/url', body);
@@ -102,18 +104,17 @@ const Profile: React.FC = () => {
         try {
             const token = localStorage.getItem('accessToken');
 
-            const mocks = await axios
-                .get('/users/individuals', {
-                    headers: { authorization: `Bearer ${token}` },
-                })
-                .then(res => res.data)
-                .then(res => res.data);
-
-            console.log(mocks);
-
-            setRes(mocks);
-        } catch (e) {
+            const mocks = await axios.get('/users/individuals', {
+                headers: { authorization: `Bearer ${token}` },
+            });
+            if (mocks.status === 200) {
+                const dumyRes = await mocks.data;
+                const realRes = await dumyRes.data;
+                setRes(realRes);
+            }
+        } catch (e: any) {
             console.log(e);
+            if (e.response.status !== 200) navigate('/*');
         }
     }
 
