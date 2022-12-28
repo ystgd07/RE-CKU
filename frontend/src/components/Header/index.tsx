@@ -31,7 +31,9 @@ const Header = () => {
                 <div>
                     <nav>
                         <ul>
-                            <li>상점</li>
+                            <li>
+                                <Link to="/match">상점</Link>
+                            </li>
                             <li>
                                 <Link to="/resume/list">이력서</Link>
                             </li>
