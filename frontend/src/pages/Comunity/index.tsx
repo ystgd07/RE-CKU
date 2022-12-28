@@ -188,7 +188,6 @@ const Comunity = () => {
                 url,
                 `?firstRequest=1&type=created&count=16&mark=&position=ALL`,
             );
-            console.log(res);
             setBoardList(res);
         } catch (err) {
             console.log(err);
