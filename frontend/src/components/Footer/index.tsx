@@ -11,7 +11,6 @@ const Container = styled.div`
 
 const Footer = () => {
     const year = new Date(Date.now()).getFullYear();
-    console.log(year);
     return <Container>Copyrigh {year}. RE-CHU All rights reserved</Container>;
 };
 
