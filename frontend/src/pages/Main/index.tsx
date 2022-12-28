@@ -56,6 +56,9 @@ const Title = styled.h2`
     font-size: 2.2rem;
     font-weight: 700;
     margin: 2rem 0;
+    :last-child {
+        margin-top: 5rem;
+    }
 `;
 
 const PostTitle = styled.h3`
@@ -137,15 +140,6 @@ const SkeletonPosts = () => {
             </Post>
         </>
     );
-};
-
-const contentStyle: React.CSSProperties = {
-    margin: 0,
-    height: '28rem',
-    color: '#fff',
-    lineHeight: '160px',
-    textAlign: 'center',
-    background: '#364d79',
 };
 
 const Main = () => {
@@ -306,7 +300,7 @@ const Main = () => {
                     )}
                 </Posts>
 
-                <Title></Title>
+                <Title>오늘의 일일 퀘스트</Title>
             </Wrapper>
         </Layout>
     );

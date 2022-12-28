@@ -188,7 +188,6 @@ const Comunity = () => {
             const res = await API.get(url, `?firstRequest=1&type=created&count=16&mark=`);
             setBoardList(res.boardList);
             setBoardNumber(res.boardCount);
-            console.log(res);
         } catch (err) {
             console.log(err);
         }
@@ -208,7 +207,6 @@ const Comunity = () => {
         } else {
             url = `/board/community`;
         }
-        console.log('URL =', url);
         try {
             const mark = boardList.slice(-1)[0].MARK;
             const res = await API.get(
