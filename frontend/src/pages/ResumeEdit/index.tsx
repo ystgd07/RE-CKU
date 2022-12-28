@@ -30,11 +30,10 @@ const Resume = () => {
 
     const [getCareerComponents, setGetCareerComponents] = useState<CareerData[]>([]);
     const [carrerIds, setCarrerIds] = useState<number[]>([]);
+    const [careerDataAll, setCareerDataAll] = useState<CareerData[]>([]);
 
     const [getProjectComponents, setGetProjectComponents] = useState<ProjectData[]>([]);
     const [projectIds, setProjectIds] = useState<number[]>([]);
-
-    const [mouseOverToggleBtn, setMouseOverToggleBtn] = useState<boolean>(false);
 
     const params = useParams();
     const resumeIds = params.id;
@@ -79,15 +78,27 @@ const Resume = () => {
         }
     };
 
-    const getJobCarrerData = async (ids: number[]) => {
-        const res = await Promise.all(
-            ids.map(id => {
-                return axios.get(`/my-portfolio/careers/${id}`).then(res => res.data.data);
-            }),
-        );
-        return res;
-    };
+    // const getJobCarrerData = async (ids: number[]) => {
 
+    //     const res = await Promise.all(
+    //         ids.map(id => {
+    //             return axios.get(`/my-portfolio/careers/${id}`).then(res => res.data.data);
+    //         }),
+    //     );
+    //     return res;
+    // };
+    const getJobCarrerData = async () => {
+        const data: any = [];
+
+        carrerIds.forEach(async (id: number) => {
+            const res = await axios.get(`/my-portfolio/careers/${id}`);
+            console.log(res.data.data, ' prop prop prop prop prop prop prop ');
+            data.push(res.data.data[0]);
+        });
+        setGetCareerComponents([...getCareerComponents, ...data]);
+        console.log(data, ' fail fail fail fail fail fail ');
+    };
+    console.log(getCareerComponents, 'success success success success success');
     const getProjectData = async (ids: number[]) => {
         const res = await Promise.all(
             ids.map(id => {
@@ -102,14 +113,14 @@ const Resume = () => {
     }, [resumeIds, token]);
 
     useEffect(() => {
-        getJobCarrerData(carrerIds).then(result => {
-            const newData = [];
-            for (let i = 0; i < result.length; i++) {
-                newData.push(...result[i]);
-                setGetCareerComponents(newData);
-            }
-        });
-
+        // getJobCarrerData(carrerIds).then(result => {
+        //     const newData = [];
+        //     for (let i = 0; i < result.length; i++) {
+        //         newData.push(...result[i]);
+        //         setGetCareerComponents(newData);
+        //     }
+        // });
+        getJobCarrerData();
         getProjectData(projectIds).then(result => {
             const newData = [];
             for (let i = 0; i < result.length; i++) {
@@ -162,10 +173,6 @@ const Resume = () => {
         setIsProjectFormToggle(true);
     };
     // console.log(addProject, ' addProject list');
-
-    const mouseOverToggle = () => {
-        setMouseOverToggleBtn(!mouseOverToggleBtn);
-    };
 
     const handleJobComponent = async (e: React.MouseEvent<HTMLButtonElement>, carrerId: number) => {
         const name = e.currentTarget.name;
@@ -271,11 +278,11 @@ const Resume = () => {
 
                                     {getCareerComponents.map((tem: CareerData, idx: number) => {
                                         return (
-                                            <ExistForm key={idx} onMouseOver={mouseOverToggle}>
+                                            <ExistForm key={idx}>
                                                 <div>
                                                     <h1>업무경험 {tem.careerId}</h1>
 
-                                                    {/* <ul className="customBtn">
+                                                    <ul className="customBtn">
                                                         <li>
                                                             <button
                                                                 type="button"
@@ -290,33 +297,7 @@ const Resume = () => {
                                                                 삭제
                                                             </button>
                                                         </li>
-                                                    </ul> */}
-                                                    {mouseOverToggleBtn ? (
-                                                        <ul
-                                                            className={`customBtn ${
-                                                                mouseOverToggleBtn
-                                                                    ? 'visible'
-                                                                    : 'hidden'
-                                                            }`}
-                                                        >
-                                                            <li>
-                                                                <button
-                                                                    type="button"
-                                                                    name="delete"
-                                                                    onClick={e =>
-                                                                        handleJobComponent(
-                                                                            e,
-                                                                            tem.careerId,
-                                                                        )
-                                                                    }
-                                                                >
-                                                                    삭제
-                                                                </button>
-                                                            </li>
-                                                        </ul>
-                                                    ) : (
-                                                        ''
-                                                    )}
+                                                    </ul>
                                                 </div>
                                                 <div className="existDiv">
                                                     <ul>

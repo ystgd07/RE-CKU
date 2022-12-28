@@ -96,6 +96,8 @@ const Job = ({
                 workNow: workFormDataState.workNow,
             });
 
+            console.log(res, ' resres rseres resres');
+
             if (res.status === 200) {
                 onCareerCreated(workFormDataState);
                 setIsWorkFormToggle(false);
