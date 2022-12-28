@@ -15,7 +15,7 @@ type ProjectFormState = {
     setAddProjectElement: React.Dispatch<React.SetStateAction<FormStore[]>>;
     addProjectElement: FormStore[];
     idx: number;
-    onProjectCreated: (state: any) => void;
+    // onProjectCreated: (state: any) => void;
 };
 
 const Project = ({
@@ -23,8 +23,8 @@ const Project = ({
     addProjectElement,
     setAddProjectElement,
     idx,
-    onProjectCreated,
-}: ProjectFormState) => {
+}: // onProjectCreated,
+ProjectFormState) => {
     const [searchStackToggle, setSearchStackToggle] = useState<boolean>(false);
     const [AllStacks, setAllStacks] = useState([]);
     const [stackInputValue, setStackInputValue] = useState<string>('');
@@ -131,7 +131,7 @@ const Project = ({
             });
 
             if (res.status === 200) {
-                onProjectCreated(projectFormDataState);
+                // onProjectCreated(projectFormDataState);
                 setIsProjectFormToggle(false);
             }
             console.log(res, ' project sususususususususuussusu');

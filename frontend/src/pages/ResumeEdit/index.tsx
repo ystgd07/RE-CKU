@@ -28,9 +28,8 @@ const Resume = () => {
     const [addJobElement, setAddJobElement] = useState<FormStore[]>([]);
     const [addProjectElement, setAddProjectElement] = useState<FormStore[]>([]);
 
-    const [getCareerComponents, setGetCareerComponents] = useState<CareerData[]>([]);
     const [carrerIds, setCarrerIds] = useState<number[]>([]);
-    const [careerDataAll, setCareerDataAll] = useState<CareerData[]>([]);
+    const [createCareerData, setCreateCareerData] = useState<CareerData[]>([]);
 
     const [getProjectComponents, setGetProjectComponents] = useState<ProjectData[]>([]);
     const [projectIds, setProjectIds] = useState<number[]>([]);
@@ -60,9 +59,7 @@ const Resume = () => {
 
             setResumeTitle(resumeTitle);
             setUserInfo(userInfoData);
-
-            const carrerId = careerData.map(e => e.careerId);
-            setCarrerIds(carrerId);
+            setCreateCareerData(careerData);
 
             const projectId = projectData.map(e => e.projectId);
             setProjectIds(projectId);
@@ -78,27 +75,6 @@ const Resume = () => {
         }
     };
 
-    // const getJobCarrerData = async (ids: number[]) => {
-
-    //     const res = await Promise.all(
-    //         ids.map(id => {
-    //             return axios.get(`/my-portfolio/careers/${id}`).then(res => res.data.data);
-    //         }),
-    //     );
-    //     return res;
-    // };
-    const getJobCarrerData = async () => {
-        const data: any = [];
-
-        carrerIds.forEach(async (id: number) => {
-            const res = await axios.get(`/my-portfolio/careers/${id}`);
-            console.log(res.data.data, ' prop prop prop prop prop prop prop ');
-            data.push(res.data.data[0]);
-        });
-        setGetCareerComponents([...getCareerComponents, ...data]);
-        console.log(data, ' fail fail fail fail fail fail ');
-    };
-    console.log(getCareerComponents, 'success success success success success');
     const getProjectData = async (ids: number[]) => {
         const res = await Promise.all(
             ids.map(id => {
@@ -113,14 +89,6 @@ const Resume = () => {
     }, [resumeIds, token]);
 
     useEffect(() => {
-        // getJobCarrerData(carrerIds).then(result => {
-        //     const newData = [];
-        //     for (let i = 0; i < result.length; i++) {
-        //         newData.push(...result[i]);
-        //         setGetCareerComponents(newData);
-        //     }
-        // });
-        getJobCarrerData();
         getProjectData(projectIds).then(result => {
             const newData = [];
             for (let i = 0; i < result.length; i++) {
@@ -182,9 +150,9 @@ const Resume = () => {
                 await axios.patch(`/my-portfolio/careers/${carrerId}`);
                 break;
             case 'delete': {
-                const fltered = getCareerComponents.filter(e => e.careerId !== carrerId);
+                const fltered = createCareerData.filter(e => e.careerId !== carrerId);
                 await axios.delete(`/my-portfolio/careers/${carrerId}`);
-                setGetCareerComponents(fltered);
+                setCreateCareerData(fltered);
                 break;
             }
 
@@ -276,7 +244,7 @@ const Resume = () => {
                                         </span>
                                     </FormTitle>
 
-                                    {getCareerComponents.map((tem: CareerData, idx: number) => {
+                                    {createCareerData.map((tem: CareerData, idx: number) => {
                                         return (
                                             <ExistForm key={idx}>
                                                 <div>
@@ -302,8 +270,9 @@ const Resume = () => {
                                                 <div className="existDiv">
                                                     <ul>
                                                         <li>
-                                                            {tem.startDate} ~ &nbsp;
-                                                            {tem.workNow ? tem.endDate : '재직중'}
+                                                            {`${tem.startDate}~${
+                                                                tem.workNow ? tem.endDate : '재직중'
+                                                            }`}
                                                         </li>
                                                     </ul>
 
@@ -328,15 +297,13 @@ const Resume = () => {
                                                 <Job
                                                     key={idx}
                                                     onCareerCreated={state => {
-                                                        setCarrerIds([...carrerIds]);
-                                                        setGetCareerComponents([
-                                                            ...getCareerComponents,
-                                                            state,
+                                                        setCreateCareerData([
+                                                            ...createCareerData,
+                                                            ...state,
                                                         ]);
                                                     }}
                                                     setIsWorkFormToggle={setIsWorkFormToggle}
                                                     setAddJobElement={setAddJobElement}
-                                                    jobItem={jobItem}
                                                     addJobElement={addJobElement}
                                                     idx={idx}
                                                 />
@@ -361,13 +328,9 @@ const Resume = () => {
                                                     setIsProjectFormToggle={setIsProjectFormToggle}
                                                     setAddProjectElement={setAddProjectElement}
                                                     addProjectElement={addProjectElement}
-                                                    onProjectCreated={state => {
-                                                        setProjectIds([...projectIds]);
-                                                        setGetCareerComponents([
-                                                            ...getProjectComponents,
-                                                            state,
-                                                        ]);
-                                                    }}
+                                                    // onProjectCreated={state => {
+
+                                                    // }}
                                                     idx={idx}
                                                 />
                                             );

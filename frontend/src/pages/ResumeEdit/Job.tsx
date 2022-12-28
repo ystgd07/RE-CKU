@@ -1,6 +1,6 @@
 import { DatePicker } from 'antd';
 import React, { FunctionComponent, SetStateAction, useEffect, useState } from 'react';
-import { FormStore, WorkFormData } from 'models/resumeEdit-model';
+import { FormStore, WorkFormData, CareerData } from 'models/resumeEdit-model';
 import axios, { AxiosResponse } from 'axios';
 import { useParams } from 'react-router-dom';
 
@@ -12,7 +12,6 @@ type WorkFormState = {
     setIsWorkFormToggle: React.Dispatch<React.SetStateAction<boolean>>;
     setAddJobElement: React.Dispatch<React.SetStateAction<FormStore[]>>;
     addJobElement: FormStore[];
-    jobItem: React.Dispatch<React.SetStateAction<FormStore[]>>;
     idx: number;
     onCareerCreated: (state: any) => void;
 };
@@ -20,7 +19,6 @@ type WorkFormState = {
 const Job = ({
     setIsWorkFormToggle,
     setAddJobElement,
-    jobItem,
     addJobElement,
     idx,
     onCareerCreated,
@@ -78,7 +76,6 @@ const Job = ({
 
     const validationForm = async (e: React.FormEvent) => {
         e.preventDefault();
-        // const stilwork = isStilWork ? workFormDataState.endDate === '' : '';
 
         if (workFormDataState.startDate === '') {
             alert('필수정보를 입력해주세요.');
@@ -96,14 +93,15 @@ const Job = ({
                 workNow: workFormDataState.workNow,
             });
 
-            console.log(res, ' resres rseres resres');
+            const sertId = res.data.data[0].insertId;
+            const result = await axios.get(`/my-portfolio/careers/${sertId}`);
 
             if (res.status === 200) {
-                onCareerCreated(workFormDataState);
+                onCareerCreated(result.data.data);
                 setIsWorkFormToggle(false);
             }
 
-            console.log(res, ' data state');
+            console.log(res, ' data state', result);
         } catch (err: unknown) {
             console.log(err);
         }
