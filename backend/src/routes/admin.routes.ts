@@ -87,8 +87,8 @@ adminRoute.get("/worst-users/:userId", async (req, res, next) => {
 });
 
 // 2-5. 검색
-adminRoute.get("/users/search", async (req, res, next) => {
-  const keyword = req.body.keyword;
+adminRoute.get("/users/search/:keyword", async (req, res, next) => {
+  const keyword = req.params.keyword;
 
   try {
     const findUser = await adminService.findUser(keyword);
