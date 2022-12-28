@@ -67,7 +67,7 @@ const Matched = () => {
             const res = await API.post(`/users/match/success`, data);
             console.log('complateMatching');
             console.log(res);
-            // navigate('/match');
+            navigate('/match');
         } catch (e) {
             console.log(e);
         }

@@ -36,7 +36,7 @@ export class Board {
   @Column()
   title: string;
 
-  @Column({ nullable: true, default: null })
+  @Column({ type: "varchar", length: 10000, default: "빈값방지" })
   content: string;
 
   @Column({ default: null, nullable: true })

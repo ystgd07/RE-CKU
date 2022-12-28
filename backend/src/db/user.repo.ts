@@ -266,7 +266,7 @@ export const findMatchByMatchingId = async (matchingId: number): Promise<Match> 
   return result;
 };
 
-export const findMatchQ = async (userId: number): Promise<MatchInfo> => {
+export const findMatchQ = async (userId: number): Promise<MatchInfo | false> => {
   const result: MatchInfo = {
     matchInfo: {
       matchingId: 0,
@@ -302,14 +302,13 @@ export const findMatchQ = async (userId: number): Promise<MatchInfo> => {
     [userId]
   );
   const parseConnect = utils.jsonParse(connect)[0];
-  console.log("이상이상", parseConnect);
+  console.log("현재 진행중인 매칭", parseConnect);
   result.matchInfo = parseConnect;
-  console.log(utils.jsonParse(connect)[0]);
   if (result.matchInfo?.step === "요청중") {
     result.cancelAble = true;
   }
   if (!parseConnect) {
-    return null;
+    return false;
   }
   return result;
 };
@@ -382,15 +381,32 @@ export const acceptMatchQ = async (matchingId: number, menteeId: number): Promis
 };
 
 // 매칭 끝내기버튼
-export const successMatchQ = async (matchingId: number, data: { role: string }): Promise<string> => {
-  // 멘티로 들어오면 count = ? mentee = ?
-  console.log(data.role);
+export const successMatchQ = async (
+  matchingId: number,
+  data: { role: string; deleteMenteeIdQuery?: string }
+): Promise<string> => {
+  // 멘티의 완료 요청이라면 멘티 테이블의 matching을 0으로 바꾸어주어야 고인물 찾기때 오류가 안남.
+  if (data.deleteMenteeIdQuery) {
+    console.log("멘티제거");
+    await db.query(
+      `
+      UPDATE user 
+      SET 
+        matching = 0 
+      WHERE 
+        id IN (
+            SELECT menteeId FROM connect WHERE id = ?
+          );
+    `,
+      [matchingId]
+    );
+  }
   const [updated] = await db.query(
     `
     UPDATE connect
-    SET 
-      ${data.role} = 1
-    WHERE 
+    SET
+      ${data.role} = 1 ${data.deleteMenteeIdQuery}
+    WHERE
       id = ?
   `,
     [matchingId]
@@ -466,7 +482,7 @@ type ZZ = {
 // 고인물에게 들어온 요청
 export const getRequestCorrectionQ = async (userId: number) => {
   // step = 요청중, mentoId =userId , complate = 0인것들을 created DESC 로 뱉기
-  console.log("이까진 오나?");
+  console.log("이까진 오나?", userId);
   const [list] = await db.query(
     `
     SELECT 
@@ -475,15 +491,12 @@ export const getRequestCorrectionQ = async (userId: number) => {
       c.menteeId,
       u.username as menteeName,
       u.email as menteeEmail,
-      c.created,
+      c.created
     FROM connect c
     JOIN user u
-    ON u.id = menteeId 
+    ON u.id = c.menteeId
     WHERE 
-      step = '요청중' OR step = '진행중' AND
-      
-      mentoId = ? AND
-      mentoComplate <0
+      c.step != '완료' AND mentoId = ? AND mentoComplate = 0 
     ORDER BY created DESC
   `,
     [userId]

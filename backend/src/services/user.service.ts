@@ -10,19 +10,18 @@ import { EmailAuth, UserProfile } from "../db/schemas";
 // 매칭 관련
 export const getRotListOrMatchingStatus = async (
   userId: number
-): Promise<userRepo.RotList | userRepo.MatchInfo> => {
+): Promise<userRepo.RotList | userRepo.MatchInfo | false> => {
   try {
     const mentee = await userRepo.unIncludePasswordUserInfoQ(userId);
     // 매칭이 없을경우 리스트 O
-    console.log("어디서");
-    if (!mentee.matching) {
+    console.log("현재 매칭중인 id :", mentee.matching);
+    if (mentee.matching === 0) {
+      console.log("고인물 리스트 리턴 로직");
       const list = await userRepo.getRotListQ(userId);
-      console.log("어디서");
       return list;
     }
     // 이미 매칭중이라면 리스트 X 현재 매칭정보 O
     const connect = await userRepo.findMatchQ(userId);
-    console.log(connect);
     return connect;
   } catch (err) {
     console.log(err.message);
@@ -86,8 +85,9 @@ export const successMatch = async (
   matchingId: number,
   role: string
 ): Promise<string> => {
-  const data: { role: string } = {
+  const data: { role: string; deleteMenteeIdQuery?: string } = {
     role: "",
+    deleteMenteeIdQuery: "",
   };
   switch (role) {
     case "mento":
@@ -95,6 +95,7 @@ export const successMatch = async (
       break;
     default:
       data.role = "menteeComplate";
+      data.deleteMenteeIdQuery = ", menteeId = 0";
       break;
   }
 
@@ -117,9 +118,12 @@ export const successMatch = async (
 };
 export const getRequestCorrection = async (userId: number) => {
   try {
+    console.log(userId);
     const list = await userRepo.getRequestCorrectionQ(userId);
+    console.log("zzz");
     return list;
   } catch (err) {
+    console.log(err.message);
     throw new Error(`500, 서버 오류`);
   }
 };

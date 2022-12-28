@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styled from '@emotion/styled';
 import Layout from 'components/Layout';
+import { calcElapsed } from 'utils/format';
 import { Link } from 'react-router-dom';
 import {
     Button,
@@ -14,32 +16,43 @@ import {
     Space,
     Skeleton,
 } from 'antd';
+import { LikeOutlined, CommentOutlined, LikeFilled } from '@ant-design/icons';
 import API from 'utils/api';
 
 const Wrapper = styled.div`
     display: flex;
     flex-direction: column;
+    align-items: center;
     width: 100%;
     font-size: 1.6rem;
 `;
 
 const Posts = styled.div`
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-template-columns: 1fr;
     grid-column-gap: 2rem;
     grid-row-gap: 4rem;
+    @media screen and (min-width: 580px) {
+        grid-template-columns: 1fr 1fr;
+    }
+    @media screen and (min-width: 990px) {
+        grid-template-columns: 1fr 1fr 1fr;
+    }
+    @media screen and (min-width: 1280px) {
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+    }
 `;
 
 const Post = styled.div`
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    width: 28rem;
-    height: 21rem;
+    width: 24rem;
+    height: 16rem;
     border-radius: 1rem;
     background-color: #fffbe3;
     border: 0.1rem solid #fffbe3;
-    padding: 1rem;
+    padding: 3rem;
+    gap: 0.5rem;
     cursor: pointer;
     &:hover {
         border-color: #ccb94c;
@@ -47,6 +60,7 @@ const Post = styled.div`
 `;
 
 const Title = styled.h2`
+    width: 100%;
     font-size: 2.2rem;
     font-weight: 700;
     margin: 2rem 0;
@@ -59,7 +73,46 @@ const PostTitle = styled.h3`
 
 const PostContents = styled.p`
     font-size: 1.8rem;
-    background-color: yellowgreen;
+    display: -webkit-box;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+`;
+
+const PostsProfile = styled.div`
+    margin: 1rem 0;
+    display: flex;
+`;
+
+const PostsProfileImg = styled.img`
+    width: 4rem;
+    height: 4rem;
+    border-radius: 50%;
+`;
+
+const PostsProfileInfoWrapper = styled.div`
+    display: flex;
+    margin-left: 1.5rem;
+    flex-direction: column;
+`;
+
+const PostsCreated = styled.p`
+    font-size: 1.4rem;
+    margin-top: 0.6rem;
+    color: #666;
+`;
+
+const PostsIconWrapper = styled.div`
+    bottom: 0;
+    display: flex;
+    align-items: center;
+`;
+
+const PostsIcon = styled.span`
+    width: 5rem;
+    display: flex;
+    justify-content: space-evenly;
 `;
 
 interface IBoardList {
@@ -99,10 +152,11 @@ const Main = () => {
     const [hotLikesBoardList, setHotLikesBoardList] = useState<IBoardList[]>([]);
     const [hotCommentBoardList, setHotCommentBoardList] = useState<IBoardList[]>([]);
 
+    const navigate = useNavigate();
+
     const fetchLatestBoard = async () => {
         try {
             const res = await API.get('/board', '?filter=created&perPage=4');
-            console.log(res);
             setLatestBoardList(res);
         } catch (err) {
             console.log(err);
@@ -111,7 +165,8 @@ const Main = () => {
 
     const fetchHotLikesBoard = async () => {
         try {
-            console.log('fetch');
+            const res = await API.get('/board', '?filter=likeCnt&perPage=4');
+            setHotLikesBoardList(res);
         } catch (err) {
             console.log(err);
         }
@@ -119,7 +174,8 @@ const Main = () => {
 
     const fetchHotCommentBoard = async () => {
         try {
-            console.log('fetch');
+            const res = await API.get('/board', '?filter=commentCnt&perPage=4');
+            setHotCommentBoardList(res);
         } catch (err) {
             console.log(err);
         }
@@ -127,7 +183,10 @@ const Main = () => {
 
     useEffect(() => {
         fetchLatestBoard();
+        fetchHotLikesBoard();
+        fetchHotCommentBoard();
     }, []);
+
     // \[?(!)(?'alt'\[[^\]\[]*\[?[^\]\[]*\]?[^\]\[]*)\]\((?'url'[^\s]+?)(?:\s+(["'])(?'title'.*?)\4)?\)
 
     return (
@@ -139,40 +198,101 @@ const Main = () => {
                         <SkeletonPosts />
                     ) : (
                         latestBoardList.map((item, index) => (
-                            <Post key={index}>
+                            <Post key={index} onClick={() => navigate(`/post/${item.postId}`)}>
                                 <PostTitle>{item.postTitle}</PostTitle>
                                 <PostContents>{item.postDescription}</PostContents>
+                                <PostsProfile>
+                                    <PostsProfileImg src={item.userProfileSrc} />
+                                    <PostsProfileInfoWrapper>
+                                        <p>{item.username}</p>
+                                        <PostsCreated>
+                                            {calcElapsed(item.createdAt)} 전
+                                        </PostsCreated>
+                                    </PostsProfileInfoWrapper>
+                                </PostsProfile>
+                                <PostsIconWrapper>
+                                    <PostsIcon>
+                                        <LikeOutlined />
+                                        {item.likeCount}
+                                    </PostsIcon>
+                                    <PostsIcon>
+                                        <CommentOutlined />
+                                        {item.commentCount}
+                                    </PostsIcon>
+                                </PostsIconWrapper>
                             </Post>
                         ))
                     )}
                 </Posts>
 
                 <Title>인기 게시물</Title>
-                <Posts>{hotLikesBoardList.length === 0 ? <SkeletonPosts /> : ''}</Posts>
+                <Posts>
+                    {hotLikesBoardList.length === 0 ? (
+                        <SkeletonPosts />
+                    ) : (
+                        hotLikesBoardList.map((item, index) => (
+                            <Post key={index} onClick={() => navigate(`/post/${item.postId}`)}>
+                                <PostTitle>{item.postTitle}</PostTitle>
+                                <PostContents>{item.postDescription}</PostContents>
+                                <PostsProfile>
+                                    <PostsProfileImg src={item.userProfileSrc} />
+                                    <PostsProfileInfoWrapper>
+                                        <p>{item.username}</p>
+                                        <PostsCreated>
+                                            {calcElapsed(item.createdAt)} 전
+                                        </PostsCreated>
+                                    </PostsProfileInfoWrapper>
+                                </PostsProfile>
+                                <PostsIconWrapper>
+                                    <PostsIcon>
+                                        <LikeOutlined />
+                                        {item.likeCount}
+                                    </PostsIcon>
+                                    <PostsIcon>
+                                        <CommentOutlined />
+                                        {item.commentCount}
+                                    </PostsIcon>
+                                </PostsIconWrapper>
+                            </Post>
+                        ))
+                    )}
+                </Posts>
 
                 <Title>가장 토론이 활발한 게시물</Title>
-                <Posts>{hotCommentBoardList.length === 0 ? <SkeletonPosts /> : ''}</Posts>
+                <Posts>
+                    {hotCommentBoardList.length === 0 ? (
+                        <SkeletonPosts />
+                    ) : (
+                        hotCommentBoardList.map((item, index) => (
+                            <Post key={index} onClick={() => navigate(`/post/${item.postId}`)}>
+                                <PostTitle>{item.postTitle}</PostTitle>
+                                <PostContents>{item.postDescription}</PostContents>
+                                <PostsProfile>
+                                    <PostsProfileImg src={item.userProfileSrc} />
+                                    <PostsProfileInfoWrapper>
+                                        <p>{item.username}</p>
+                                        <PostsCreated>
+                                            {calcElapsed(item.createdAt)} 전
+                                        </PostsCreated>
+                                    </PostsProfileInfoWrapper>
+                                </PostsProfile>
+                                <PostsIconWrapper>
+                                    <PostsIcon>
+                                        <LikeOutlined />
+                                        {item.likeCount}
+                                    </PostsIcon>
+                                    <PostsIcon>
+                                        <CommentOutlined />
+                                        {item.commentCount}
+                                    </PostsIcon>
+                                </PostsIconWrapper>
+                            </Post>
+                        ))
+                    )}
+                </Posts>
 
                 <Title>일일 퀘스트</Title>
             </Wrapper>
-            <div>
-                <div>
-                    <div>This is Main</div>
-                    <Link to="/resume">이력서 페이지 가기</Link>
-                    <div>
-                        <Link to={`/post/create`}>게시물 생성하기</Link>
-                    </div>
-                    <div>
-                        <Link to={`/post/76`}>게시물 상세 페이지</Link>
-                    </div>
-                    <div>
-                        <Link to="/login">로그인</Link>
-                    </div>
-                    <div>
-                        <Link to="/myportfolio">포폴</Link>
-                    </div>
-                </div>
-            </div>
         </Layout>
     );
 };

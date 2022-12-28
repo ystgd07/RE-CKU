@@ -179,7 +179,6 @@ function PostCreate() {
             return;
         }
 
-        // const resumeId = isResume ? 0 : 0;
         const data = {
             ...form,
             content,

@@ -5,7 +5,7 @@ import {
     WorkFormData,
     ProjectFormData,
     FormStore,
-} from 'models/resume-model';
+} from 'models/resumeEdit-model';
 import axios, { AxiosResponse } from 'axios';
 import { useParams } from 'react-router-dom';
 import { GiCancel } from '@react-icons/all-files/gi/GiCancel';
