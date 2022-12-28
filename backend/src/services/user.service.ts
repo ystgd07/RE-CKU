@@ -262,6 +262,7 @@ export const updateInfo = async (
     }
     await updateUser(id, data);
   } catch (err) {
+    console.log(err.message);
     throw Error("500, 서버 오류");
   }
 
