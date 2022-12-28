@@ -1,6 +1,6 @@
 import { DatePicker } from 'antd';
 import React, { FunctionComponent, SetStateAction, useEffect, useState } from 'react';
-import { FormStore, WorkFormData } from 'models/resume-model';
+import { FormStore, WorkFormData } from 'models/resumeEdit-model';
 import axios, { AxiosResponse } from 'axios';
 import { useParams } from 'react-router-dom';
 

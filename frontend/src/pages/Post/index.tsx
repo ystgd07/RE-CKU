@@ -19,6 +19,9 @@ const Wrapper = styled.div`
     display: flex;
     flex-direction: column;
     width: 100%;
+    :last-child {
+        margin-bottom: 5rem;
+    }
 `;
 const Profile = styled.div`
     width: 100%;
@@ -75,12 +78,9 @@ const CommentButtonWrapper = styled.div`
 `;
 
 const ResumeWrapper = styled.div`
-    padding-bottom: 2rem;
+    padding: 2rem;
     border-radius: 1rem;
-    background-color: rgba(0, 0, 0, 0.1);
-    h3 {
-        margin-left: 4rem;
-    }
+    border: 1px solid black;
 `;
 
 interface IBoardInfo {
