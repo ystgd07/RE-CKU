@@ -35,3 +35,7 @@ export const H4 = styled.h1`
     border-radius: 10px;
     margin: 10px;
 `;
+
+export const P = styled.p`
+    margin: 10px;
+`;
