@@ -158,7 +158,7 @@ const Main = () => {
     const fetchLatestBoard = async () => {
         try {
             const res = await API.get('/board', '?filter=created&perPage=4');
-            setLatestBoardList(res);
+            setLatestBoardList(res.boardList);
         } catch (err) {
             console.log(err);
         }
@@ -167,7 +167,7 @@ const Main = () => {
     const fetchHotLikesBoard = async () => {
         try {
             const res = await API.get('/board', '?filter=likeCnt&perPage=4');
-            setHotLikesBoardList(res);
+            setHotLikesBoardList(res.boardList);
         } catch (err) {
             console.log(err);
         }
@@ -176,7 +176,7 @@ const Main = () => {
     const fetchHotCommentBoard = async () => {
         try {
             const res = await API.get('/board', '?filter=commentCnt&perPage=4');
-            setHotCommentBoardList(res);
+            setHotCommentBoardList(res.boardList);
         } catch (err) {
             console.log(err);
         }
