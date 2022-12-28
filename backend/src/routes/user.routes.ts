@@ -163,8 +163,7 @@ userRoute.patch("/individuals", tokenValidator, async (req, res, next) => {
   const gitHubUrl = req.body.gitHubUrl;
   const avatarUrl = req.body.avatarUrl;
   const working = req.body.working;
-  console.log("아바타 유알엘", avatarUrl);
-  // const avatarUrl = req.body.avatarUrl;
+  console.log("working value =", req.body.working);
   const toUpdate = {
     ...(password && { password }),
     ...(phoneNumber && { phoneNumber }),
@@ -172,6 +171,10 @@ userRoute.patch("/individuals", tokenValidator, async (req, res, next) => {
     ...(gitHubUrl && { gitHubUrl }),
     ...(working && { working }),
   };
+  // 0값으로 들어오면 위 코드로 잡히지 않음.
+  if (req.body.working === 0) {
+    toUpdate.working = 0;
+  }
   console.log(toUpdate);
   try {
     const update = await userService.updateInfo(id, toUpdate);
