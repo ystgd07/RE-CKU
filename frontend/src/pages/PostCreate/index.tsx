@@ -179,6 +179,7 @@ function PostCreate() {
             return;
         }
 
+        // const resumeId = isResume ? 0 : 0;
         const data = {
             ...form,
             content,
@@ -350,7 +351,7 @@ function PostCreate() {
                     />
                 </Wrapper>
                 <Wrapper>
-                    {/* <Title level={4}>태그</Title>
+                    <Title level={4}>태그</Title>
                     <TagWrapper>
                         {hashTags !== '' &&
                             hashTags.split(',').map((item, index) => (
@@ -366,7 +367,7 @@ function PostCreate() {
                         value={tag}
                         onChange={handleTagInput}
                         onKeyDown={onKeyDown}
-                    /> */}
+                    />
                 </Wrapper>
                 <ButtonDiv>
                     <Button type="default" size="large">

@@ -86,8 +86,8 @@ export class User {
   @Column({ default: false })
   working: boolean;
 
-  // @Column({ default: false })
-  // matching: boolean;
+  @Column({ default: false })
+  matching: boolean;
 
   @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP" })
   created: Date;

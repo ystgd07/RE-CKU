@@ -1,41 +1,71 @@
-export interface careerDataRes {
-    company: string;
-    endDate: string;
-    careerId: number;
-    notDevelop: number;
-    position: string;
-    reward: string;
-    startDate: string;
-    resumeId: number;
-    workNow: number;
+export interface ResumeDetailModel {
+    careerData: [];
+    msg: string;
+    projectData: [];
+    resumeData: ResumeData[];
+    userData: UserData;
 }
 
-export interface projectDataRes {
-    projectId: number;
+export interface ResumeData {
+    userId: number;
+    intro?: string;
+    resumeName: string;
+    position?: string;
+    updatedAt: string;
+    resumeId: number;
+    title: string;
+}
+
+export interface UserData {
+    avaterUrl?: string;
+    created: string;
+    email: string;
+    id: number;
+    phoneNumber: string;
+    username: string;
+}
+
+export interface WorkFormData {
+    company: string;
+    position: string;
+    notDevlop: boolean;
+    workNow: boolean;
+    startDate: string;
+    endDate: string;
+    reward: string;
+}
+
+export interface ProjectFormData {
+    projectName: string;
+    year: string;
     information: string;
     link1: string;
     link2: string;
-    projectName: string;
-    resumeId: number;
-    year: string;
+    stacks: string[];
 }
 
-export interface resumeDataRes {
-    resumeId: number;
-    intro: string;
-    resumeName: string;
+export interface FormStore {
+    list: number;
+    state: boolean;
+}
+
+export interface CareerData {
+    careerId: number;
+    company: string;
     position: string;
-    updatedAt: string;
-    userId: number;
+    notDevlop: boolean;
+    workNow: boolean;
+    startDate: string;
+    endDate: string;
+    reward: string;
 }
 
-export interface userDataRes {
-    avatarUrl: string;
-    created: string;
-    id: number;
-    email: string;
-    phoneNumber: string;
-    username: string;
-    password: string;
-    point: number;
+export interface ProjectData {
+    projectId: number;
+    projectName: string;
+    year: string;
+    information: string;
+    link1: string;
+    link2: string;
+    stacks: string[];
 }

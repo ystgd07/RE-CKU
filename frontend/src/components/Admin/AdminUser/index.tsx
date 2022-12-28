@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
 import {
     Layout,
     Avatar,
@@ -12,10 +11,8 @@ import {
     Row,
     Skeleton,
     Divider,
-    Pagination,
 } from 'antd';
-import type { PaginationProps } from 'antd';
-import API from 'utils/api';
+// import InfiniteScroll from 'react-infinite-scroll-component';
 import axios from 'axios';
 import styled from '@emotion/styled';
 const { Content } = Layout;
@@ -78,94 +75,30 @@ interface userDataRes {
 
 const AdminContent: React.FC = () => {
     const [userData, setUserData] = useState<userDataRes[]>([]);
-    const [searchEmail, setSearchEmail] = useState<string>('');
-    const [current, setCurrent] = useState<number>(1);
-    const [totalpages, setTotalPages] = useState<number>(1);
-    const [searchpage, setSearchpage] = useState<number>(0);
+    const [searchEmail, setSearchEmail] = useState('');
     const [point, setPoint] = useState();
-    const [count, setCount] = useState<number>(4);
-    const navigate = useNavigate();
-
     const {
         token: { colorBgContainer },
     } = theme.useToken();
 
-    async function getPages() {
+    async function getUserId() {
         try {
-            const cnt = 4;
-            setCount(cnt);
-            const res = await API.get(`/admin/users/pages`, `?count=${count}`);
-            setTotalPages(res);
-            getCountPage(current);
-        } catch (e) {
-            console.log(e);
-        }
-    }
-    async function getSearchUser(page: number) {
-        try {
-            if (searchEmail === '') {
-                getPages();
-            } else {
-                console.log('searchEmail', typeof searchEmail);
-                const res = await API.get(`/admin/users/search`, `${searchEmail}`);
-                console.log('getPages😀');
-                console.log('res', res.length);
-                setTotalPages(Math.ceil(res.length / 4));
-                // getCountPage(current);
-                // setUserData(res);
-                searchPage(res, page);
-                setSearchpage(1);
-            }
-        } catch (e) {
-            console.log(e);
-        }
-    }
-
-    async function searchPage(res: any, current: number) {
-        try {
-            const data = res;
-            const arr = [];
-            for (let i = 0; i < data.length; i += 4) {
-                arr.push(data.slice(i, i + 4));
-            }
-            console.log('arr', arr);
-            console.log('page', current);
-            setUserData(arr[current - 1]);
-            console.log('arr[page - 1]', arr[current - 1]);
-        } catch (e) {
-            console.log(e);
-        }
-    }
-
-    async function getCountPage(page: number) {
-        try {
-            const res = await API.get(`/admin/users`, `?count=${count}&pages=${page}`);
+            const res = await axios.get(`/admin/users`);
             console.log('😀');
-            setUserData(res);
-            console.log('searchpage', searchpage);
-            setSearchpage(0);
+            console.log(res.data.data);
+            setUserData(res.data.data);
         } catch (e) {
             console.log(e);
         }
     }
-
-    const onChange: PaginationProps['onChange'] = page => {
-        if (searchpage === 0) {
-            console.log('전부');
-            setCurrent(page);
-            getCountPage(page);
-        } else {
-            console.log('검색');
-            setCurrent(page);
-            // getSearchUser();
-            getSearchUser(page);
-        }
-    };
-
     async function updatePoint(userId: any) {
         try {
+            console.log(point);
+            // console.log(e.item.userId);
             const res = await axios.patch(`/admin/users/${userId}`, { point: point });
+
             console.log('😀');
+            console.log(res);
             setUserData(res.data.data);
         } catch (e) {
             console.log(e);
@@ -173,9 +106,16 @@ const AdminContent: React.FC = () => {
     }
 
     useEffect(() => {
-        getPages();
+        getUserId();
     }, []);
 
+    function onSearchUser(searchEmail: string) {
+        if (searchEmail === '') {
+            getUserId();
+        }
+        const searchUser = userData.filter((data: any) => data.email.includes(searchEmail));
+        setUserData(searchUser);
+    }
     const onChangeActive = async (userId: string, active: boolean): Promise<void> => {
         // const onChangeActivetrue = async (userId: any) => {
         try {
@@ -188,7 +128,16 @@ const AdminContent: React.FC = () => {
             console.log(e);
         }
     };
-
+    // const onChangeActivefalse = async (userId: any) => {
+    //     try {
+    //         console.log(userId);
+    //         const res = await axios.patch(`/admin/users/${userId}`, { active: 1 });
+    //         console.log('1');
+    //         setUserData(res.data.data);
+    //     } catch (e) {
+    //         console.log(e);
+    //     }
+    // };
     return (
         <>
             <Content
@@ -209,18 +158,27 @@ const AdminContent: React.FC = () => {
                         <Col span={50}>
                             <Search
                                 placeholder="검색할 이메일을 입력해주세요"
-                                onSearch={() => getSearchUser(current)}
+                                // onSearch={() => onSearchUser(searchEmail)}
                                 enterButton
-                                onChange={e => {
-                                    setSearchEmail(e.target.value);
-                                }}
-                                value={searchEmail}
+                                // onChange={e => {
+                                //     setSearchEmail(e.target.value);
+                                // }}
+                                onChange={e => onSearchUser(e.target.value)}
+                                // value={searchEmail}
                             />
                         </Col>
                     </Row>
                 </div>
 
                 <br />
+                {/* <InfiniteScroll
+                    dataLength={userData.length}
+                    next={userData}
+                    hasMore={userData.length < 50}
+                    loader={<Skeleton avatar paragraph={{ rows: 1 }} active />}
+                    endMessage={<Divider plain>It is all, nothing more 🤐</Divider>}
+                    scrollableTarget="scrollableDiv"
+                > */}
                 <List
                     itemLayout="horizontal"
                     dataSource={userData}
@@ -228,7 +186,7 @@ const AdminContent: React.FC = () => {
                         <List.Item>
                             <List.Item.Meta
                                 key={item.userId}
-                                avatar={<Avatar size={64} src={item.avatarUrl} />}
+                                avatar={<Avatar src={item.avatarUrl} />}
                                 title={
                                     <>
                                         {item.email}/{item.username}
@@ -263,6 +221,7 @@ const AdminContent: React.FC = () => {
                                                             onSearch={() =>
                                                                 updatePoint(item.userId)
                                                             }
+                                                            // value={point}
                                                             onChange={(e: any) => {
                                                                 setPoint(e.target.value);
                                                             }}
@@ -272,15 +231,16 @@ const AdminContent: React.FC = () => {
                                             </div>
                                         </div>
                                         <div>
-                                            활동
+                                            활동 :
                                             <Switch
                                                 checked={item.active === 1}
+                                                // onChange={() => onChangeActive}
                                                 onClick={() => {
                                                     item.active === 1
                                                         ? onChangeActive(String(item.userId), false)
                                                         : onChangeActive(String(item.userId), true);
                                                 }}
-                                                // size="small"
+                                                size="small"
                                             />
                                         </div>
                                     </div>
@@ -289,19 +249,7 @@ const AdminContent: React.FC = () => {
                         </List.Item>
                     )}
                 />
-
-                <div
-                    style={{
-                        display: 'flex',
-                        justifyContent: 'center',
-                    }}
-                >
-                    <Pagination
-                        defaultCurrent={current}
-                        total={totalpages * 10}
-                        onChange={onChange}
-                    />
-                </div>
+                {/* </InfiniteScroll> */}
             </Content>
         </>
     );

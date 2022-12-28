@@ -3,11 +3,14 @@ import styled from '@emotion/styled';
 export const MobileDiv = styled.div`
     display: flex;
     flex-direction: column;
+    /* width: 100%; */
     justify-content: start;
+    /* max-width: 1280px; */
     min-width: 320px;
     margin: 2% auto 0;
     text-align: start;
     align-items: center;
+    /* background-color: #b4c1db; */
     opacity: 0.8;
     border-radius: 5px;
 

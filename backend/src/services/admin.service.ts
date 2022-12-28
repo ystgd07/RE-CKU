@@ -45,13 +45,6 @@ export const findReport = async (userId: number) => {
   return reportInfo;
 };
 
-// 2-5. 검색
-export const findUser = async (keyword: string) => {
-  const findUser = await adminRepo.findUserQ(keyword);
-
-  return findUser;
-};
-
 // 3-1. 포인트 / 비활성화
 export const updateUser = async (userId: number, updateInfo: Record<string, string | number>, count: number, offset: number) => {
   const updatedUser = await adminRepo.updateUserQ(userId, updateInfo);

@@ -103,7 +103,6 @@ export const InfoModal: React.FC = () => {
                     <Form.Item
                         name="newpassword"
                         rules={[{ required: true, message: 'Please input your Password!' }]}
-                        style={{ marginBottom: '5px' }}
                     >
                         <Input
                             prefix={<LockOutlined className="site-form-item-icon" />}
@@ -116,7 +115,6 @@ export const InfoModal: React.FC = () => {
                     <Form.Item
                         name="checkpassword"
                         rules={[{ required: true, message: 'Please input your Password!' }]}
-                        style={{ marginBottom: '5px' }}
                     >
                         <Input
                             prefix={<LockOutlined className="site-form-item-icon" />}
