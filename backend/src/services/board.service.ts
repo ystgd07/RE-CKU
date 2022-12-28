@@ -21,22 +21,16 @@ export const getCommunityNotices = async (firstRequest: number, type: string, co
   }
 };
 
-export const getResumeNotices = async (
-  firstRequest: number,
-  type: string,
-  position: string,
-  count: number,
-  mark: string
-) => {
+export const getResumeNotices = async (firstRequest: number, type: string, count: number, mark: string) => {
   try {
     // 첫조회
     if (firstRequest > 0) {
       console.log("이력서 게시글 첫 조회,", type);
-      const notices = await boardRepo.firstGetResumeNoticesQ(type, position, count);
+      const notices = await boardRepo.firstGetResumeNoticesQ(type, count);
       return notices;
     }
     // 페이지네이션
-    const notices = await boardRepo.moreGetResumeNoticesQ(type, position, count, mark);
+    const notices = await boardRepo.moreGetResumeNoticesQ(type, count, mark);
     return notices;
   } catch (err) {
     console.log(err.message);
