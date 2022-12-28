@@ -1,7 +1,7 @@
 import { db } from ".";
 import * as userRepo from "./user.repo";
 import * as resumeRepo from "./resume.repo";
-import { Board, BoardInfo } from "./schemas/board.entity";
+import { BoardInfo } from "./schemas/board.entity";
 import * as utils from "./utils";
 import { TypeCareer, TypeProject } from "./schemas";
 
@@ -39,7 +39,7 @@ export const firstGetCommunityNoticesQ = async (type: string, count: number) => 
       `,
     [count]
   );
-  const [boardList] = await db.query(`SELECT id FROM board WHERE hasResumeId IS NOT NULL`);
+  const [boardList] = await db.query(`SELECT id FROM board WHERE hasResumeId IS NULL`);
   const boardListCount = utils.jsonParse(boardList).length;
   const result = {
     boardList: utils.jsonParse(boards),
@@ -87,7 +87,10 @@ export const moreGetCommunityNoticesQ = async (type: string, count: number, mark
       `,
     [count]
   );
-  const result = utils.jsonParse(boards);
+  const result = {
+    boardList: utils.jsonParse(boards),
+    boardListCount: null,
+  };
   return result;
 };
 
@@ -182,7 +185,10 @@ export const moreGetResumeNoticesQ = async (type: string, count: number, mark: s
       `,
     [count]
   );
-  const result = utils.jsonParse(boards);
+  const result = {
+    boardList: utils.jsonParse(boards),
+    boardListCount: null,
+  };
   return result;
 };
 
