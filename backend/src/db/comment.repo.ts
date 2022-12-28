@@ -9,9 +9,7 @@ export const findComment = async (commentId: number): Promise<{ id: number } | b
     `
     SELECT id 
     FROM comment
-    WHERE 
-    id = ? AND
-    active = 1
+    WHERE id = ?
   `,
     [commentId]
   );
@@ -285,10 +283,7 @@ export const firstGetComments = async (boardId: number, userId: number, count: n
         WHERE
             userId = ?
           AND
-            commentId = ?
-          AND
-            active = 1    
-        `,
+            commentId = ?`,
         [userId, comment.commentId]
       );
       // 현재 사용자의 좋아요 여부
@@ -333,9 +328,9 @@ export const moreCommentsPagenationQ = async (boardId: number, userId: number, c
       ${mark} > CONCAT (
         LPAD ((s.likes),12,0),
         LPAD (s.id,8,0)
-      ) AND
-      boardId = ? AND
-      s.active = 1
+      ) 
+      AND
+      boardId = ?
     Order BY  s.likes DESC , s.id DESC
     limit ?
     `,

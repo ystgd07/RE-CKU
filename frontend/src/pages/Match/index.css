@@ -1,11 +1,11 @@
-.col {
+[class~='ant-col'] {
     background: transparent;
     border: 0;
     display: flex;
     justify-content: space-around;
 }
 
-.div {
+[class~='ant-col'] > div {
     /* height: 300px; */
     width: 40vh;
     font-size: 14px;

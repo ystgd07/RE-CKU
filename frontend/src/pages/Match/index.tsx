@@ -25,12 +25,12 @@ const Match = () => {
     async function getMatching() {
         try {
             const res = await API.get(`/users/rots`);
-            console.log('res', res);
-            if (res.matchInfo) {
-                navigate('/matched');
-            } else {
-                setData(res);
-            }
+            console.log(res);
+            // if (res.matchInfo) {
+            //     navigate('/matched');
+            // } else {
+            //     setData(res);
+            // }
         } catch (e) {
             console.log(e);
         }
@@ -39,11 +39,9 @@ const Match = () => {
     async function postMatching() {
         try {
             const rotId = modalIdContent;
-            console.log(rotId);
             const res = await API.post(`/users/match`, { rotId });
             console.log(res);
             getMatching();
-            setModalOpen(false);
         } catch (e) {
             console.log(e);
         }
@@ -73,8 +71,8 @@ const Match = () => {
                 <Row gutter={[0, 0]}>
                     {data.map((data: any) => (
                         <>
-                            <Col span={12} key={data.id} className="col">
-                                <div className="div" onClick={() => onClickModal(data)}>
+                            <Col span={12}>
+                                <div onClick={() => onClickModal(data)}>
                                     <div>
                                         <h3>{data.username}</h3>
                                         <p>

@@ -4,7 +4,6 @@ import styled from '@emotion/styled';
 import Layout from 'components/Layout';
 import { calcElapsed } from 'utils/format';
 import { Link } from 'react-router-dom';
-<<<<<<< HEAD
 import {
     Button,
     Input,
@@ -18,14 +17,7 @@ import {
     Skeleton,
 } from 'antd';
 import { LikeOutlined, CommentOutlined, LikeFilled } from '@ant-design/icons';
-=======
-import { Skeleton, Carousel, Card } from 'antd';
-import { LikeOutlined, CommentOutlined, RightOutlined } from '@ant-design/icons';
->>>>>>> ddd3e506fe85822277b9730d3d3d9ff5f4517a74
 import API from 'utils/api';
-import carousel1 from 'assets/images/carousel1.png';
-import carousel2 from 'assets/images/carousel2.png';
-import carousel3 from 'assets/images/carousel3.png';
 
 const Wrapper = styled.div`
     display: flex;
@@ -72,9 +64,6 @@ const Title = styled.h2`
     font-size: 2.2rem;
     font-weight: 700;
     margin: 2rem 0;
-    :last-child {
-        margin-top: 5rem;
-    }
 `;
 
 const PostTitle = styled.h3`
@@ -124,41 +113,6 @@ const PostsIcon = styled.span`
     width: 5rem;
     display: flex;
     justify-content: space-evenly;
-<<<<<<< HEAD
-=======
-`;
-
-const QuestWrapper = styled.div`
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-`;
-
-const QuestText = styled.p`
-    font-size: 1.8rem;
-    margin: 1rem 0;
-`;
-
-const Quest = styled.div`
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 70%;
-    height: 20rem;
-    border: 1px solid #fffbe3;
-    background-color: #fffbe3;
-    border-radius: 1rem;
-    font-size: 10rem;
-    cursor: pointer;
-    :hover {
-        border-color: #ccb94c;
-    }
-    h3 {
-        font-size: 4rem;
-    }
->>>>>>> ddd3e506fe85822277b9730d3d3d9ff5f4517a74
 `;
 
 interface IBoardList {
@@ -193,28 +147,17 @@ const SkeletonPosts = () => {
     );
 };
 
-interface IQuestData {
-    boardId: number;
-    chance: number;
-}
-
 const Main = () => {
     const [latestBoardList, setLatestBoardList] = useState<IBoardList[]>([]);
     const [hotLikesBoardList, setHotLikesBoardList] = useState<IBoardList[]>([]);
     const [hotCommentBoardList, setHotCommentBoardList] = useState<IBoardList[]>([]);
-    const [questData, setQuestData] = useState<IQuestData | null>(null);
-    const navigate = useNavigate();
 
     const navigate = useNavigate();
 
     const fetchLatestBoard = async () => {
         try {
             const res = await API.get('/board', '?filter=created&perPage=4');
-<<<<<<< HEAD
             setLatestBoardList(res);
-=======
-            setLatestBoardList(res.boardList);
->>>>>>> ddd3e506fe85822277b9730d3d3d9ff5f4517a74
         } catch (err) {
             console.log(err);
         }
@@ -223,11 +166,7 @@ const Main = () => {
     const fetchHotLikesBoard = async () => {
         try {
             const res = await API.get('/board', '?filter=likeCnt&perPage=4');
-<<<<<<< HEAD
             setHotLikesBoardList(res);
-=======
-            setHotLikesBoardList(res.boardList);
->>>>>>> ddd3e506fe85822277b9730d3d3d9ff5f4517a74
         } catch (err) {
             console.log(err);
         }
@@ -236,63 +175,22 @@ const Main = () => {
     const fetchHotCommentBoard = async () => {
         try {
             const res = await API.get('/board', '?filter=commentCnt&perPage=4');
-<<<<<<< HEAD
             setHotCommentBoardList(res);
-=======
-            setHotCommentBoardList(res.boardList);
->>>>>>> ddd3e506fe85822277b9730d3d3d9ff5f4517a74
         } catch (err) {
             console.log(err);
         }
-    };
-
-    const fetchQuestData = async () => {
-        try {
-            const res = await API.get('/board/random');
-            setQuestData(res);
-        } catch (err) {
-            console.log(err);
-        }
-    };
-
-    const handleQuestClick = async () => {
-        //Users/individuals patch
-        try {
-            // const res = await API.patch("/users/individuals")
-        } catch (err) {
-            console.log(err);
-        }
-        navigate(`/post/${questData?.boardId}`);
     };
 
     useEffect(() => {
         fetchLatestBoard();
         fetchHotLikesBoard();
         fetchHotCommentBoard();
-<<<<<<< HEAD
     }, []);
 
-=======
-        fetchQuestData();
-    }, []);
-
-    const onChange = (currentSlide: number) => {};
->>>>>>> ddd3e506fe85822277b9730d3d3d9ff5f4517a74
     // \[?(!)(?'alt'\[[^\]\[]*\[?[^\]\[]*\]?[^\]\[]*)\]\((?'url'[^\s]+?)(?:\s+(["'])(?'title'.*?)\4)?\)
 
     return (
         <Layout>
-            <Carousel autoplay afterChange={onChange}>
-                <div>
-                    <img src={carousel1} alt="carousel" />
-                </div>
-                <div>
-                    <img src={carousel2} alt="carousel" />
-                </div>
-                <div>
-                    <img src={carousel3} alt="carousel" />
-                </div>
-            </Carousel>
             <Wrapper>
                 <Title>최근 등록된 게시물</Title>
                 <Posts>
@@ -393,15 +291,7 @@ const Main = () => {
                     )}
                 </Posts>
 
-                <Title>오늘의 일일 퀘스트</Title>
-                <QuestWrapper>
-                    <QuestText>{`오늘 잔여 횟수 : ${
-                        questData === null ? '' : questData?.chance
-                    }`}</QuestText>
-                    <Quest onClick={handleQuestClick}>
-                        <h3>이력서 보고 포인트 얻기!</h3>
-                    </Quest>
-                </QuestWrapper>
+                <Title>일일 퀘스트</Title>
             </Wrapper>
         </Layout>
     );

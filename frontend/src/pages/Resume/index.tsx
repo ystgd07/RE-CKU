@@ -1,17 +1,14 @@
 import { useParams } from 'react-router-dom';
+import Header from 'components/Header';
 import ResumeComponent from 'components/Resume';
 
-export type ResumeId = {
-    id: string;
-};
-
 const Resume = () => {
-    const { id } = useParams<ResumeId>();
-    // const id = params.id;
-    console.log(id, 'id');
+    const { id } = useParams<{ id: string }>();
+    console.log('resume id = ', id);
     return (
         <div>
-            <ResumeComponent resumeId={id} />
+            <Header />
+            <ResumeComponent resumeId={Number(id)} />
         </div>
     );
 };

@@ -1,11 +1,14 @@
-import { LoginSection, Container, ImgSection } from './style';
+import React from 'react';
+import * as S from './style';
 import Logo from 'assets/images/logo.png';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useForm } from 'react-hook-form';
-import Kakao from 'assets/images/kakao.png';
+import Layout from 'components/Layout';
 
 const Login = () => {
+    const navigate = useNavigate();
+
     const {
         register,
         handleSubmit,
@@ -25,6 +28,7 @@ const Login = () => {
         try {
             console.log('jsondata', jsondata);
             const res = await axios.post('/users', jsondata);
+            console.log(res, '성공');
             const accessToken = res.data.accessToken;
             const refreshToken = res.data.refreshToken;
             const userId = res.data.userId;
@@ -33,7 +37,7 @@ const Login = () => {
             localStorage.setItem('refreshToken', refreshToken);
             localStorage.setItem('userId', userId);
             localStorage.setItem('isAdmin', isAdmin);
-            window.location.replace('/');
+            navigate('/');
         } catch (err: any) {
             console.error(err.stack);
             alert('아이디 혹은 비밀번호가 틀렸습니다');
@@ -51,71 +55,67 @@ const Login = () => {
         }
     };
     return (
-        <Container>
-            <ImgSection>
-                <article>
-                    <img src={Logo} alt="logo" />
-                </article>
-            </ImgSection>
+        <Layout>
+            <S.Div>
+                <S.MobileDiv>
+                    <form onSubmit={handleSubmit(onSubmitHandler)}>
+                        <div>
+                            <h1>로그인</h1>
 
-            <LoginSection>
-                <form onSubmit={handleSubmit(onSubmitHandler)}>
-                    <div className="loginWrap">
-                        <h1>LOGIN</h1>
+                            <input
+                                type="email"
+                                {...register('email', {
+                                    required: '이메일을 입력해주세요',
+                                    pattern: {
+                                        value: /^[A-Za-z0-9._%+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/,
+                                        message: '이메일 형식만 가능합니다.',
+                                    },
+                                })}
+                                placeholder="이메일 입력"
+                                autoComplete="off"
+                            />
 
-                        <input
-                            type="email"
-                            {...register('email', {
-                                required: '이메일을 입력해주세요',
-                                pattern: {
-                                    value: /^[A-Za-z0-9._%+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/,
-                                    message: '이메일 형식만 가능합니다.',
-                                },
-                            })}
-                            placeholder="이메일 입력"
-                            autoComplete="off"
-                        />
+                            <label className={`${errors.email ? 'block' : 'none'}`}>
+                                {errors?.email?.message}
+                            </label>
 
-                        <label className={`${errors.email ? 'block' : 'none'}`}>
-                            {errors?.email?.message}
-                        </label>
+                            <input
+                                {...register('password', {
+                                    required: '비밀번호를 입력해주세요',
+                                })}
+                                type="password"
+                                placeholder="비밀번호 입력"
+                                autoComplete="new-password"
+                            />
 
-                        <input
-                            {...register('password', {
-                                required: '비밀번호를 입력해주세요',
-                            })}
-                            type="password"
-                            placeholder="비밀번호 입력"
-                            autoComplete="new-password"
-                        />
-                        <div className="util">
-                            <Link to="/join">회원가입 </Link>
-                            <Link to="/find-pw">비밀번호 찾기</Link>
-                        </div>
+                            <article>
+                                <ul>
+                                    <li>
+                                        <Link to="/join">회원가입 </Link>
+                                    </li>
+                                    <li>
+                                        <Link to="/find-pw">비밀번호를 잊으셨나요?</Link>
+                                    </li>
+                                    <li>
+                                        <button type="submit" className="loginBtn">
+                                            로그인
+                                        </button>
+                                    </li>
+                                </ul>
+                            </article>
 
-                        <article>
                             <ul>
                                 <li>
-                                    <button type="submit" className="loginBtn">
-                                        로그인
-                                    </button>
-                                </li>
-                            </ul>
-                            <ul className="kakaoLogin">
-                                <li>
-                                    <span>
-                                        <img src={Kakao} alt="kakao" />
-                                    </span>
                                     <button type="button" onClick={LoginByKakao}>
                                         카카오 로그인
                                     </button>
                                 </li>
                             </ul>
-                        </article>
-                    </div>
-                </form>
-            </LoginSection>
-        </Container>
+                        </div>
+                    </form>
+                </S.MobileDiv>
+            </S.Div>
+        </Layout>
     );
 };
 

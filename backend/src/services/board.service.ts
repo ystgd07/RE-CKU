@@ -5,8 +5,10 @@ import { jsonParse } from "../db/utils/parseToJSON";
 
 export const getCommunityNotices = async (firstRequest: number, type: string, count: number, mark: string) => {
   try {
-    // 첫조회
+    console.log("퍼스트", firstRequest);
+    // 첫 요청일시
     if (firstRequest > 0) {
+      console.log("되냐");
       const notices = await boardRepo.firstGetCommunityNoticesQ(type, count);
       return notices;
     }
@@ -19,17 +21,22 @@ export const getCommunityNotices = async (firstRequest: number, type: string, co
   }
 };
 
-export const getResumeNotices = async (firstRequest: number, type: string, count: number, mark: string) => {
+export const getResumeNotices = async (
+  firstRequest: number,
+  type: string,
+  position: string,
+  count: number,
+  mark: string
+) => {
   try {
-    console.log(count);
     // 첫조회
     if (firstRequest > 0) {
       console.log("이력서 게시글 첫 조회,", type);
-      const notices = await boardRepo.firstGetResumeNoticesQ(type, count);
+      const notices = await boardRepo.firstGetResumeNoticesQ(type, position, count);
       return notices;
     }
     // 페이지네이션
-    const notices = await boardRepo.moreGetResumeNoticesQ(type, count, mark);
+    const notices = await boardRepo.moreGetResumeNoticesQ(type, position, count, mark);
     return notices;
   } catch (err) {
     console.log(err.message);

@@ -111,34 +111,6 @@ export const findReportQ = async (userId: number) => {
   return reportInfos;
 };
 
-// 2-5. 검색
-export const findUserQ = async (keyword: string) => {
-  const email = '%' + keyword + '%';
-
-  const [findUser] = await db.query(
-    `
-        SELECT
-          id AS userId,
-          username,
-          email,
-          phoneNumber,
-          avatarUrl,
-          active,
-          howToLogin,
-          point,
-          clickedLikes,
-          reported,
-          working,
-          created
-        FROM user
-        WHERE email LIKE ?
-        `,
-    email
-  );
-
-  return findUser;
-};
-
 // 3-1. 회원 정보 수정
 export const updateUserQ = async (userId: number, updateInfo: Record<string, string | number>) => {
   const [key, value] = utils.updateData(updateInfo);

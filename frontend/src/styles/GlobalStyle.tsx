@@ -2,7 +2,6 @@ import React from 'react';
 import { Global, css } from '@emotion/react';
 
 const style = css`
-    @import url('https://fonts.googleapis.com/css2?family=Viga&display=swap');
     html,
     body,
     div,

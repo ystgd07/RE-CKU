@@ -15,7 +15,7 @@ import Header from 'components/Header';
 import { useParams } from 'react-router-dom';
 import Job from './Job';
 import Project from './Project';
-import { UserData, ResumeData, FormStore, CareerData, ProjectData } from 'models/resumeEdit-model';
+import { UserData, ResumeData, FormStore, CareerData, ProjectData } from 'models/resume-model';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from 'context/store';
 

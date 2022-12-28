@@ -4,6 +4,7 @@ import { Descriptions, Tag, Col, Row, Button } from 'antd';
 import { InfoModal } from './InfoModal';
 import GitHubModal from './GitHubModal';
 import axios from 'axios';
+
 type Mock = {
     // id: string;
     email: string;
@@ -61,11 +62,7 @@ export const UserInfo = ({ user, getEvent }: UserProps) => {
             >
                 <Descriptions title="User Info">
                     <Descriptions.Item label="UserName">{username}</Descriptions.Item>
-                    <Descriptions.Item label="Telephone">
-                        {phoneNumber
-                            .replace(/[^0-9]/g, '')
-                            .replace(/^(\d{2,3})(\d{3,4})(\d{4})$/, `$1-$2-$3`)}
-                    </Descriptions.Item>
+                    <Descriptions.Item label="Telephone">{phoneNumber}</Descriptions.Item>
 
                     <Descriptions.Item label="email">{email}</Descriptions.Item>
                     <Descriptions.Item label="gitHub">
@@ -102,7 +99,7 @@ export const UserInfo = ({ user, getEvent }: UserProps) => {
                     <Button
                         icon={<GithubOutlined />}
                         type="primary"
-                        style={{ backgroundColor: 'black', position: 'static' }}
+                        style={{ backgroundColor: 'black' }}
                         onClick={() => {
                             setPropsOpen(true);
                         }}
