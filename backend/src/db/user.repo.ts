@@ -313,55 +313,74 @@ export const findMatchQ = async (userId: number): Promise<MatchInfo | false> => 
   return result;
 };
 
-// 매칭 요청
+// 매칭 요청  트렌젝션 o
 export const createMatchQ = async (data: { step: string; menteeId: number; mentoId: number }): Promise<number> => {
   const [keys, values, valval] = utils.insertData(data);
-  const [create] = await db.query(
-    `
-    INSERT INTO 
-    connect (${keys.join(", ")})
-    VALUES (${values.join(", ")})
-  `,
-    [...valval]
-  );
-  const parseCreate = utils.jsonParse(create);
-  const matchingId = parseCreate.insertId;
-  // 만들어진 매칭 id 값으로 멘티의 유저정보 업데이트
-  await db.query(
-    `
-    UPDATE user
-    SET 
-      matching = ?
-    WHERE
-      id = ?
-  `,
-    [matchingId, data.menteeId]
-  );
-  // 위 로직은 트렌젝션 사용해야할듯
-  return matchingId;
+  const conn = await db.getConnection();
+  conn.beginTransaction();
+  try {
+    const [create] = await db.query(
+      `
+      INSERT INTO 
+      connect (${keys.join(", ")})
+      VALUES (${values.join(", ")})
+    `,
+      [...valval]
+    );
+    const parseCreate = utils.jsonParse(create);
+    const matchingId = parseCreate.insertId;
+    // 만들어진 매칭 id 값으로 멘티의 유저정보 업데이트
+    await db.query(
+      `
+      UPDATE user
+      SET 
+        matching = ?
+      WHERE
+        id = ?
+    `,
+      [matchingId, data.menteeId]
+    );
+    return matchingId;
+  } catch (err) {
+    conn.rollback();
+    console.log(err.message);
+    throw new Error(`에러`);
+  } finally {
+    conn.release();
+  }
 };
 
-// 매칭 취소
+// 매칭 취소  트렌젝션 o
 export const cancelMatchQ = async (matchingId: number): Promise<boolean> => {
-  const [zz] = await db.query(
-    `
-    DELETE FROM connect
-    WHERE id = ? 
-  `,
-    [matchingId]
-  );
-  await db.query(
-    `
-    UPDATE user
-    SET
-      matching = 0
-    WHERE 
-      matching = ?
-  `,
-    [matchingId]
-  );
-  // 여기도 트렌젝션
-  return true;
+  const conn = await db.getConnection();
+  conn.beginTransaction();
+  try {
+    const [zz] = await db.query(
+      `
+      DELETE FROM connect
+      WHERE id = ? 
+    `,
+      [matchingId]
+    );
+    await db.query(
+      `
+      UPDATE user
+      SET
+        matching = 0
+      WHERE 
+        matching = ?
+    `,
+      [matchingId]
+    );
+    // 여기도 트렌젝션
+    return true;
+  } catch (err) {
+    console.log(err.message);
+    conn.rollback();
+    throw new Error(`에러`);
+  } finally {
+    conn.release();
+  }
 };
 
 // 매칭 수락 ( 고인물 )
@@ -385,11 +404,13 @@ export const successMatchQ = async (
   matchingId: number,
   data: { role: string; deleteMenteeIdQuery?: string }
 ): Promise<string> => {
-  // 멘티의 완료 요청이라면 멘티 테이블의 matching을 0으로 바꾸어주어야 고인물 찾기때 오류가 안남.
-  if (data.deleteMenteeIdQuery) {
-    console.log("멘티제거");
-    await db.query(
-      `
+  const conn = await db.getConnection();
+  conn.beginTransaction();
+  try {
+    if (data.deleteMenteeIdQuery) {
+      console.log("멘티제거");
+      await db.query(
+        `
       UPDATE user 
       SET 
         matching = 0 
@@ -398,25 +419,32 @@ export const successMatchQ = async (
             SELECT menteeId FROM connect WHERE id = ?
           );
     `,
-      [matchingId]
-    );
-  }
-  const [updated] = await db.query(
-    `
+        [matchingId]
+      );
+    }
+    const [updated] = await db.query(
+      `
     UPDATE connect
     SET
       ${data.role} = 1 ${data.deleteMenteeIdQuery}
     WHERE
       id = ?
   `,
-    [matchingId]
-  );
-  const result = data.role === "menteeComplate" ? "멘티가 종료누름" : "멘토가 종료누름";
-  return result;
+      [matchingId]
+    );
+    const result = data.role === "menteeComplate" ? "멘티가 종료누름" : "멘토가 종료누름";
+    return result;
+  } catch (err) {
+    console.log(err.message);
+    conn.rollback();
+    throw new Error(`500 서버오류`);
+  } finally {
+    conn.release();
+  }
 };
 
 // 매칭 종료 ( 멘티id 비우고, 멘토id 만 남기기)
-// 트렌젝션 완료
+// 트렌젝션 O
 export const complateMatch = async (matchingId: number) => {
   console.log("??");
   const conn = await db.getConnection();
@@ -476,12 +504,14 @@ export const complateMatch = async (matchingId: number) => {
     return "매칭 종료";
   } catch (err) {
     conn.rollback();
+    console.log(err.message);
+    throw new Error(err);
   } finally {
     conn.release();
   }
 };
 
-type ZZ = {
+type 임시 = {
   matchingId: number;
   step: string;
   menteeId: number;
@@ -489,7 +519,7 @@ type ZZ = {
   menteeEmail: string;
   created: string;
 };
-// 고인물에게 들어온 요청
+// 고인물에게 들어온 요청  트렌젝션 O
 export const getRequestCorrectionQ = async (userId: number) => {
   // step = 요청중, mentoId =userId , complate = 0인것들을 created DESC 로 뱉기
   console.log("이까진 오나?", userId);
@@ -533,6 +563,7 @@ export const getRequestCorrectionQ = async (userId: number) => {
     return result;
   } catch (err) {
     conn.rollback();
+    console.log(err.message);
     throw new Error(`500, 서버 오류`);
   } finally {
     conn.release();
