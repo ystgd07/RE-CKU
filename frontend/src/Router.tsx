@@ -52,6 +52,9 @@ const Router = () => {
                             <Route path="/join" element={<Navigate replace to="/" />} />
                             <Route path="/find-pw" element={<Navigate replace to="/" />} />
 
+                            <Route path="/match" element={<Match />} />
+                            <Route path="/matched" element={<Matched />} />
+
                             <Route path="/*" element={<Err404 />} />
                         </>
                     </>
