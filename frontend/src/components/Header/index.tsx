@@ -15,6 +15,7 @@ const Header = () => {
 
             localStorage.clear();
             setLogin(!login);
+            window.location.replace('/');
         } catch (err: unknown) {
             console.log(err);
         }
@@ -31,7 +32,9 @@ const Header = () => {
                     <nav>
                         <ul>
                             <li>상점</li>
-                            <li>이력서</li>
+                            <li>
+                                <Link to="/resume/list">이력서</Link>
+                            </li>
                             <li>
                                 <Link to="/comunity">커뮤니티</Link>
                             </li>
@@ -42,7 +45,7 @@ const Header = () => {
                         {token ? (
                             <>
                                 <li>
-                                    <Link to="profile">마이페이지</Link>
+                                    <Link to="/profile">마이페이지</Link>
                                 </li>
                                 <li onClick={logout}>로그아웃</li>
                             </>
