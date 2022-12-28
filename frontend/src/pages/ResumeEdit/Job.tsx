@@ -78,9 +78,9 @@ const Job = ({
 
     const validationForm = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (
-            workFormDataState.startDate === '' || isStilWork ? workFormDataState.endDate === '' : ''
-        ) {
+        // const stilwork = isStilWork ? workFormDataState.endDate === '' : '';
+
+        if (workFormDataState.startDate === '') {
             alert('필수정보를 입력해주세요.');
             return;
         }

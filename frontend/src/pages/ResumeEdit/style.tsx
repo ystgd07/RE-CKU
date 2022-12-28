@@ -1,10 +1,12 @@
 import styled from '@emotion/styled';
 
-export const ResumeContainer = styled.section`
+export const Background = styled.section`
     background-color: #f9fafb;
+`;
+
+export const ResumeContainer = styled.section`
     display: flex;
     justify-content: center;
-    max-height: 100vh;
 
     .rotate {
         transform: rotate(45deg);
@@ -13,6 +15,14 @@ export const ResumeContainer = styled.section`
 
     .block {
         display: block;
+    }
+
+    .visible {
+        visibility: visible;
+    }
+
+    .hidden {
+        visibility: hidden;
     }
 
     .none {
