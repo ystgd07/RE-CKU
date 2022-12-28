@@ -31,13 +31,14 @@ const Header = () => {
                 <div>
                     <nav>
                         <ul>
-                            <li>상점</li>
-                            <li>
-                                <Link to="/resume/list">이력서</Link>
-                            </li>
                             <li>
                                 <Link to="/comunity">커뮤니티</Link>
                             </li>
+
+                            <li>
+                                <Link to="/resume/list">이력서</Link>
+                            </li>
+                            <li>상점</li>
                         </ul>
                     </nav>
 
