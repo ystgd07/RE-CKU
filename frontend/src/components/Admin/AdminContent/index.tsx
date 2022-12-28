@@ -90,8 +90,6 @@ const AdminContent: React.FC = () => {
     async function getId() {
         try {
             const res = await axios.get(`/admin/worst-users`);
-            console.log('😈');
-            console.log(res.data.data);
             setUserData(res.data.data);
         } catch (e) {
             console.log(e);
@@ -101,8 +99,6 @@ const AdminContent: React.FC = () => {
     async function getReport(userId: number) {
         try {
             const res = await axios.get(`/admin/worst-users/${userId}`);
-            console.log('😫');
-            console.log(res.data.data);
             setUserReportData(res.data.data);
         } catch (e) {
             console.log(e);
@@ -116,8 +112,6 @@ const AdminContent: React.FC = () => {
         try {
             console.log('userId', userId);
             const res = await axios.patch(`/admin/worst-users/${userId}/ban`, { type: 'BAN' });
-            console.log('🥶✋');
-            console.log(res);
             getId();
         } catch (e) {
             console.log(e);
@@ -127,8 +121,6 @@ const AdminContent: React.FC = () => {
         try {
             console.log('userId', userId);
             const res = await axios.patch(`/admin/worst-users/${userId}/ban`, { type: 'RECOVERY' });
-            console.log('😊✋');
-            console.log(res);
             getId();
         } catch (e) {
             console.log(e);
@@ -157,17 +149,22 @@ const AdminContent: React.FC = () => {
                     renderItem={item => (
                         <List.Item>
                             <List.Item.Meta
-                                avatar={<Avatar src={item.avatarUrl} />}
+                                // style={{
+                                //     display: 'flex',
+                                //     flexDirection: 'column',
+                                // }}
+                                avatar={<Avatar size={64} src={item.avatarUrl} />}
                                 title={
-                                    <>
+                                    <div>
                                         {item.email}/{item.username}
-                                    </>
+                                    </div>
                                 }
                                 description={
                                     <>
                                         <div
                                             style={{
                                                 display: 'flex',
+                                                flexDirection: 'row',
                                                 justifyContent: 'space-between',
                                             }}
                                         >

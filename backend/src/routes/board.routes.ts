@@ -42,18 +42,10 @@ boardRoute.get("/", async (req, res, next) => {
 
 // 이력서 게시판의 첫 요청 및 페이지네이션
 boardRoute.get("/resumes", async (req, res, next) => {
-  console.log("cocococ cococococococo cocococococo ", req.query);
   const firstRequest = Number(req.query.firstRequest);
   const type = String(req.query.type);
   const mark = String(req.query.mark).toUpperCase();
   const count = Number(req.query.count);
-  // const position = String(req.query.position).toUpperCase();
-  const accessType = ["likeCnt", "created"];
-  // const accessPosition = ["FE", "BE", "FS", "PM", "ALL"];
-  // if (accessPosition.includes(position) === false || count < 2 || accessType.includes(type) === false) {
-  //   next(new Error(`404, 입력정보를 정확히 입력해주세요.`));
-  //   return;
-  // }
   console.log(req.query);
   try {
     const result = await boardService.getResumeNotices(firstRequest, type, count, mark);
@@ -72,8 +64,6 @@ boardRoute.get("/community", async (req, res, next) => {
   const type = String(req.query.type);
   const mark = String(req.query.mark).toUpperCase();
   const count = Number(req.query.count);
-  console.log(req.query);
-  console.log(typeof firstRequest);
   const accessType = ["likeCnt", "created"];
   if (accessType.includes(type) === false || count < 2) {
     next(new Error(`404, 입력정보를 정확히 입력해주세요.`));
@@ -82,6 +72,7 @@ boardRoute.get("/community", async (req, res, next) => {
 
   try {
     const result = await boardService.getCommunityNotices(firstRequest, type, count, mark);
+    console.log("wegwegwegwegweg", result);
     return res.status(200).json({
       msg: "자유게시물입니다.",
       data: { boardCount: result.boardListCount, boardList: result.boardList },
