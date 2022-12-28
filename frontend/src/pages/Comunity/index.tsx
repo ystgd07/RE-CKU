@@ -186,9 +186,9 @@ const Comunity = () => {
                 url = `/board/community`;
             }
             const res = await API.get(url, `?firstRequest=1&type=created&count=16&mark=`);
+            setBoardList(res.boardList);
+            setBoardNumber(res.boardCount);
             console.log(res);
-            // setBoardList(res.boardList);
-            // setBoardNumber(res.boardCount);
         } catch (err) {
             console.log(err);
         }
