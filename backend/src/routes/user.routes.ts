@@ -163,7 +163,7 @@ userRoute.patch("/individuals", tokenValidator, async (req, res, next) => {
   const gitHubUrl = req.body.gitHubUrl;
   const avatarUrl = req.body.avatarUrl;
   const working = req.body.working;
-  console.log("아바타 유알엘", avatarUrl);
+  const chance = req.body.chance;
   // const avatarUrl = req.body.avatarUrl;
   const toUpdate = {
     ...(password && { password }),
@@ -171,8 +171,9 @@ userRoute.patch("/individuals", tokenValidator, async (req, res, next) => {
     ...(avatarUrl && { avatarUrl }),
     ...(gitHubUrl && { gitHubUrl }),
     ...(working && { working }),
+    ...(chance && { chance }),
   };
-  console.log(toUpdate);
+  console.log("업데이트 할 것들", toUpdate);
   try {
     const update = await userService.updateInfo(id, toUpdate);
     return res.status(200).json({
