@@ -82,6 +82,7 @@ boardRoute.get("/community", async (req, res, next) => {
 
   try {
     const result = await boardService.getCommunityNotices(firstRequest, type, count, mark);
+    console.log("wegwegwegwegweg", result);
     return res.status(200).json({
       msg: "자유게시물입니다.",
       data: { boardCount: result.boardListCount, boardList: result.boardList },

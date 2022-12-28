@@ -2,9 +2,8 @@ import { Alert, ContentElement } from './style';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Card, Col, Row, Button, Layout, Modal, List } from 'antd';
-import Header from 'components/Header';
-const { Footer, Content } = Layout;
+import { Card, Col, Row, Button, Modal, List } from 'antd';
+import Layout from 'components/Layout';
 type Mock = { resumeName: string; address: string; updatedAt: string; resumeId: any };
 let id: any;
 let test: string = '';
@@ -93,94 +92,84 @@ const ResumeMain = () => {
     return (
         <>
             {' '}
-            <Layout style={{ backgroundColor: 'white' }}>
-                <Header></Header>
-                <Content
-                    style={{
-                        backgroundColor: 'white',
-                        margin: '30px',
-                        width: '-webkit-calc(100% - 80px)',
-                    }}
-                >
-                    <ContentElement>
-                        <div onClick={postPortfolio}>
+            <Layout>
+                <ContentElement>
+                    <div onClick={postPortfolio}>
+                        <div>
                             <div>
-                                <div>
-                                    <i>+</i>
-                                </div>
-                                <p>새 이력서 작성</p>
+                                <i>+</i>
                             </div>
+                            <p>새 이력서 작성</p>
                         </div>
-                    </ContentElement>
-                    <Alert>{res.length === 0 && <p>작성된 이력서가 없습니다.</p>}</Alert>
+                    </div>
+                </ContentElement>
+                <Alert>{res.length === 0 && <p>작성된 이력서가 없습니다.</p>}</Alert>
 
-                    <Modal
-                        title="이력서 삭제"
-                        open={isModalOpen}
-                        onOk={handleOk}
-                        onCancel={handleCancel}
-                    >
-                        <p>정말로 해당 이력서를 삭제하시겠습니까?</p>
-                    </Modal>
-                    <List
-                        grid={{
-                            gutter: 16,
-                            xs: 1,
-                            sm: 2,
-                            md: 4,
-                            lg: 4,
-                            xl: 6,
-                            xxl: 3,
-                        }}
-                        dataSource={res}
-                        renderItem={(e: Mock) => (
-                            <List.Item style={{ background: 'white' }}>
-                                <Card
-                                    onClick={gotoPost}
-                                    key={e.resumeId}
-                                    id={e.resumeId}
-                                    style={{
-                                        marginTop: 16,
-                                        cursor: 'pointer',
-                                        border: '1px solid #dbdbdb',
-                                        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)',
-                                        backgroundColor: 'white',
-                                    }}
-                                    title={e.resumeName}
-                                    bordered={true}
-                                    extra={
-                                        <div style={{ display: 'flex' }}>
-                                            <Button
-                                                type="primary"
-                                                shape="round"
-                                                value={e.resumeId}
-                                                onClick={gotoModify}
-                                            >
-                                                수정
-                                            </Button>
-                                            <Button
-                                                type="primary"
-                                                danger
-                                                shape="round"
-                                                style={{ marginLeft: '5px' }}
-                                                value={e.resumeId}
-                                                onClick={showModal}
-                                            >
-                                                삭제
-                                            </Button>
-                                        </div>
-                                    }
-                                >
-                                    {e.updatedAt.split('T')[0]}
+                <Modal
+                    title="이력서 삭제"
+                    open={isModalOpen}
+                    onOk={handleOk}
+                    onCancel={handleCancel}
+                >
+                    <p>정말로 해당 이력서를 삭제하시겠습니까?</p>
+                </Modal>
+                <List
+                    grid={{
+                        gutter: 16,
+                        xs: 1,
+                        sm: 2,
+                        md: 4,
+                        lg: 4,
+                        xl: 6,
+                        xxl: 3,
+                    }}
+                    dataSource={res}
+                    renderItem={(e: Mock) => (
+                        <List.Item style={{ background: 'white' }}>
+                            <Card
+                                onClick={gotoPost}
+                                key={e.resumeId}
+                                id={e.resumeId}
+                                style={{
+                                    marginTop: 16,
+                                    cursor: 'pointer',
+                                    border: '1px solid #dbdbdb',
+                                    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)',
+                                    backgroundColor: 'white',
+                                }}
+                                title={e.resumeName}
+                                bordered={true}
+                                extra={
                                     <div>
-                                        <h4>{e.resumeName}</h4>
+                                        <Button
+                                            type="primary"
+                                            shape="round"
+                                            value={e.resumeId}
+                                            onClick={gotoModify}
+                                        >
+                                            수정
+                                        </Button>
+                                        <Button
+                                            type="primary"
+                                            danger
+                                            shape="round"
+                                            style={{ marginLeft: '5px' }}
+                                            value={e.resumeId}
+                                            onClick={showModal}
+                                        >
+                                            삭제
+                                        </Button>
                                     </div>
-                                </Card>
-                            </List.Item>
-                        )}
-                    />
-                </Content>
-                <Footer style={{ backgroundColor: 'white' }}>Footer</Footer>
+                                }
+                            >
+                                {e.updatedAt.split('T')[0]}
+                                <div>
+                                    <h4>{e.resumeName}</h4>
+                                </div>
+                            </Card>
+                        </List.Item>
+                    )}
+                />
             </Layout>
         </>
     );
