@@ -1,7 +1,7 @@
 import { db } from ".";
 import * as userRepo from "./user.repo";
 import * as resumeRepo from "./resume.repo";
-import { Board, BoardInfo } from "./schemas/board.entity";
+import { BoardInfo } from "./schemas/board.entity";
 import * as utils from "./utils";
 import { TypeCareer, TypeProject } from "./schemas";
 
@@ -42,7 +42,12 @@ export const firstGetCommunityNoticesQ = async (
       `,
     [count]
   );
-  const result = utils.jsonParse(boards);
+  const [boardList] = await db.query(`SELECT id FROM board WHERE hasResumeId IS NULL`);
+  const boardListCount = utils.jsonParse(boardList).length;
+  const result = {
+    boardList: utils.jsonParse(boards),
+    boardListCount,
+  };
   return result;
 };
 export const moreGetCommunityNoticesQ = async (
@@ -89,19 +94,19 @@ export const moreGetCommunityNoticesQ = async (
       `,
     [count]
   );
-  const result = utils.jsonParse(boards);
+  const result = {
+    boardList: utils.jsonParse(boards),
+    boardListCount: null,
+  };
   return result;
 };
 
 // type에 따라 이력서 게시판 목록
 export const firstGetResumeNoticesQ = async (type: string, count: number) => {
   let asType = "";
-  let wherePosition = "r.position Is not null";
   if (type === "created") {
     asType = "unix_timestamp";
   }
-
-  console.log(wherePosition);
   const [boards] = await db.query(
     `
       SELECT 
@@ -129,8 +134,6 @@ export const firstGetResumeNoticesQ = async (type: string, count: number) => {
       ON b.hasResumeId = r.id
       WHERE
           b.hasResumeId IS NOT NULL 
-        AND
-          ${wherePosition}
       ORDER BY b.${type} DESC , b.id DESC
       LIMIT ?
       `,
@@ -190,7 +193,11 @@ export const moreGetResumeNoticesQ = async (
       `,
     [count]
   );
-  const result = utils.jsonParse(boards);
+  console.log("으악시바", boards);
+  const result = {
+    boardList: utils.jsonParse(boards),
+    boardListCount: null,
+  };
   return result;
 };
 
@@ -612,12 +619,29 @@ export const savePointByBoard = async (data: {
 
 export const randomBoardsQ = async (userId: number) => {
   const [random] = await db.query(
-    `SELECT id FROM board 
+    `SELECT id 
+     FROM board 
         WHERE id not in (
             SELECT boardId FROM board_like_maping WHERE userId = ?
             )
         ORDER BY RAND() LIMIT 1`,
     [userId]
   );
-  return utils.jsonParse(random)[0];
+  const [user] = await db.query(
+    `
+    SELECT 
+      chance
+    FROM user
+    WHERE 
+      id = ?
+  `,
+    [userId]
+  );
+  const boardId = utils.jsonParse(random)[0].id;
+  const chance = utils.jsonParse(user)[0].chance;
+  const result = {
+    boardId,
+    chance,
+  };
+  return result;
 };

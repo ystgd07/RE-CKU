@@ -182,6 +182,7 @@ userRoute.patch("/individuals", tokenValidator, async (req, res, next) => {
     const update = await userService.updateInfo(id, toUpdate);
     return res.status(200).json({
       msg: "회원정보가 수정되었습니다.",
+      data: update,
     });
   } catch (err) {
     next(err);
