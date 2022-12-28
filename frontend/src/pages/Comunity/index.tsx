@@ -174,6 +174,7 @@ interface BoardResume {
 const Comunity = () => {
     const [boardList, setBoardList] = useState<BoardResume[]>([]);
     const [isResumeTopic, setIsResumeTopic] = useState<boolean>(false);
+    const [boardNumber, setBoardNumber] = useState<number | null>(null);
     const navigate = useNavigate();
 
     const fetchBoardList = async (mode: boolean) => {
@@ -184,11 +185,9 @@ const Comunity = () => {
             } else {
                 url = `/board/community`;
             }
-            const res = await API.get(
-                url,
-                `?firstRequest=1&type=created&count=16&mark=&position=ALL`,
-            );
-            setBoardList(res);
+            const res = await API.get(url, `?firstRequest=1&type=created&count=16&mark=`);
+            setBoardList(res.boardList);
+            setBoardNumber(res.boardCount);
         } catch (err) {
             console.log(err);
         }
@@ -196,6 +195,7 @@ const Comunity = () => {
 
     const onChange = () => {
         setBoardList([]);
+        setBoardNumber(null);
         setIsResumeTopic(prev => !prev);
         fetchBoardList(!isResumeTopic);
     };
@@ -207,14 +207,13 @@ const Comunity = () => {
         } else {
             url = `/board/community`;
         }
-        console.log('URL =', url);
         try {
             const mark = boardList.slice(-1)[0].MARK;
             const res = await API.get(
                 url,
                 `?firstRequest=0&type=created&count=8&mark=${mark}&position=ALL`,
             );
-            setBoardList([...boardList, ...res]);
+            setBoardList([...boardList, ...res.boardList]);
         } catch (err) {
             console.log(err);
         }
@@ -278,9 +277,13 @@ const Comunity = () => {
                         ))
                     )}
                 </Posts>
-                <Button type="link" onClick={handleMoreBoard}>
-                    더보기
-                </Button>
+                {boardNumber !== null && boardList.length < boardNumber ? (
+                    <Button type="link" onClick={handleMoreBoard}>
+                        더보기
+                    </Button>
+                ) : (
+                    ''
+                )}
             </Wrapper>
         </Layout>
     );
