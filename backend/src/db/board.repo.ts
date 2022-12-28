@@ -137,7 +137,7 @@ export const firstGetResumeNoticesQ = async (type: string, count: number) => {
     [count]
   );
   const [boardList] = await db.query(
-    `SELECT id FROM board WHERE hasResumeId = IS NOT NULL`
+    `SELECT id FROM board WHERE hasResumeId IS NOT NULL`
   );
   const boardListCount = utils.jsonParse(boardList).length;
   const result = {
@@ -222,7 +222,7 @@ export const findAllBoardForMainpage = async (
     [perPage]
   );
   const [boardList] = await db.query(
-    `SELECT id FROM board WHERE hasResumeId = IS NOT NULL`
+    `SELECT id FROM board WHERE hasResumeId IS NOT NULL`
   );
   const boardListCount = utils.jsonParse(boardList).length;
   const result = {

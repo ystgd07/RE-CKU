@@ -81,6 +81,7 @@ const AdminContent: React.FC = () => {
     const [searchEmail, setSearchEmail] = useState<string>('');
     const [current, setCurrent] = useState<number>(1);
     const [totalpages, setTotalPages] = useState<number>(1);
+    const [searchpage, setSearchpage] = useState<number>(0);
     const [point, setPoint] = useState();
     const [count, setCount] = useState<number>(4);
     const navigate = useNavigate();
@@ -100,12 +101,37 @@ const AdminContent: React.FC = () => {
             console.log(e);
         }
     }
-    async function getSearchUser() {
+    async function getSearchUser(page: number) {
         try {
-            const res = await API.get(`/admin/users/search`, `?searchEmail=${searchEmail}`);
-            console.log('getPages😀');
-            // setTotalPages(res);
-            getCountPage(current);
+            if (searchEmail === '') {
+                getPages();
+            } else {
+                console.log('searchEmail', typeof searchEmail);
+                const res = await API.get(`/admin/users/search`, `${searchEmail}`);
+                console.log('getPages😀');
+                console.log('res', res.length);
+                setTotalPages(Math.ceil(res.length / 4));
+                // getCountPage(current);
+                // setUserData(res);
+                searchPage(res, page);
+                setSearchpage(1);
+            }
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
+    async function searchPage(res: any, current: number) {
+        try {
+            const data = res;
+            const arr = [];
+            for (let i = 0; i < data.length; i += 4) {
+                arr.push(data.slice(i, i + 4));
+            }
+            console.log('arr', arr);
+            console.log('page', current);
+            setUserData(arr[current - 1]);
+            console.log('arr[page - 1]', arr[current - 1]);
         } catch (e) {
             console.log(e);
         }
@@ -116,14 +142,24 @@ const AdminContent: React.FC = () => {
             const res = await API.get(`/admin/users`, `?count=${count}&pages=${page}`);
             console.log('😀');
             setUserData(res);
+            console.log('searchpage', searchpage);
+            setSearchpage(0);
         } catch (e) {
             console.log(e);
         }
     }
 
     const onChange: PaginationProps['onChange'] = page => {
-        setCurrent(page);
-        getCountPage(page);
+        if (searchpage === 0) {
+            console.log('전부');
+            setCurrent(page);
+            getCountPage(page);
+        } else {
+            console.log('검색');
+            setCurrent(page);
+            // getSearchUser();
+            getSearchUser(page);
+        }
     };
 
     async function updatePoint(userId: any) {
@@ -173,7 +209,7 @@ const AdminContent: React.FC = () => {
                         <Col span={50}>
                             <Search
                                 placeholder="검색할 이메일을 입력해주세요"
-                                onSearch={() => getSearchUser()}
+                                onSearch={() => getSearchUser(current)}
                                 enterButton
                                 onChange={e => {
                                     setSearchEmail(e.target.value);
@@ -192,7 +228,7 @@ const AdminContent: React.FC = () => {
                         <List.Item>
                             <List.Item.Meta
                                 key={item.userId}
-                                avatar={<Avatar src={item.avatarUrl} />}
+                                avatar={<Avatar size={64} src={item.avatarUrl} />}
                                 title={
                                     <>
                                         {item.email}/{item.username}
@@ -253,7 +289,7 @@ const AdminContent: React.FC = () => {
                         </List.Item>
                     )}
                 />
-                {/* </InfiniteScroll> */}
+
                 <div
                     style={{
                         display: 'flex',
