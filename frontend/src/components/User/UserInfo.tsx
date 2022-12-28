@@ -59,7 +59,8 @@ export const UserInfo = ({ user, getEvent }: UserProps) => {
                     marginBottom: '20px',
                 }}
             >
-                <UserOutlined />
+                {' '}
+                <UserOutlined></UserOutlined>
                 <Descriptions title="User Info" size="middle" bordered={true}>
                     <Descriptions.Item
                         label="UserName"
@@ -77,7 +78,6 @@ export const UserInfo = ({ user, getEvent }: UserProps) => {
                             .replace(/[^0-9]/g, '')
                             .replace(/^(\d{2,3})(\d{3,4})(\d{4})$/, `$1-$2-$3`)}
                     </Descriptions.Item>
-
                     <Descriptions.Item
                         label="email"
                         contentStyle={{ fontWeight: '500', fontSize: '1.5rem' }}

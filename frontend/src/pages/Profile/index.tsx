@@ -189,8 +189,14 @@ const Profile: React.FC = () => {
                                 size={120}
                                 icon={<UserOutlined />}
                                 src={`${imgUrl === '' ? res.avatarUrl : imgUrl}`}
-                                style={{ cursor: 'pointer' }}
+                                style={{
+                                    cursor: 'pointer',
+                                    borderStyle: 'solid',
+                                    borderWidth: '3px',
+                                    borderColor: `${tierColor}`,
+                                }}
                                 onClick={showModal}
+                                alt="이미지 변경(클릭)"
                             />
                         </div>
                         <div style={{ height: '38px' }}>

@@ -2,7 +2,8 @@ import { Alert, ContentElement } from './style';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Card, Col, Row, Button, Modal, List } from 'antd';
+import { Card, Button, Modal, List } from 'antd';
+
 import Layout from 'components/Layout';
 type Mock = { resumeName: string; address: string; updatedAt: string; resumeId: any };
 let id: any;
@@ -47,6 +48,7 @@ const ResumeMain = () => {
         navigate(`/resume/${e.currentTarget.value}/edit`);
     };
     const gotoPost = (e: any) => {
+        e.stopPropagation();
         window.open(`/resume/${e.currentTarget.id}`, '_blank');
     };
     async function getPortfolio() {
