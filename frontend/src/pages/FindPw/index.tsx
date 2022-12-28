@@ -6,7 +6,6 @@ import Logo from 'assets/images/logo.png';
 import { useForm } from 'react-hook-form';
 
 const FindPw = () => {
-    // const [Email, setEmail] = useState('');
     const navigate = useNavigate();
     const {
         register,
@@ -18,12 +17,11 @@ const FindPw = () => {
     }
 
     const onSubmitHandler = async (data: FormData) => {
-        // e.preventDefault();
         try {
             const res = await axios.post('/');
             console.log(res, '성공');
 
-            alert('회원가입이 완료되었습니다.');
+            alert('비밀번호가 전송되었습니다.');
             navigate('/login');
         } catch (err: any) {
             console.error(err.stack);
@@ -31,36 +29,34 @@ const FindPw = () => {
     };
 
     return (
-        <S.Div>
-            <S.MobileDiv>
-                <p>
-                    <Link to="/join">
-                        {' '}
-                        <S.Image src={Logo} alt="로고" />
-                    </Link>
-                </p>
-                <form onSubmit={handleSubmit(onSubmitHandler)}>
-                    <div style={{ width: '400px', minWidth: '320px', textAlign: 'center' }}>
-                        <h1>임시 비밀번호 보내기</h1>
-                        <div style={{ height: '30px' }}></div>
-                        <p>이메일</p>
-                        <input
-                            {...register('email', {
-                                required: '이메일을 입력해주세요',
-                                pattern: {
-                                    value: /^[A-Za-z0-9._%+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/,
-                                    message: '이메일 형식만 가능합니다.',
-                                },
-                            })}
-                            placeholder="이메일 입력"
-                            // autoComplete="off"
-                        />
-                        <label>{errors?.email?.message}</label>
-                        <button formAction="">이메일로 임시 비밀번호 보내기</button>
-                    </div>
-                </form>
-            </S.MobileDiv>
-        </S.Div>
+        <S.FindPwFrame>
+            <form onSubmit={handleSubmit(onSubmitHandler)}>
+                <div>
+                    <h1>임시 비밀번호 보내기</h1>
+                    <ul>
+                        <li>
+                            <input
+                                {...register('email', {
+                                    required: '이메일을 입력해주세요',
+                                    pattern: {
+                                        value: /^[A-Za-z0-9._%+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/,
+                                        message: '이메일 형식만 가능합니다.',
+                                    },
+                                })}
+                                placeholder="이메일 입력"
+                            />
+                            <label className={`${errors.email ? 'block' : 'none'}`}>
+                                {errors?.email?.message}
+                            </label>
+                        </li>
+
+                        <li>
+                            <button formAction="">이메일로 임시 비밀번호 보내기</button>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </S.FindPwFrame>
     );
 };
 

@@ -28,9 +28,7 @@ export const getUsersByAdmin = async () => {
 };
 
 /** 인자로 userId 또는 email을 넣어주시면, 비밀번호를 제외한 사용자 정보를 드립니다. */
-export const unIncludePasswordUserInfoQ = async (
-  userIdOrEmail: number | string
-): Promise<UserProfile> => {
+export const unIncludePasswordUserInfoQ = async (userIdOrEmail: number | string): Promise<UserProfile> => {
   const queryResultCoulmns =
     "id,matching,username,point,email,phoneNumber,created,avatarUrl,clickedLikes,gitHubUrl,howToLogin,role,working,chance";
   let [userInfoRows, fields] = [[], []];
@@ -63,9 +61,7 @@ export const unIncludePasswordUserInfoQ = async (
   return result;
 };
 
-export const findOneUser = async (
-  userIdOrEmail: number | string
-): Promise<UserProfile> => {
+export const findOneUser = async (userIdOrEmail: number | string): Promise<UserProfile> => {
   const queryResultCoulmns =
     "id,username,point,email,phoneNumber,created,avatarUrl,password,clickedLikes,gitHubUrl,howToLogin,role,working,ban ";
   let [userInfoRows, fields] = [[], []];
@@ -98,9 +94,7 @@ export const findOneUser = async (
   return result;
 };
 
-export const createIndiUser = async (
-  data: Record<string, string | number | boolean>
-) => {
+export const createIndiUser = async (data: Record<string, string | number | boolean>) => {
   const { username, email, phoneNumber, password } = data;
   const [keys, values, valval] = utils.insertData(data);
   const [newUser] = await db.query(
@@ -117,10 +111,7 @@ export const createIndiUser = async (
   return result;
 };
 
-export const updateUser = async (
-  id: number,
-  data: Record<string, string | boolean | number>
-): Promise<string> => {
+export const updateUser = async (id: number, data: Record<string, string | boolean | number>): Promise<string> => {
   const [keys, values] = updateData(data);
   console.log("업뎃내역 ", data);
   await db.query(
@@ -154,11 +145,7 @@ export const checkReportedQ = async (reporter: number, defendant: number) => {
   return result;
 };
 
-export const reportQ = async (reportData: {
-  reporterUserId: number;
-  defendantUserId: number;
-  reason: string;
-}) => {
+export const reportQ = async (reportData: { reporterUserId: number; defendantUserId: number; reason: string }) => {
   const [keys, values, valval] = utils.insertData(reportData);
   const [newReport] = await db.query(
     `
@@ -182,10 +169,7 @@ export const reportQ = async (reportData: {
   return true;
 };
 
-export const cancelReportQ = async (
-  reporterUserId: number,
-  defendantUserId: number
-) => {
+export const cancelReportQ = async (reporterUserId: number, defendantUserId: number) => {
   await db.query(
     `
     DELETE 
@@ -231,7 +215,8 @@ export const getRotListQ = async (userId: number): Promise<RotList> => {
       id != ? AND
       point > 200 AND
       working = true
-    ORDER BY corrections DESC
+    ORDER BY rand()
+    LIMIT 6
   `,
     [userId]
   );
@@ -248,8 +233,8 @@ export type MatchInfo = {
     menteeId: number;
     created: "";
     rotId: number;
-    email: string;
-    username: string;
+    mentoEmail: string;
+    mentoName: string;
     point: number;
   };
   cancelAble: boolean;
@@ -262,9 +247,7 @@ export type Match = {
   mentoComplate: string;
   menteeComplate: string;
 };
-export const findMatchByMatchingId = async (
-  matchingId: number
-): Promise<Match> => {
+export const findMatchByMatchingId = async (matchingId: number): Promise<Match> => {
   const [connect] = await db.query(
     `
     SELECT 
@@ -283,9 +266,7 @@ export const findMatchByMatchingId = async (
   return result;
 };
 
-export const findMatchQ = async (
-  userId: number
-): Promise<MatchInfo | string> => {
+export const findMatchQ = async (userId: number): Promise<MatchInfo | false> => {
   const result: MatchInfo = {
     matchInfo: {
       matchingId: 0,
@@ -294,8 +275,8 @@ export const findMatchQ = async (
       menteeId: 0,
       created: "",
       rotId: 0,
-      email: "",
-      username: "",
+      mentoEmail: "",
+      mentoName: "",
       point: 0,
     },
     cancelAble: false,
@@ -309,8 +290,8 @@ export const findMatchQ = async (
         c.menteeId,
         c.created,
         u.id as rotId,
-        u.email,
-        u.username,
+        u.email as mentoEmail,
+        u.username as mentoName,
         u.point
       FROM connect c
       JOIN user u
@@ -321,24 +302,19 @@ export const findMatchQ = async (
     [userId]
   );
   const parseConnect = utils.jsonParse(connect)[0];
-  console.log("이상이상", parseConnect);
-  if (!parseConnect) {
-    return "매칭중인것 없음";
-  }
+  console.log("현재 진행중인 매칭", parseConnect);
   result.matchInfo = parseConnect;
-  console.log(utils.jsonParse(connect)[0]);
-  if (result.matchInfo.step === "요청중") {
+  if (result.matchInfo?.step === "요청중") {
     result.cancelAble = true;
+  }
+  if (!parseConnect) {
+    return false;
   }
   return result;
 };
 
 // 매칭 요청
-export const createMatchQ = async (data: {
-  step: string;
-  menteeId: number;
-  mentoId: number;
-}): Promise<number> => {
+export const createMatchQ = async (data: { step: string; menteeId: number; mentoId: number }): Promise<number> => {
   const [keys, values, valval] = utils.insertData(data);
   const [create] = await db.query(
     `
@@ -389,10 +365,7 @@ export const cancelMatchQ = async (matchingId: number): Promise<boolean> => {
 };
 
 // 매칭 수락 ( 고인물 )
-export const acceptMatchQ = async (
-  matchingId: number,
-  menteeId: number
-): Promise<boolean> => {
+export const acceptMatchQ = async (matchingId: number, menteeId: number): Promise<boolean> => {
   const [updateMatch] = await db.query(
     `
     UPDATE connect
@@ -410,22 +383,35 @@ export const acceptMatchQ = async (
 // 매칭 끝내기버튼
 export const successMatchQ = async (
   matchingId: number,
-  data: { role: string }
+  data: { role: string; deleteMenteeIdQuery?: string }
 ): Promise<string> => {
-  // 멘티로 들어오면 count = ? mentee = ?
-  console.log(data.role);
+  // 멘티의 완료 요청이라면 멘티 테이블의 matching을 0으로 바꾸어주어야 고인물 찾기때 오류가 안남.
+  if (data.deleteMenteeIdQuery) {
+    console.log("멘티제거");
+    await db.query(
+      `
+      UPDATE user 
+      SET 
+        matching = 0 
+      WHERE 
+        id IN (
+            SELECT menteeId FROM connect WHERE id = ?
+          );
+    `,
+      [matchingId]
+    );
+  }
   const [updated] = await db.query(
     `
     UPDATE connect
-    SET 
-      ${data.role} = 1
-    WHERE 
+    SET
+      ${data.role} = 1 ${data.deleteMenteeIdQuery}
+    WHERE
       id = ?
   `,
     [matchingId]
   );
-  const result =
-    data.role === "menteeComplate" ? "멘티가 종료누름" : "멘토가 종료누름";
+  const result = data.role === "menteeComplate" ? "멘티가 종료누름" : "멘토가 종료누름";
   return result;
 };
 
@@ -485,23 +471,32 @@ export const complateMatch = async (matchingId: number) => {
   return "매칭 종료";
 };
 
+type ZZ = {
+  matchingId: number;
+  step: string;
+  menteeId: number;
+  menteeName: string;
+  menteeEmail: string;
+  created: string;
+};
 // 고인물에게 들어온 요청
 export const getRequestCorrectionQ = async (userId: number) => {
   // step = 요청중, mentoId =userId , complate = 0인것들을 created DESC 로 뱉기
-  console.log("이까진 오나?");
+  console.log("이까진 오나?", userId);
   const [list] = await db.query(
     `
     SELECT 
-      id as matchingId,
-      step,
-      menteeId,
-      created
-    FROM connect
+      c.id as matchingId,
+      c.step,
+      c.menteeId,
+      u.username as menteeName,
+      u.email as menteeEmail,
+      c.created
+    FROM connect c
+    JOIN user u
+    ON u.id = c.menteeId
     WHERE 
-      step = '요청중' OR step = '진행중' AND
-      
-      mentoId = ? AND
-      mentoComplate <0
+      c.step != '완료' AND mentoId = ? AND mentoComplate = 0 
     ORDER BY created DESC
   `,
     [userId]
