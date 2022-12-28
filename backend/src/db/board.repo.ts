@@ -572,7 +572,7 @@ export const savePointByBoard = async (data: { userId: number; boardId: number }
 
 export const randomBoardsQ = async (userId: number) => {
   const [random] = await db.query(
-    `SELECT id FROM company.board 
+    `SELECT id FROM board 
         WHERE id not in (
             SELECT boardId FROM board_like_maping WHERE userId = ?
             )
