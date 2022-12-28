@@ -9,8 +9,7 @@ import axios from 'axios';
 
 class axiosAPI {
     instance;
-    BASE_URL = 'http://localhost:3000';
-    // BASE_URL = 'https://rechu-api.jinytree.shop';
+    BASE_URL = 'http://localhost:3001';
 
     constructor() {
         this.instance = axios.create();

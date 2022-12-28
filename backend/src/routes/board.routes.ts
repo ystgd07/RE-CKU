@@ -42,6 +42,7 @@ boardRoute.get("/", async (req, res, next) => {
 
 // 이력서 게시판의 첫 요청 및 페이지네이션
 boardRoute.get("/resumes", async (req, res, next) => {
+  console.log("cocococ cococococococo cocococococo ", req.query)
   const firstRequest = Number(req.query.firstRequest);
   const type = String(req.query.type);
   const mark = String(req.query.mark).toUpperCase();
@@ -63,6 +64,7 @@ boardRoute.get("/resumes", async (req, res, next) => {
   } catch (err) {
     next(err);
   }
+  
 });
 
 // 자유 게시판의 첫 요청 및 페이지네이션
