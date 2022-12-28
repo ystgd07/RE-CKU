@@ -1,15 +1,9 @@
 import axios from 'axios';
-// axios 클래스 만들어봤는데
-// 처음 만들어봐서 이게 질문할게 좀 있습니다.
-// 인터셉터로 token 인증 추가를 했습니다.
-// 그런데 토큰 안쓰는 api가 있을 수 있는데
-// 그때는 이 클래스를 사용할 수 없나요?
-
-// withCredential 활용해서 구분 가능할 수도
 
 class axiosAPI {
     instance;
-    BASE_URL = 'http://localhost:3001';
+    BASE_URL = 'http://localhost:5000';
+    // BASE_URL = 'https://rechu-api.jinytree.shop';
 
     constructor() {
         this.instance = axios.create();

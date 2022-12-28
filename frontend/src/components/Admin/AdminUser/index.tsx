@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import {
     Layout,
     Avatar,
@@ -11,8 +12,10 @@ import {
     Row,
     Skeleton,
     Divider,
+    Pagination,
 } from 'antd';
-// import InfiniteScroll from 'react-infinite-scroll-component';
+import type { PaginationProps } from 'antd';
+import API from 'utils/api';
 import axios from 'axios';
 import styled from '@emotion/styled';
 const { Content } = Layout;
@@ -76,21 +79,62 @@ interface userDataRes {
 const AdminContent: React.FC = () => {
     const [userData, setUserData] = useState<userDataRes[]>([]);
     const [searchEmail, setSearchEmail] = useState('');
+    const [current, setCurrent] = useState<number>(1);
+    const [totalpages, setTotalPages] = useState<number>();
     const [point, setPoint] = useState();
+    const [count, setCount] = useState<number>(4);
+    const navigate = useNavigate();
+
     const {
         token: { colorBgContainer },
     } = theme.useToken();
 
-    async function getUserId() {
+    async function getPages() {
         try {
-            const res = await axios.get(`/admin/users`);
-            console.log('😀');
-            console.log(res.data.data);
-            setUserData(res.data.data);
+            const cnt = 4;
+            setCount(cnt);
+            const res = await API.get(`/admin/users/pages`, `?count=${count}`);
+            console.log('getPages😀');
+            console.log(res);
+            setTotalPages(res);
+            getCountPage(current);
         } catch (e) {
             console.log(e);
         }
     }
+
+    // async function getUserIdAll() {
+    //     try {
+    //         const res = await API.get(`/admin/users-all`);
+    //         console.log('getUserIdAll', res);
+    //         setUserData(res.data.data);
+    //     } catch (e) {
+    //         console.log(e);
+    //     }
+    // }
+
+    async function getCountPage(page: number) {
+        try {
+            // if (page === 1) {
+            //     console.log('1', '1');
+            //     navigate('/admin/user');
+            // }
+            const res = await API.get(`/admin/users`, `?count=${count}&pages=${page}`);
+            console.log('😀');
+            // console.log('current', current);
+            console.log(res);
+            setUserData(res);
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
+    const onChange: PaginationProps['onChange'] = page => {
+        console.log(page);
+        setCurrent(page);
+        getCountPage(page);
+    };
+
     async function updatePoint(userId: any) {
         try {
             console.log(point);
@@ -106,16 +150,22 @@ const AdminContent: React.FC = () => {
     }
 
     useEffect(() => {
-        getUserId();
+        getPages();
+        // getUserIdAll();
     }, []);
 
     function onSearchUser(searchEmail: string) {
         if (searchEmail === '') {
-            getUserId();
+            getCountPage(1);
+            console.log('searchEmail111', searchEmail);
         }
+        console.log('searchEmail', searchEmail);
+        console.log('onSearchUser');
+        // getUserIdAll();
         const searchUser = userData.filter((data: any) => data.email.includes(searchEmail));
         setUserData(searchUser);
     }
+
     const onChangeActive = async (userId: string, active: boolean): Promise<void> => {
         // const onChangeActivetrue = async (userId: any) => {
         try {
@@ -158,13 +208,13 @@ const AdminContent: React.FC = () => {
                         <Col span={50}>
                             <Search
                                 placeholder="검색할 이메일을 입력해주세요"
-                                // onSearch={() => onSearchUser(searchEmail)}
+                                onSearch={() => onSearchUser(searchEmail)}
                                 enterButton
-                                // onChange={e => {
-                                //     setSearchEmail(e.target.value);
-                                // }}
-                                onChange={e => onSearchUser(e.target.value)}
-                                // value={searchEmail}
+                                onChange={e => {
+                                    setSearchEmail(e.target.value);
+                                }}
+                                // onChange={e => onSearchUser(e.target.value)}
+                                value={searchEmail}
                             />
                         </Col>
                     </Row>
@@ -250,6 +300,14 @@ const AdminContent: React.FC = () => {
                     )}
                 />
                 {/* </InfiniteScroll> */}
+                <div
+                    style={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                    }}
+                >
+                    <Pagination defaultCurrent={current} total={50} onChange={onChange} />
+                </div>
             </Content>
         </>
     );
