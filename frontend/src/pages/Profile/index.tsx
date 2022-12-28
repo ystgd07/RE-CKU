@@ -17,10 +17,12 @@ import { UserOutlined } from '@ant-design/icons';
 import { UserInfo } from 'components/User/UserInfo';
 import { Proofread } from 'components/User/Proofread';
 import axios from 'axios';
+import Header from 'components/Header';
+
 const token = localStorage.getItem('accessToken');
 
 //TODO:코드라인이 심각하게 많아지고 있다 컴포넌트의 필요성을 절실하게 느끼는 중..
-const { Header, Content, Footer } = Layout;
+const { Content, Footer } = Layout;
 const tierColors = {
     bronze: '#964b00',
     silver: '#c0c0c0',
@@ -177,6 +179,7 @@ const Profile: React.FC = () => {
 
     return (
         <Layout className="layout">
+            <Header />
             <Content
                 style={{
                     padding: '0 50px',

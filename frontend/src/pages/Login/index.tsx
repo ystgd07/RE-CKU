@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { LoginSection, Container, ImgSection } from './style';
 import Logo from 'assets/images/logo.png';
 import { Link, useNavigate } from 'react-router-dom';
@@ -8,6 +8,7 @@ import Kakao from 'assets/images/kakao.png';
 
 const Login = () => {
     const navigate = useNavigate();
+    const token = localStorage.getItem('accessToken');
 
     const {
         register,
@@ -37,6 +38,7 @@ const Login = () => {
             localStorage.setItem('refreshToken', refreshToken);
             localStorage.setItem('userId', userId);
             localStorage.setItem('isAdmin', isAdmin);
+
             navigate('/');
         } catch (err: any) {
             console.error(err.stack);
