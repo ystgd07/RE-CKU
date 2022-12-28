@@ -39,7 +39,7 @@ let matchData: [];
 const token = localStorage.getItem('accessToken');
 let lengthReq = 0;
 let lengthPro = 0;
-let test = true;
+let test = 1;
 export const Proofread = () => {
     const [res, setRes] = useState<Mock[]>([]);
     const getMentoReq = async () => {
@@ -99,7 +99,7 @@ export const Proofread = () => {
         }
     };
     const toggleChange = async () => {
-        test === true ? (test = false) : (test = true);
+        test === 1 ? (test = 0) : (test = 1);
         try {
             const res = await axios.patch(
                 '/users/individuals',
@@ -128,10 +128,8 @@ export const Proofread = () => {
             }}
         >
             <div style={{ marginBottom: '20px', display: 'flex', flexDirection: 'row-reverse' }}>
-                <div>
-                    <h5 style={{ marginBottom: '0px', marginTop: '0px' }}>첨삭ON/OFF</h5>
-                    <Switch defaultChecked onChange={toggleChange} style={{ marginLeft: '10px' }} />
-                </div>
+                <h5 style={{ marginBottom: '0px', marginTop: '0px' }}>첨삭ON/OFF</h5>
+                <Switch defaultChecked onChange={toggleChange} style={{ marginLeft: '10px' }} />
             </div>
             <Divider orientation="left" orientationMargin="0">
                 <p style={{ fontWeight: 'bold' }}>
