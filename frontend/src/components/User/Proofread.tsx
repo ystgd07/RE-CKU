@@ -27,6 +27,7 @@ const data = [
         title: 'Title 6',
     },
 ];
+let matchData: [];
 const token = localStorage.getItem('accessToken');
 
 const getMentoReq = async () => {
@@ -34,7 +35,9 @@ const getMentoReq = async () => {
         const res = await axios.get('users/req', {
             headers: { authorization: `Bearer ${token}` },
         });
-        console.log(res);
+        const data = await res.data;
+        matchData = await data.data;
+        console.log(matchData);
     } catch (e) {
         console.log(e);
     }
@@ -67,7 +70,7 @@ export const Proofread = () => {
                     xl: 6,
                     xxl: 3,
                 }}
-                dataSource={data}
+                dataSource={matchData}
                 renderItem={item => (
                     <List.Item style={{ background: 'white' }}>
                         <Card
@@ -76,7 +79,7 @@ export const Proofread = () => {
                                 border: ' solid #dbdbdb',
                                 boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)',
                             }}
-                            title={item.title}
+                            title={matchData}
                             extra={
                                 <div>
                                     <Button style={{ marginRight: '10px' }}>수락하기</Button>
@@ -103,7 +106,7 @@ export const Proofread = () => {
                     xl: 6,
                     xxl: 3,
                 }}
-                dataSource={data}
+                dataSource={matchData}
                 renderItem={item => (
                     <List.Item style={{ background: 'white' }}>
                         <Card
@@ -112,7 +115,7 @@ export const Proofread = () => {
                                 border: ' solid #dbdbdb',
                                 boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)',
                             }}
-                            title={item.title}
+                            title={matchData}
                             extra={
                                 <div>
                                     <Button style={{ marginRight: '10px' }}>수락하기</Button>
