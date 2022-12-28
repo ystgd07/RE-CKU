@@ -157,17 +157,22 @@ const AdminContent: React.FC = () => {
                     renderItem={item => (
                         <List.Item>
                             <List.Item.Meta
-                                avatar={<Avatar src={item.avatarUrl} />}
+                                // style={{
+                                //     display: 'flex',
+                                //     flexDirection: 'column',
+                                // }}
+                                avatar={<Avatar size={64} src={item.avatarUrl} />}
                                 title={
-                                    <>
+                                    <div>
                                         {item.email}/{item.username}
-                                    </>
+                                    </div>
                                 }
                                 description={
                                     <>
                                         <div
                                             style={{
                                                 display: 'flex',
+                                                flexDirection: 'row',
                                                 justifyContent: 'space-between',
                                             }}
                                         >

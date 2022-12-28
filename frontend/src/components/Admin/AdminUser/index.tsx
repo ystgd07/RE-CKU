@@ -78,9 +78,9 @@ interface userDataRes {
 
 const AdminContent: React.FC = () => {
     const [userData, setUserData] = useState<userDataRes[]>([]);
-    const [searchEmail, setSearchEmail] = useState('');
+    const [searchEmail, setSearchEmail] = useState<string>('');
     const [current, setCurrent] = useState<number>(1);
-    const [totalpages, setTotalPages] = useState<number>();
+    const [totalpages, setTotalPages] = useState<number>(1);
     const [point, setPoint] = useState();
     const [count, setCount] = useState<number>(4);
     const navigate = useNavigate();
@@ -94,35 +94,27 @@ const AdminContent: React.FC = () => {
             const cnt = 4;
             setCount(cnt);
             const res = await API.get(`/admin/users/pages`, `?count=${count}`);
-            console.log('getPages😀');
-            console.log(res);
             setTotalPages(res);
             getCountPage(current);
         } catch (e) {
             console.log(e);
         }
     }
-
-    // async function getUserIdAll() {
-    //     try {
-    //         const res = await API.get(`/admin/users-all`);
-    //         console.log('getUserIdAll', res);
-    //         setUserData(res.data.data);
-    //     } catch (e) {
-    //         console.log(e);
-    //     }
-    // }
+    async function getSearchUser() {
+        try {
+            const res = await API.get(`/admin/users/search`, `?searchEmail=${searchEmail}`);
+            console.log('getPages😀');
+            // setTotalPages(res);
+            getCountPage(current);
+        } catch (e) {
+            console.log(e);
+        }
+    }
 
     async function getCountPage(page: number) {
         try {
-            // if (page === 1) {
-            //     console.log('1', '1');
-            //     navigate('/admin/user');
-            // }
             const res = await API.get(`/admin/users`, `?count=${count}&pages=${page}`);
             console.log('😀');
-            // console.log('current', current);
-            console.log(res);
             setUserData(res);
         } catch (e) {
             console.log(e);
@@ -130,19 +122,14 @@ const AdminContent: React.FC = () => {
     }
 
     const onChange: PaginationProps['onChange'] = page => {
-        console.log(page);
         setCurrent(page);
         getCountPage(page);
     };
 
     async function updatePoint(userId: any) {
         try {
-            console.log(point);
-            // console.log(e.item.userId);
             const res = await axios.patch(`/admin/users/${userId}`, { point: point });
-
             console.log('😀');
-            console.log(res);
             setUserData(res.data.data);
         } catch (e) {
             console.log(e);
@@ -151,20 +138,7 @@ const AdminContent: React.FC = () => {
 
     useEffect(() => {
         getPages();
-        // getUserIdAll();
     }, []);
-
-    function onSearchUser(searchEmail: string) {
-        if (searchEmail === '') {
-            getCountPage(1);
-            console.log('searchEmail111', searchEmail);
-        }
-        console.log('searchEmail', searchEmail);
-        console.log('onSearchUser');
-        // getUserIdAll();
-        const searchUser = userData.filter((data: any) => data.email.includes(searchEmail));
-        setUserData(searchUser);
-    }
 
     const onChangeActive = async (userId: string, active: boolean): Promise<void> => {
         // const onChangeActivetrue = async (userId: any) => {
@@ -178,16 +152,7 @@ const AdminContent: React.FC = () => {
             console.log(e);
         }
     };
-    // const onChangeActivefalse = async (userId: any) => {
-    //     try {
-    //         console.log(userId);
-    //         const res = await axios.patch(`/admin/users/${userId}`, { active: 1 });
-    //         console.log('1');
-    //         setUserData(res.data.data);
-    //     } catch (e) {
-    //         console.log(e);
-    //     }
-    // };
+
     return (
         <>
             <Content
@@ -208,12 +173,11 @@ const AdminContent: React.FC = () => {
                         <Col span={50}>
                             <Search
                                 placeholder="검색할 이메일을 입력해주세요"
-                                onSearch={() => onSearchUser(searchEmail)}
+                                onSearch={() => getSearchUser()}
                                 enterButton
                                 onChange={e => {
                                     setSearchEmail(e.target.value);
                                 }}
-                                // onChange={e => onSearchUser(e.target.value)}
                                 value={searchEmail}
                             />
                         </Col>
@@ -221,14 +185,6 @@ const AdminContent: React.FC = () => {
                 </div>
 
                 <br />
-                {/* <InfiniteScroll
-                    dataLength={userData.length}
-                    next={userData}
-                    hasMore={userData.length < 50}
-                    loader={<Skeleton avatar paragraph={{ rows: 1 }} active />}
-                    endMessage={<Divider plain>It is all, nothing more 🤐</Divider>}
-                    scrollableTarget="scrollableDiv"
-                > */}
                 <List
                     itemLayout="horizontal"
                     dataSource={userData}
@@ -271,7 +227,6 @@ const AdminContent: React.FC = () => {
                                                             onSearch={() =>
                                                                 updatePoint(item.userId)
                                                             }
-                                                            // value={point}
                                                             onChange={(e: any) => {
                                                                 setPoint(e.target.value);
                                                             }}
@@ -281,16 +236,15 @@ const AdminContent: React.FC = () => {
                                             </div>
                                         </div>
                                         <div>
-                                            활동 :
+                                            활동
                                             <Switch
                                                 checked={item.active === 1}
-                                                // onChange={() => onChangeActive}
                                                 onClick={() => {
                                                     item.active === 1
                                                         ? onChangeActive(String(item.userId), false)
                                                         : onChangeActive(String(item.userId), true);
                                                 }}
-                                                size="small"
+                                                // size="small"
                                             />
                                         </div>
                                     </div>
@@ -306,7 +260,11 @@ const AdminContent: React.FC = () => {
                         justifyContent: 'center',
                     }}
                 >
-                    <Pagination defaultCurrent={current} total={50} onChange={onChange} />
+                    <Pagination
+                        defaultCurrent={current}
+                        total={totalpages * 10}
+                        onChange={onChange}
+                    />
                 </div>
             </Content>
         </>
