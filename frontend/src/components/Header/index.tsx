@@ -15,6 +15,7 @@ const Header = () => {
 
             localStorage.clear();
             setLogin(!login);
+            window.location.replace('/');
         } catch (err: unknown) {
             console.log(err);
         }

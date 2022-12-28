@@ -1,15 +1,11 @@
-import React from 'react';
 import * as S from './style';
-import Logo from 'assets/images/logo.png';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { useForm } from 'react-hook-form';
 import Layout from 'components/Layout';
 import Kakao from 'assets/images/kakao.png';
 
 const Login = () => {
-    const navigate = useNavigate();
-
     const {
         register,
         handleSubmit,
@@ -29,7 +25,6 @@ const Login = () => {
         try {
             console.log('jsondata', jsondata);
             const res = await axios.post('/users', jsondata);
-            console.log(res, '성공');
             const accessToken = res.data.accessToken;
             const refreshToken = res.data.refreshToken;
             const userId = res.data.userId;
@@ -38,7 +33,7 @@ const Login = () => {
             localStorage.setItem('refreshToken', refreshToken);
             localStorage.setItem('userId', userId);
             localStorage.setItem('isAdmin', isAdmin);
-            navigate('/');
+            window.location.replace('/');
         } catch (err: any) {
             console.error(err.stack);
             alert('아이디 혹은 비밀번호가 틀렸습니다');

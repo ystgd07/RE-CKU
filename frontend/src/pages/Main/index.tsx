@@ -4,18 +4,7 @@ import styled from '@emotion/styled';
 import Layout from 'components/Layout';
 import { calcElapsed } from 'utils/format';
 import { Link } from 'react-router-dom';
-import {
-    Button,
-    Input,
-    Switch,
-    Typography,
-    notification,
-    Modal,
-    Tag,
-    Radio,
-    Space,
-    Skeleton,
-} from 'antd';
+import { Skeleton } from 'antd';
 import { LikeOutlined, CommentOutlined, LikeFilled } from '@ant-design/icons';
 import API from 'utils/api';
 
