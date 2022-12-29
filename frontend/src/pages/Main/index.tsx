@@ -3,8 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import styled from '@emotion/styled';
 import Layout from 'components/Layout';
 import { calcElapsed } from 'utils/format';
-import { Link } from 'react-router-dom';
-import { Skeleton, Carousel, Card } from 'antd';
+import { Skeleton, Carousel, notification } from 'antd';
+import type { NotificationPlacement } from 'antd/es/notification/interface';
 import { LikeOutlined, CommentOutlined, RightOutlined } from '@ant-design/icons';
 import API from 'utils/api';
 import carousel01 from 'assets/images/001.png';
@@ -46,7 +46,7 @@ const Post = styled.div`
     background-color: #fffbe3;
     border: 0.1rem solid #fffbe3;
     padding: 3rem;
-    gap: 0.5rem;
+    gap: 1rem;
     cursor: pointer;
     &:hover {
         border-color: #ccb94c;
@@ -78,7 +78,6 @@ const PostContents = styled.p`
 `;
 
 const PostsProfile = styled.div`
-    margin: 1rem 0;
     display: flex;
 `;
 
@@ -225,9 +224,16 @@ const Main = () => {
     };
 
     const handleQuestClick = async () => {
-        //Users/individuals patch
+        if (questData?.chance === 0) {
+            openNotification(
+                'bottomRight',
+                `금일 잔여 횟수를 모두 소진했습니다. 내일 다시 시도해주세요.`,
+            );
+            return;
+        }
         try {
-            // const res = await API.patch("/users/individuals")
+            await API.get('/users/point');
+            fetchQuestData();
         } catch (err) {
             console.log(err);
         }
@@ -242,10 +248,19 @@ const Main = () => {
     }, []);
 
     const onChange = (currentSlide: number) => {};
+
+    const [api, contextHolder] = notification.useNotification();
+    const openNotification = (placement: NotificationPlacement, message: string) => {
+        api.info({
+            message: message,
+            placement,
+        });
+    };
     // \[?(!)(?'alt'\[[^\]\[]*\[?[^\]\[]*\]?[^\]\[]*)\]\((?'url'[^\s]+?)(?:\s+(["'])(?'title'.*?)\4)?\)
 
     return (
         <Layout>
+            {contextHolder}
             <Carousel autoplay afterChange={onChange}>
                 <div>
                     <img src={carousel01} alt="carousel" />
@@ -363,7 +378,7 @@ const Main = () => {
                     )}
                 </Posts>
 
-                <Title>오늘의 일일 퀘스트</Title>
+                <Title>일일 퀘스트</Title>
                 <QuestWrapper>
                     <QuestText>{`오늘 잔여 횟수 : ${
                         questData === null ? '' : questData?.chance

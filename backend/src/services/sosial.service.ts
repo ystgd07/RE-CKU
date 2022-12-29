@@ -1,19 +1,19 @@
 import axios from "axios";
 import * as userService from "./user.service";
 import * as userRepo from "../db/user.repo";
-export const kakaoStart = () => {
-  const baseUrl = "https://kauth.kakao.com/oauth/authorize?";
-  const config = {
-    client_id: process.env.KAKAO_KEY,
-    redirect_uri: process.env.KAKAO_REDIRECT,
-    response_type: "code",
-    scope: "profile_nickname,profile_image,account_email",
-  };
-  const query = new URLSearchParams(config).toString();
-  const finalUrl = `${baseUrl}${query}`;
-  console.log("🔥 동의항목 얻었다");
-  return finalUrl;
-};
+// export const kakaoStart = () => {
+//   const baseUrl = "https://kauth.kakao.com/oauth/authorize?";
+//   const config = {
+//     client_id: process.env.KAKAO_KEY,
+//     redirect_uri: process.env.KAKAO_REDIRECT,
+//     response_type: "code",
+//     scope: "profile_nickname,profile_image,account_email",
+//   };
+//   const query = new URLSearchParams(config).toString();
+//   const finalUrl = `${baseUrl}${query}`;
+//   console.log("🔥 동의항목 얻었다");
+//   return finalUrl;
+// };
 
 type AuthConfig = {
   grant_type: string;

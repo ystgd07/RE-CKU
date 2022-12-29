@@ -15,6 +15,7 @@ type ProjectFormState = {
     setAddProjectElement: React.Dispatch<React.SetStateAction<FormStore[]>>;
     addProjectElement: FormStore[];
     idx: number;
+    onProjectCreated: (state: any) => void;
 };
 
 const Project = ({
@@ -22,6 +23,7 @@ const Project = ({
     addProjectElement,
     setAddProjectElement,
     idx,
+    onProjectCreated,
 }: ProjectFormState) => {
     const [searchStackToggle, setSearchStackToggle] = useState<boolean>(false);
     const [AllStacks, setAllStacks] = useState([]);
@@ -128,11 +130,14 @@ const Project = ({
                 skills: projectFormDataState.stacks,
             });
 
+            // const insertId = res.data.data[0].insertId;
+            // const result = await axios.get(`/my-portfolio/careers/${insertId}`);
+
             if (res.status === 200) {
-                // onCareerCreated(workFormDataState);
+                // onProjectCreated();
                 setIsProjectFormToggle(false);
             }
-            console.log(res, ' project sususususususususuussusu');
+            console.log(res.data, ' project sususususususususuussusu');
         } catch (err: unknown) {
             console.log(err);
         }
@@ -259,7 +264,7 @@ const Project = ({
                         </li>
                         <li style={{ paddingBottom: '1.6rem' }}>
                             <input
-                                type="url"
+                                type="email"
                                 placeholder="URL"
                                 name="link1"
                                 onChange={projectFormHandler}
@@ -267,7 +272,7 @@ const Project = ({
                         </li>
                         <li>
                             <input
-                                type="url"
+                                type="email"
                                 placeholder="URL"
                                 name="link2"
                                 onChange={projectFormHandler}
