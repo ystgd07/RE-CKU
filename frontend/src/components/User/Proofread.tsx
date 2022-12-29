@@ -43,7 +43,7 @@ let matchData: [];
 const token = localStorage.getItem('accessToken');
 let lengthReq = 0;
 let lengthPro = 0;
-let test = 1;
+let test: number | boolean = 1;
 
 export const Proofread = () => {
     const [res, setRes] = useState<Mock[]>([]);
@@ -59,6 +59,7 @@ export const Proofread = () => {
                 const dumyRes = await mocks.data;
                 const realRes = await dumyRes.data;
                 test = realRes.working;
+                test === 1 ? (test = true) : (test = false);
             }
         } catch (e: any) {
             console.log(e);
@@ -121,7 +122,7 @@ export const Proofread = () => {
     };
 
     const toggleChange = async () => {
-        test === 1 ? (test = 0) : (test = 1);
+        test === 1 ? (test = true) : (test = false);
         try {
             const res = await axios.patch(
                 `${API.BASE_URL}/users/individuals`,
