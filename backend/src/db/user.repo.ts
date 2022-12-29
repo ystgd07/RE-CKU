@@ -311,7 +311,7 @@ export const findMatchQ = async (userId: number): Promise<MatchInfo> => {
       JOIN user u
       on mentoId = u.id
       WHERE 
-        u.matching = ?
+        menteeId = ?
     `,
     [parseMatching.matching]
   );
