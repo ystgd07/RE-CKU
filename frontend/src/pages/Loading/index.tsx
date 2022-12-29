@@ -58,10 +58,10 @@ const Loading = () => {
         try {
             const res = await API.get(`sosial/kakao/auth?code=${getCode}`);
             console.log(res);
-            const accessToken = res.data.accessToken;
-            const refreshToken = res.data.refreshToken;
-            const userId = res.data.userId;
-            const isAdmin = res.data.isAdmin;
+            const accessToken = res.data.result.accessToken;
+            const refreshToken = res.data.result.refreshToken;
+            const userId = res.data.result.userId;
+            const isAdmin = res.data.result.isAdmin;
             localStorage.setItem('isAdmin', isAdmin);
             localStorage.setItem('accessToken', accessToken);
             localStorage.setItem('refreshToken', refreshToken);
