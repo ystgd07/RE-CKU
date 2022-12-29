@@ -26,7 +26,7 @@ const Router = () => {
             <Routes>
                 {localStorage.getItem('accessToken') ? (
                     <>
-                        {localStorage.getItem('isAdmin') === 'admin' && (
+                        {localStorage.getItem('isAdmin') === 'true' && (
                             <>
                                 {/* Admin 전용 라우터 */}
                                 <Route path="/admin" element={<Admin />}>
