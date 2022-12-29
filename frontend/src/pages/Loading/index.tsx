@@ -44,6 +44,7 @@ const LoadingText = styled.div`
     font: 1rem 'Noto Sans KR';
     text-align: center;
 `;
+
 const Loading = () => {
     const navigate = useNavigate();
     const locaiton = useLocation();
@@ -53,10 +54,10 @@ const Loading = () => {
     }, []);
 
     const getCode = new URLSearchParams(window.location.search).get('code');
-    // 유효성 검사... 어케 하지...?
+
     const getToken = async () => {
         try {
-            const res = await API.get(`sosial/kakao/auth?code=${getCode}`);
+            const res = await axios.get(`${API.BASE_URL}/sosial/kakao/auth?code=${getCode}`);
             console.log(res);
             const accessToken = res.data.result.accessToken;
             const refreshToken = res.data.result.refreshToken;
@@ -67,7 +68,6 @@ const Loading = () => {
             localStorage.setItem('refreshToken', refreshToken);
             localStorage.setItem('userId', userId);
             window.location.href = '/';
-            //      navigate('/');
         } catch (e) {
             console.log(e);
         }

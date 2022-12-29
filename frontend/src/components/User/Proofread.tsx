@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { Card, List, Switch, Button, Divider } from 'antd';
 import axios from 'axios';
 import { off } from 'process';
+import API from 'utils/api';
+
 const data = [
     {
         title: 'Title 1',
@@ -28,6 +30,7 @@ const data = [
         title: 'Title 6',
     },
 ];
+
 type Mock = {
     matchingId: string;
     step: string;
@@ -35,23 +38,46 @@ type Mock = {
     menteeName: string;
     menteeEmail: string;
 };
+
 let matchData: [];
 const token = localStorage.getItem('accessToken');
 let lengthReq = 0;
 let lengthPro = 0;
-let test = 1;
+// let test: number | boolean;
+
 export const Proofread = () => {
+    const [test, setTest] = useState(false);
     const [res, setRes] = useState<Mock[]>([]);
+
+    async function getProfile() {
+        try {
+            const token = localStorage.getItem('accessToken');
+
+            const mocks = await axios.get(`${API.BASE_URL}/users/individuals`, {
+                headers: { authorization: `Bearer ${token}` },
+            });
+            if (mocks.status === 200) {
+                const dumyRes = await mocks.data;
+                const realRes = await dumyRes.data;
+                if (realRes.working === 1) {
+                    setTest(true);
+                } else {
+                    setTest(false);
+                }
+            }
+        } catch (e: any) {
+            console.log(e);
+        }
+    }
+
     const getMentoReq = async () => {
         try {
-            const res = await axios.get('users/req', {
+            const res = await axios.get(`${API.BASE_URL}/users/req`, {
                 headers: { authorization: `Bearer ${token}` },
             });
             const data = await res.data;
             matchData = await data.data;
             setRes(matchData);
-            console.log('나의시점');
-            console.log(matchData);
         } catch (e) {
             console.log(e);
         }
@@ -62,20 +88,20 @@ export const Proofread = () => {
         const menteeid = e.currentTarget.value;
         try {
             const res = await axios.patch(
-                'users/match',
+                `${API.BASE_URL}/users/match`,
                 { matchingId: matchingid * 1, menteeId: menteeid * 1 },
                 { headers: { authorization: `Bearer ${token}` } },
             );
-            console.log(res);
             getMentoReq();
         } catch (e) {
             console.log(e);
         }
     };
+
     const deleteMatchData = async (e: any) => {
         const matchingid = e.currentTarget.id;
         try {
-            const res = await axios.delete('users/match', {
+            const res = await axios.delete(`${API.BASE_URL}/users/match`, {
                 data: { matchingId: matchingid },
                 headers: { authorization: `Bearer ${token}` },
             });
@@ -84,40 +110,43 @@ export const Proofread = () => {
             console.log(e);
         }
     };
+
     const updateMatchData = async (e: any) => {
         const matchingid = e.currentTarget.id;
         try {
             const res = await axios.post(
-                'users/match/success',
+                `${API.BASE_URL}/users/match/success`,
                 { matchingId: matchingid * 1, role: 'mento' },
                 { headers: { authorization: `Bearer ${token}` } },
             );
-            console.log(res);
             if (res.status === 200) getMentoReq();
         } catch (e) {
             console.log(e);
         }
     };
+
     const toggleChange = async () => {
-        test === 1 ? (test = 0) : (test = 1);
         try {
             const res = await axios.patch(
-                '/users/individuals',
-                { working: test },
+                `${API.BASE_URL}/users/individuals`,
+                { working: !test },
                 { headers: { authorization: `Bearer ${token}` } },
             );
-            console.log(res);
         } catch (e) {
             console.log(e);
         }
     };
+
     useEffect(() => {
+        getProfile();
         getMentoReq();
     }, []);
+
     useEffect(() => {
         lengthReq = res.filter((e: any) => e.step === '요청중').length;
         lengthPro = res.filter((e: any) => e.step === '진행중').length;
     }, [res]);
+    console.log(test, '양반넘아! 이 애물딴지');
     return (
         <div
             style={{
@@ -129,7 +158,11 @@ export const Proofread = () => {
         >
             <div style={{ marginBottom: '20px', display: 'flex', flexDirection: 'row-reverse' }}>
                 <h5 style={{ marginBottom: '0px', marginTop: '0px' }}>첨삭ON/OFF</h5>
-                <Switch defaultChecked onChange={toggleChange} style={{ marginLeft: '10px' }} />
+                <Switch
+                    defaultChecked={test}
+                    onChange={toggleChange}
+                    style={{ marginLeft: '10px' }}
+                />
             </div>
             <Divider orientation="left" orientationMargin="0">
                 <p style={{ fontWeight: 'bold' }}>

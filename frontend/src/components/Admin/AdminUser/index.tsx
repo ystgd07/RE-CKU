@@ -18,6 +18,7 @@ import type { PaginationProps } from 'antd';
 import API from 'utils/api';
 import axios from 'axios';
 import styled from '@emotion/styled';
+
 const { Content } = Layout;
 const { Search } = Input;
 const { Paragraph } = Typography;
@@ -106,13 +107,8 @@ const AdminContent: React.FC = () => {
             if (searchEmail === '') {
                 getPages();
             } else {
-                console.log('searchEmail', typeof searchEmail);
                 const res = await API.get(`/admin/users/search`, `${searchEmail}`);
-                console.log('getPages😀');
-                console.log('res', res.length);
                 setTotalPages(Math.ceil(res.length / 4));
-                // getCountPage(current);
-                // setUserData(res);
                 searchPage(res, page);
                 setSearchpage(1);
             }
@@ -128,10 +124,7 @@ const AdminContent: React.FC = () => {
             for (let i = 0; i < data.length; i += 4) {
                 arr.push(data.slice(i, i + 4));
             }
-            console.log('arr', arr);
-            console.log('page', current);
             setUserData(arr[current - 1]);
-            console.log('arr[page - 1]', arr[current - 1]);
         } catch (e) {
             console.log(e);
         }
@@ -151,22 +144,25 @@ const AdminContent: React.FC = () => {
 
     const onChange: PaginationProps['onChange'] = page => {
         if (searchpage === 0) {
-            console.log('전부');
             setCurrent(page);
             getCountPage(page);
         } else {
-            console.log('검색');
             setCurrent(page);
-            // getSearchUser();
             getSearchUser(page);
         }
     };
 
-    async function updatePoint(userId: any) {
+    async function updatePoint(userId: any, current: number) {
+        const data = {
+            point,
+        };
         try {
-            const res = await axios.patch(`/admin/users/${userId}`, { point: point });
-            console.log('😀');
-            setUserData(res.data.data);
+            const res = await API.patch(
+                `/admin/users/${userId}`,
+                `?count=${count}&pages=${current}`,
+                data,
+            );
+            setUserData(res.data);
         } catch (e) {
             console.log(e);
         }
@@ -176,14 +172,24 @@ const AdminContent: React.FC = () => {
         getPages();
     }, []);
 
-    const onChangeActive = async (userId: string, active: boolean): Promise<void> => {
-        // const onChangeActivetrue = async (userId: any) => {
+    const onChangeActive = async (
+        userId: string,
+        active: boolean,
+        current: number,
+    ): Promise<void> => {
+        const data = {
+            active,
+        };
         try {
             console.log(userId);
-            const res = await axios.patch(`/admin/users/${userId}`, { active: active });
+            const res = await API.patch(
+                `/admin/users/${userId}`,
+                `?count=${count}&pages=${current}`,
+                data,
+            );
             console.log('0');
             console.log(res);
-            setUserData(res.data.data);
+            setUserData(res.data);
         } catch (e) {
             console.log(e);
         }
@@ -265,7 +271,7 @@ const AdminContent: React.FC = () => {
                                                             enterButton="change"
                                                             size="small"
                                                             onSearch={() =>
-                                                                updatePoint(item.userId)
+                                                                updatePoint(item.userId, current)
                                                             }
                                                             onChange={(e: any) => {
                                                                 setPoint(e.target.value);
@@ -281,8 +287,16 @@ const AdminContent: React.FC = () => {
                                                 checked={item.active === 1}
                                                 onClick={() => {
                                                     item.active === 1
-                                                        ? onChangeActive(String(item.userId), false)
-                                                        : onChangeActive(String(item.userId), true);
+                                                        ? onChangeActive(
+                                                              String(item.userId),
+                                                              false,
+                                                              current,
+                                                          )
+                                                        : onChangeActive(
+                                                              String(item.userId),
+                                                              true,
+                                                              current,
+                                                          );
                                                 }}
                                                 // size="small"
                                             />

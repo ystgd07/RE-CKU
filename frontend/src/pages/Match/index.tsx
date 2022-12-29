@@ -52,6 +52,7 @@ const Match = () => {
     const [myData, setMyData] = useState<myData>();
     const [modalOpen, setModalOpen] = useState(false);
     const navigate = useNavigate();
+
     async function getMatching() {
         try {
             const res = await API.get(`/users/rots`);

@@ -284,6 +284,17 @@ export const findMatchQ = async (userId: number): Promise<MatchInfo> => {
     },
     cancelAble: false,
   };
+  const [matchingId] = await db.query(
+    `
+    SELECT
+      matching
+    FROM user
+    WHERE
+      id = ?
+  `,
+    [userId]
+  );
+  const parseMatching = utils.jsonParse(matchingId)[0];
   const [connect] = await db.query(
     `
       SELECT 
@@ -300,9 +311,9 @@ export const findMatchQ = async (userId: number): Promise<MatchInfo> => {
       JOIN user u
       on mentoId = u.id
       WHERE 
-        menteeId = ?
+        u.matching = ?
     `,
-    [userId]
+    [parseMatching.matching]
   );
   const parseConnect = utils.jsonParse(connect)[0];
   console.log("현재 진행중인 매칭", parseConnect);
@@ -562,12 +573,13 @@ export const getRequestCorrectionQ = async (userId: number) => {
       req.cancelAble = req.step !== "요청중" ? false : true;
       return { ...req };
     });
+    console.log("그지꺵꺵이", addCancelAble);
     conn.commit();
     // if (result.step !== "요청중") {
     //   result.cancelAble = false;
     // }
     // result.cancelAble = true;
-    return result;
+    return addCancelAble;
   } catch (err) {
     conn.rollback();
     console.log(err.message);

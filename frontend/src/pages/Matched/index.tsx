@@ -27,11 +27,9 @@ const Matched = () => {
     async function getMatching() {
         try {
             const res = await API.get(`/users/rots`);
-            console.log(res.matchInfo);
             if (res.matchInfo) {
                 setData(res.matchInfo);
                 setStep(res.matchInfo.step);
-                // setMatchId(res.matchInfo.matchingId);
             } else {
                 navigate('/match');
             }
@@ -48,12 +46,9 @@ const Matched = () => {
         const data = { matchingId };
         const token = localStorage.getItem('accessToken');
         try {
-            console.log('matchingId', matchingId);
-            console.log('matchingId', typeof matchingId);
-            // const res = await axios.delete(`/users/match`, { matchingId });
             const res = await axios({
                 method: 'delete',
-                url: '/users/match',
+                url: `${API.BASE_URL}/users/match`,
                 data: {
                     matchingId,
                 },
@@ -68,8 +63,6 @@ const Matched = () => {
         const data = { matchingId, role: mentee };
         try {
             const res = await API.post(`/users/match/success`, data);
-            console.log('complateMatching');
-            console.log(res);
             navigate('/match');
         } catch (e) {
             console.log(e);
@@ -83,16 +76,18 @@ const Matched = () => {
             <S.MobileDiv>
                 <S.H1>요청중인매칭</S.H1>
                 <div>
-                    <h3>
-                        {data?.mentoName}({data?.mentoEmail})
-                    </h3>
+                    <h3 style={{ textAlign: 'center' }}>{data?.mentoName}</h3>
+                    <S.P>
+                        <strong>이메일 :</strong>
+                        {data?.mentoEmail}
+                    </S.P>
                     <S.P>
                         <strong>상태 :</strong>
                         {data?.step}
                     </S.P>
                     <S.P>
-                        <strong>point :</strong>
-                        {data?.point}
+                        <strong>요청시간 :</strong>
+                        {data?.created}
                     </S.P>
                     {step === '요청중' ? (
                         <Popconfirm

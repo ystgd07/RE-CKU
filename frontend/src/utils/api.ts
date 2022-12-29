@@ -2,12 +2,10 @@ import axios from 'axios';
 
 class axiosAPI {
     instance;
-    BASE_URL = 'http://localhost:3001';
-    // BASE_URL = 'https://rechu-api.jinytree.shop';
+    BASE_URL = 'https://rechu.jinytree.shop/api';
 
     constructor() {
         this.instance = axios.create();
-        // token 인증 추가
         this.instance.interceptors.request.use(
             (config): any => {
                 const headers = config.headers;

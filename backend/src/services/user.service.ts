@@ -11,6 +11,7 @@ import { EmailAuth, UserProfile } from "../db/schemas";
 export const getRotListOrMatchingStatus = async (userId: number): Promise<userRepo.RotList | userRepo.MatchInfo> => {
   try {
     const connect = await userRepo.findMatchQ(userId);
+    console.log("connect", connect);
     if (!connect.matchInfo) {
       console.log("고인물 리스트 리턴 로직");
       const list = await userRepo.getRotListQ(userId);
@@ -32,7 +33,8 @@ export const createMatch = async (menteeId: number, mentoId: number): Promise<nu
   try {
     const alreadyMatch = await userRepo.findMatchQ(menteeId);
     console.log("alreadyMatch", alreadyMatch);
-    if (alreadyMatch) throw new Error(`이미 요청한 고인물입니다.`);
+
+    if (alreadyMatch.matchInfo !== undefined) throw new Error(`이미 요청한 고인물입니다.`);
     const matchingId = await userRepo.createMatchQ(data);
     return matchingId;
   } catch (err) {
@@ -258,11 +260,11 @@ export const findPassword = async (email: string): Promise<boolean | string> => 
   }
 
   const mailInfo = {
-    from: "jinytree1403@naver.com",
+    from: process.env.MAILER_USER,
     to: email,
-    subject: "[헤드헌터] 비밀번호 발송 ",
+    subject: "[RE-CHU] 비밀번호 발송 ",
     text: `      
-    헤드헌터 ${email} 
+    RE-CHU ${email} 
     
     임시 비밀번호 :  ${randomStr}
     
@@ -291,11 +293,11 @@ export const sendEmail = async (toEmail: string, number?: number) => {
   }
   // 이메일 내용
   const mailInfo = {
-    from: "jinytree1403@naver.com",
+    from: process.env.MAILER_USER,
     to: toEmail,
-    subject: "[헤드헌터] 인증번호 발송 ",
+    subject: "[re-chu] 인증번호 발송 ",
     text: `      
-    헤드헌터 회원가입 인증번호
+    re-chu 회원가입 인증번호
     
     인증번호 입력란에 ${number} 를 입력해주세요.`,
   };
