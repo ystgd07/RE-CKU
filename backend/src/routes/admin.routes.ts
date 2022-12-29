@@ -110,7 +110,6 @@ adminRoute.patch("/users/:userId", async (req, res, next) => {
     const count = Number(req.query.count);
     const pages = Number(req.query.pages);
     const offset = count * pages - count;
-
     const updatedUser = await adminService.updateUser(userId, updateInfo, count, offset);
 
     return res.status(203).json({

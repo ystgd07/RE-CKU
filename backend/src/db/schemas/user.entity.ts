@@ -1,10 +1,4 @@
-import {
-  Entity,
-  Column,
-  PrimaryGeneratedColumn,
-  OneToMany,
-  OneToOne,
-} from "typeorm";
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany, OneToOne } from "typeorm";
 import { Connect } from "./connect.entity";
 import { Resume } from "./resume.entity";
 import { Board } from "./board.entity";
@@ -89,7 +83,7 @@ export class User {
   @Column({ default: 3 })
   chance: number;
 
-  @Column({ default: false })
+  @Column({ default: true })
   working: boolean;
 
   @Column({ default: false })

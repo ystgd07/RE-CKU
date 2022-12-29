@@ -6,6 +6,7 @@ import Logo from 'assets/images/logo.png';
 import { useForm } from 'react-hook-form';
 import Layout from 'components/Layout';
 import API from 'utils/api';
+import { Container, ImgSection } from '../Login/style';
 
 const Join = () => {
     const [email, setEmail] = useState();
@@ -93,7 +94,13 @@ const Join = () => {
     };
 
     return (
-        <Layout>
+        <Container>
+            <ImgSection>
+                <article>
+                    <img src={Logo} alt="logo" />
+                </article>
+            </ImgSection>
+
             <S.MobileDiv>
                 <form onSubmit={handleSubmit(onValid)}>
                     <h1>SIGN UP</h1>
@@ -204,7 +211,7 @@ const Join = () => {
                     </div>
                 </form>
             </S.MobileDiv>
-        </Layout>
+        </Container>
     );
 };
 

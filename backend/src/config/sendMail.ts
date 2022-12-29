@@ -1,19 +1,20 @@
 import nodemailer from "nodemailer";
 
 const sender = nodemailer.createTransport({
-  service: "naver",
+  service: "naver.com",
   auth: {
-    user: process.env.SEND_MAILID || "123",
-    pass: process.env.SEND_MAILID_PW || "123",
+    user: process.env.MAILER_USER,
+    pass: process.env.MAILER_PASSWORD,
   },
   host: "smtp.naver.com",
   port: 587,
-  //   tls: {
-  //     rejectUnauthorized: false,
-  //   },
+  tls: {
+    rejectUnauthorized: false,
+  },
 });
 
 const send = async (option) => {
+  console.log(process.env.MAILER_USER, "메일러 ㅋㅋ🔥");
   sender.sendMail(option, (err, info) => {
     if (err) {
       console.log(err);
