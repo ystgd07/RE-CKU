@@ -158,21 +158,10 @@ export const Proofread = () => {
         >
             <div style={{ marginBottom: '20px', display: 'flex', flexDirection: 'row-reverse' }}>
                 <h5 style={{ marginBottom: '0px', marginTop: '0px' }}>첨삭ON/OFF</h5>
-                {test ? (
-                    <Switch defaultChecked onChange={toggleChange} style={{ marginLeft: '10px' }} />
-                ) : (
-                    <Switch onChange={toggleChange} style={{ marginLeft: '10px' }} />
-                )}
-                <Switch defaultChecked onChange={toggleChange} style={{ marginLeft: '20px' }} />
                 <Switch
-                    defaultChecked={true}
+                    defaultChecked={test}
                     onChange={toggleChange}
-                    style={{ marginLeft: '20px' }}
-                />
-                <Switch
-                    defaultChecked={false}
-                    onChange={toggleChange}
-                    style={{ marginLeft: '20px' }}
+                    style={{ marginLeft: '10px' }}
                 />
             </div>
             <Divider orientation="left" orientationMargin="0">
