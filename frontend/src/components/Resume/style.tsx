@@ -63,7 +63,7 @@ export const TopSection = styled.section`
 
     & h1 {
         font-size: 3rem;
-        padding: 1rem 0 1rem 0;
+        padding: 1rem 0 1rem 6rem;
         border-bottom: 2px solid #fff;
     }
 

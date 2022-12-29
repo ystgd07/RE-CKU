@@ -3,23 +3,37 @@ import Logo from 'assets/images/logo.png';
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
 import { HContainer, HHeader } from './style';
+import API from 'utils/api';
 
 const Header = () => {
     const navigate = useNavigate();
     const token = localStorage.getItem('accessToken');
-    const [login, setLogin] = useState<boolean>(false);
+    const [isAdmin, setIsAdmin] = useState<boolean>(localStorage.getItem('isAdmin') ? true : false);
+
+    const userInfo = async () => {
+        try {
+            const res = await API.get(`/users/individuals`);
+            setIsAdmin(res.role);
+            console.log(isAdmin);
+        } catch (err: unknown) {
+            console.log(err);
+        }
+    };
+
+    useEffect(() => {
+        userInfo();
+    }, [token]);
 
     const logout = useCallback(() => {
         try {
             axios.patch(`/users/sign-out`, {}, { headers: { authorization: `Bearer ${token}` } });
 
             localStorage.clear();
-            setLogin(!login);
             window.location.replace('/');
         } catch (err: unknown) {
             console.log(err);
         }
-    }, [login]);
+    }, []);
 
     return (
         <HContainer>
@@ -31,6 +45,12 @@ const Header = () => {
                 <div>
                     <nav>
                         <ul>
+                            {isAdmin === true && (
+                                <li>
+                                    <Link to="/admin">관리자</Link>
+                                </li>
+                            )}
+
                             <li>
                                 <Link to="/comunity">커뮤니티</Link>
                             </li>
@@ -38,7 +58,9 @@ const Header = () => {
                             <li>
                                 <Link to="/resume/list">이력서</Link>
                             </li>
-                            <li>상점</li>
+                            <li>
+                                <Link to="/match">상점</Link>
+                            </li>
                         </ul>
                     </nav>
 

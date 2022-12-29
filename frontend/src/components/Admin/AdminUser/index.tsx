@@ -227,6 +227,7 @@ const AdminContent: React.FC = () => {
                     renderItem={item => (
                         <List.Item>
                             <List.Item.Meta
+                                style={{ alignItems: 'center' }}
                                 key={item.userId}
                                 avatar={<Avatar size={64} src={item.avatarUrl} />}
                                 title={
@@ -236,7 +237,10 @@ const AdminContent: React.FC = () => {
                                 }
                                 description={
                                     <div
-                                        style={{ display: 'flex', justifyContent: 'space-between' }}
+                                        style={{
+                                            display: 'flex',
+                                            justifyContent: 'space-between',
+                                        }}
                                     >
                                         <div>
                                             <Typography.Title
@@ -272,7 +276,7 @@ const AdminContent: React.FC = () => {
                                             </div>
                                         </div>
                                         <div>
-                                            활동
+                                            <span style={{ verticalAlign: 'middle' }}>활동</span>{' '}
                                             <Switch
                                                 checked={item.active === 1}
                                                 onClick={() => {

@@ -1,10 +1,12 @@
 import styled from '@emotion/styled';
 
-export const ResumeContainer = styled.section`
+export const Background = styled.section`
     background-color: #f9fafb;
+`;
+
+export const ResumeContainer = styled.section`
     display: flex;
     justify-content: center;
-    max-height: 100vh;
 
     .rotate {
         transform: rotate(45deg);
@@ -13,6 +15,14 @@ export const ResumeContainer = styled.section`
 
     .block {
         display: block;
+    }
+
+    .visible {
+        visibility: visible;
+    }
+
+    .hidden {
+        visibility: hidden;
     }
 
     .none {
@@ -471,6 +481,7 @@ export const ExistForm = styled.section`
     & div:first-of-type {
         display: flex;
         justify-content: space-between;
+        align-items: center;
 
         .customBtn {
             display: flex;
@@ -504,7 +515,7 @@ export const ExistForm = styled.section`
         }
     }
 
-    & .existDiv {
+    & .careerContent {
         display: flex;
         flex-wrap: wrap;
         align-items: center;
@@ -523,12 +534,49 @@ export const ExistForm = styled.section`
             line-height: 1.6;
             & li {
                 & strong {
-                    font-size: 2.6rem;
+                    font-size: 2.2rem;
                 }
             }
 
             & li:last-of-type {
                 font-size: 1.6rem;
+            }
+        }
+
+        & dl {
+            & dt {
+                line-height: 1.6;
+            }
+
+            border-left: 2px solid #d3d3d3;
+            padding: 2rem;
+        }
+    }
+
+    & .projectContent {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+
+        & ul {
+            padding: 1rem 0;
+            width: 100%;
+            line-height: 1.6;
+
+            & li:first-of-type {
+                & strong {
+                    font-size: 2.2rem;
+                }
+
+                & span {
+                    font-size: 1.6rem;
+                }
+            }
+
+            & li:last-of-type {
+                & span {
+                    padding-right: 1rem;
+                }
             }
         }
 
