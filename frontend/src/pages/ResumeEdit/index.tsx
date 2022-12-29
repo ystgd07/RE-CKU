@@ -316,7 +316,7 @@ const Resume = () => {
                                                             <strong>{tem.projectName}</strong>{' '}
                                                             <span>{tem.year}</span>
                                                         </li>
-                                                        <li>{tem.stacks}</li>
+                                                        <li>{tem.skills}</li>
                                                         <li>
                                                             <span>Link: {tem.link1}</span>
                                                             <span>Link: {tem.link2}</span>

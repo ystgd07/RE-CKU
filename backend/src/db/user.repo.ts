@@ -209,7 +209,10 @@ export const getRotListQ = async (userId: number): Promise<RotList> => {
       username,
       id,
       point,
-      corrections
+      corrections,
+      email,
+      gitHubUrl,
+      avatarUrl
     FROM user
     WHERE 
       id != ? AND
