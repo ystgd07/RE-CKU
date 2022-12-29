@@ -154,7 +154,7 @@ const Match = () => {
             }
         });
     };
-    let realData = data.map((e: any, idx: number) => {
+    data.map((e: any, idx: number) => {
         tierCreate(e.point);
         data[idx].tier = tier;
         data[idx].tierColor = tierColor;
