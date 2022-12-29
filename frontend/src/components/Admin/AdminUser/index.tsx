@@ -152,12 +152,17 @@ const AdminContent: React.FC = () => {
         }
     };
 
-    async function updatePoint(userId: any) {
+    async function updatePoint(userId: any, current: number) {
+        const data = {
+            point,
+        };
         try {
-            const res = await axios.patch(`${API.BASE_URL}/admin/users/${userId}`, {
-                point: point,
-            });
-            setUserData(res.data.data);
+            const res = await API.patch(
+                `/admin/users/${userId}`,
+                `?count=${count}&pages=${current}`,
+                data,
+            );
+            setUserData(res.data);
         } catch (e) {
             console.log(e);
         }
@@ -167,15 +172,24 @@ const AdminContent: React.FC = () => {
         getPages();
     }, []);
 
-    const onChangeActive = async (userId: string, active: boolean): Promise<void> => {
+    const onChangeActive = async (
+        userId: string,
+        active: boolean,
+        current: number,
+    ): Promise<void> => {
+        const data = {
+            active,
+        };
         try {
             console.log(userId);
-            const res = await axios.patch(`${API.BASE_URL}/admin/users/${userId}`, {
-                active: active,
-            });
+            const res = await API.patch(
+                `/admin/users/${userId}`,
+                `?count=${count}&pages=${current}`,
+                data,
+            );
             console.log('0');
             console.log(res);
-            setUserData(res.data.data);
+            setUserData(res.data);
         } catch (e) {
             console.log(e);
         }
@@ -257,7 +271,7 @@ const AdminContent: React.FC = () => {
                                                             enterButton="change"
                                                             size="small"
                                                             onSearch={() =>
-                                                                updatePoint(item.userId)
+                                                                updatePoint(item.userId, current)
                                                             }
                                                             onChange={(e: any) => {
                                                                 setPoint(e.target.value);
@@ -273,8 +287,16 @@ const AdminContent: React.FC = () => {
                                                 checked={item.active === 1}
                                                 onClick={() => {
                                                     item.active === 1
-                                                        ? onChangeActive(String(item.userId), false)
-                                                        : onChangeActive(String(item.userId), true);
+                                                        ? onChangeActive(
+                                                              String(item.userId),
+                                                              false,
+                                                              current,
+                                                          )
+                                                        : onChangeActive(
+                                                              String(item.userId),
+                                                              true,
+                                                              current,
+                                                          );
                                                 }}
                                                 // size="small"
                                             />
