@@ -24,6 +24,8 @@ interface myData {
     role: string;
     username: string;
     working: number;
+    tier: string;
+    tierColor: string;
 }
 const tierColors = {
     bronze: '#964b00',
@@ -54,6 +56,7 @@ const Match = () => {
         try {
             const res = await API.get(`/users/rots`);
             console.log('res', res);
+            console.log(res.matchInfo);
             if (res.matchInfo) {
                 navigate('/matched');
             } else {
