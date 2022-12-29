@@ -1,7 +1,7 @@
 import nodemailer from "nodemailer";
 
 const sender = nodemailer.createTransport({
-  service: "Google",
+  service: "naver.com",
   auth: {
     user: process.env.MAILER_USER,
     pass: process.env.MAILER_PASSWORD,
