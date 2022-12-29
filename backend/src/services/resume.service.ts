@@ -81,7 +81,6 @@ export const findMyResumes = async (userId: number): Promise<any> => {
 export const findMyResume = async (userId: number, resumeId: number): Promise<Object> => {
   let myResume = {};
   const resumeInfo = await findResumeQ(resumeId);
-
   const userInfo = await findOneUser(resumeInfo.userId); // undifindde
   // 토큰값이랑 리점아이디랑 같은 경우에는 userInfo 를 userId 로 찾아주면 됨
   // if (userId === resumeInfo.usedUserId) {
