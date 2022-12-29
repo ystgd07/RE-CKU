@@ -48,10 +48,10 @@ export class User {
   @Column({ length: 20, nullable: false })
   username: string;
 
-  @Column({ unique: true, nullable: false })
+  @Column({ unique: true, nullable: true })
   email: string;
 
-  @Column({ unique: true, nullable: true, default: null })
+  @Column({ nullable: true, default: null })
   phoneNumber: string;
 
   @Column({ nullable: true })
