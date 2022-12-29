@@ -83,9 +83,9 @@ export const findMyResume = async (userId: number, resumeId: number): Promise<Ob
   const resumeInfo = await findResumeQ(resumeId);
   let userInfo = await findOneUser(resumeInfo.usedUserId);
   // 토큰값이랑 리점아이디랑 같은 경우에는 userInfo 를 userId 로 찾아주면 됨
-  if (userId === resumeInfo.usedUserId) {
-    userInfo = await findOneUser(userId);
-  }
+  // if (userId === resumeInfo.usedUserId) {
+  //   userInfo = await findOneUser(userId);
+  // }
   const careers = await findCareersQ(resumeId);
   const projects = await findProjectsQ(resumeId);
 
