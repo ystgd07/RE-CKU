@@ -47,6 +47,24 @@ let test = 1;
 
 export const Proofread = () => {
     const [res, setRes] = useState<Mock[]>([]);
+
+    async function getProfile() {
+        try {
+            const token = localStorage.getItem('accessToken');
+
+            const mocks = await axios.get(`${API.BASE_URL}/users/individuals`, {
+                headers: { authorization: `Bearer ${token}` },
+            });
+            if (mocks.status === 200) {
+                const dumyRes = await mocks.data;
+                const realRes = await dumyRes.data;
+                test = realRes.working;
+            }
+        } catch (e: any) {
+            if (e.response.status !== 200) navigate('/*');
+        }
+    }
+
     const getMentoReq = async () => {
         try {
             const res = await axios.get(`${API.BASE_URL}/users/req`, {
@@ -116,6 +134,7 @@ export const Proofread = () => {
     };
 
     useEffect(() => {
+        getProfile();
         getMentoReq();
     }, []);
 
@@ -135,7 +154,11 @@ export const Proofread = () => {
         >
             <div style={{ marginBottom: '20px', display: 'flex', flexDirection: 'row-reverse' }}>
                 <h5 style={{ marginBottom: '0px', marginTop: '0px' }}>첨삭ON/OFF</h5>
-                <Switch defaultChecked onChange={toggleChange} style={{ marginLeft: '10px' }} />
+                <Switch
+                    defaultChecked={test}
+                    onChange={toggleChange}
+                    style={{ marginLeft: '10px' }}
+                />
             </div>
             <Divider orientation="left" orientationMargin="0">
                 <p style={{ fontWeight: 'bold' }}>
