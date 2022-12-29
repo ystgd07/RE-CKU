@@ -29,13 +29,6 @@ const Wrapper = styled.div`
     font-size: 1.6rem;
 `;
 
-const ImgDiv = styled.div`
-    & img {
-        width: 100%;
-        height: 100%;
-    }
-`;
-
 const Posts = styled.div`
     display: grid;
     grid-template-columns: 1fr;
@@ -287,21 +280,21 @@ const Main = () => {
         <Layout>
             {contextHolder}
             <Carousel autoplay afterChange={onChange}>
-                <ImgDiv>
+                <div>
                     <img src={carousel01} alt="carousel" />
-                </ImgDiv>
-                <ImgDiv>
+                </div>
+                <div>
                     <img src={carousel02} alt="carousel" />
-                </ImgDiv>
-                <ImgDiv>
+                </div>
+                <div>
                     <img src={carousel03} alt="carousel" />
-                </ImgDiv>
-                <ImgDiv>
+                </div>
+                <div>
                     <img src={carousel04} alt="carousel" />
-                </ImgDiv>
-                <ImgDiv>
+                </div>
+                <div>
                     <img src={carousel05} alt="carousel" />
-                </ImgDiv>
+                </div>
             </Carousel>
             <Container>
                 <Wrapper>
