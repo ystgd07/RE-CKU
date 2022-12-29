@@ -562,13 +562,13 @@ export const getRequestCorrectionQ = async (userId: number) => {
       req.cancelAble = req.step !== "요청중" ? false : true;
       return { ...req };
     });
-    console.log("그지꺵꺵이");
+    console.log("그지꺵꺵이", addCancelAble);
     conn.commit();
     // if (result.step !== "요청중") {
     //   result.cancelAble = false;
     // }
     // result.cancelAble = true;
-    return result;
+    return addCancelAble;
   } catch (err) {
     conn.rollback();
     console.log(err.message);
