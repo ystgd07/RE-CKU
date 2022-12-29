@@ -43,7 +43,7 @@ let matchData: [];
 const token = localStorage.getItem('accessToken');
 let lengthReq = 0;
 let lengthPro = 0;
-let test: number | boolean = true;
+let test: number | boolean;
 
 export const Proofread = () => {
     const [res, setRes] = useState<Mock[]>([]);
