@@ -122,7 +122,7 @@ export const Proofread = () => {
     };
 
     const toggleChange = async () => {
-        test === 1 ? (test = true) : (test = false);
+        test === true ? (test = true) : (test = false);
         try {
             const res = await axios.patch(
                 `${API.BASE_URL}/users/individuals`,
