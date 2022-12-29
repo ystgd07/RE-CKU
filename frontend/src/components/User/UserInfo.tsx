@@ -3,6 +3,7 @@ import { GithubOutlined, UserOutlined } from '@ant-design/icons';
 import { Descriptions, Tag, Col, Row, Button, Badge } from 'antd';
 import { InfoModal } from './InfoModal';
 import GitHubModal from './GitHubModal';
+import { UserDelete } from './UserDelete';
 import axios from 'axios';
 type Mock = {
     // id: string;
@@ -127,6 +128,13 @@ export const UserInfo = ({ user, getEvent }: UserProps) => {
                         labelStyle={{ fontWeight: '600', fontSize: '1.5rem' }}
                     >
                         <InfoModal></InfoModal>
+                    </Descriptions.Item>
+                    <Descriptions.Item
+                        label="회원탈퇴"
+                        contentStyle={{ fontWeight: '500', fontSize: '1.5rem' }}
+                        labelStyle={{ fontWeight: '600', fontSize: '1.5rem' }}
+                    >
+                        <UserDelete></UserDelete>
                     </Descriptions.Item>
                 </Descriptions>
             </div>
