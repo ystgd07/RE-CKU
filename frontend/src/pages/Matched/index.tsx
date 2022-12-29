@@ -76,16 +76,18 @@ const Matched = () => {
             <S.MobileDiv>
                 <S.H1>요청중인매칭</S.H1>
                 <div>
-                    <h3>
-                        {data?.mentoName}({data?.mentoEmail})
-                    </h3>
+                    <h3 style={{ textAlign: 'center' }}>{data?.mentoName}</h3>
+                    <S.P>
+                        <strong>이메일 :</strong>
+                        {data?.mentoEmail}
+                    </S.P>
                     <S.P>
                         <strong>상태 :</strong>
                         {data?.step}
                     </S.P>
                     <S.P>
-                        <strong>point :</strong>
-                        {data?.point}
+                        <strong>요청시간 :</strong>
+                        {data?.created}
                     </S.P>
                     {step === '요청중' ? (
                         <Popconfirm
