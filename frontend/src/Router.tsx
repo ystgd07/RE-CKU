@@ -63,6 +63,7 @@ const Router = () => {
                         <Route path="/login" element={<Login />} />
                         <Route path="/join" element={<Join />} />
                         <Route path="/find-pw" element={<FindPw />} />
+                        <Route path="/loading" element={<Loading />} />
                         <Route path="/*" element={<Login />} />
                     </>
                 )}

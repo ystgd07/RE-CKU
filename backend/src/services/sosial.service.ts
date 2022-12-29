@@ -29,6 +29,7 @@ export const kakaoAuth = async (code: string) => {
     redirect_uri: process.env.KAKAO_REDIRECT,
     code,
   };
+  console.log(config, "zzz");
   const params = new URLSearchParams(config).toString();
   try {
     const accessToken = await axios
@@ -71,7 +72,7 @@ export const kakaoAuth = async (code: string) => {
       return result;
     }
   } catch (err) {
-    console.log(err);
+    console.log(err.message);
     throw new Error(`500, `);
   }
 };

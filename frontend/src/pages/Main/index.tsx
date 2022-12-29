@@ -12,6 +12,7 @@ import carousel02 from 'assets/images/002.png';
 import carousel03 from 'assets/images/003.png';
 import carousel04 from 'assets/images/004.png';
 import carousel05 from 'assets/images/005.png';
+import randomGame from 'assets/images/random-game.png';
 
 const Wrapper = styled.div`
     display: flex;
@@ -130,13 +131,17 @@ const Quest = styled.div`
     align-items: center;
     width: 70%;
     height: 20rem;
-    border: 1px solid #fffbe3;
-    background-color: #fffbe3;
     border-radius: 1rem;
     font-size: 10rem;
+    overflow: hidden;
     cursor: pointer;
+    img {
+        height: 100%;
+    }
     :hover {
-        border-color: #ccb94c;
+        border: 1px solid #e2e2e2;
+        transform: scale(1.05);
+        transition: scale 0.4s;
     }
     h3 {
         font-size: 4rem;
@@ -384,7 +389,7 @@ const Main = () => {
                         questData === null ? '' : questData?.chance
                     }`}</QuestText>
                     <Quest onClick={handleQuestClick}>
-                        <h3>이력서 보고 포인트 얻기!</h3>
+                        <img src={randomGame} alt="img" />
                     </Quest>
                 </QuestWrapper>
             </Wrapper>
