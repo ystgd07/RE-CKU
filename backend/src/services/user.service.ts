@@ -34,7 +34,7 @@ export const createMatch = async (menteeId: number, mentoId: number): Promise<nu
     const alreadyMatch = await userRepo.findMatchQ(menteeId);
     console.log("alreadyMatch", alreadyMatch);
 
-    if (alreadyMatch.matchInfo !== undefined) throw new Error(`이미 요청한 고인물입니다.`);
+    if (alreadyMatch.matchInfo !== undefined) throw new Error(`이미 요청한 상태입니다.`);
     const matchingId = await userRepo.createMatchQ(data);
     return matchingId;
   } catch (err) {
@@ -79,7 +79,6 @@ export const successMatch = async (matchingId: number, role: string): Promise<st
       break;
     default:
       data.role = "menteeComplate";
-      data.deleteMenteeIdQuery = ", menteeId = 0";
       break;
   }
 
@@ -90,6 +89,7 @@ export const successMatch = async (matchingId: number, role: string): Promise<st
     const mentoComplate = Number(matchInfo.mentoComplate);
     if (mentoComplate > 0 && menteeComplate > 0) {
       console.log("ㅋㅋ");
+      // 완료로
       const complateMatch = await userRepo.complateMatch(matchingId);
       console.log(complateMatch);
       return complateMatch;
@@ -100,6 +100,7 @@ export const successMatch = async (matchingId: number, role: string): Promise<st
     throw new Error(`500, 서버 오류`);
   }
 };
+// 고인물이 마이페이지에서 요청들어온거 보는거임
 export const getRequestCorrection = async (userId: number) => {
   try {
     console.log(userId);

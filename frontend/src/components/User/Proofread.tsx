@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Card, List, Switch, Button, Divider } from 'antd';
+import { Card, List, Switch, Button, Divider, Badge } from 'antd';
 import axios from 'axios';
 import { off } from 'process';
 import API from 'utils/api';
@@ -43,9 +43,10 @@ let matchData: [];
 const token = localStorage.getItem('accessToken');
 let lengthReq = 0;
 let lengthPro = 0;
-let test = 1;
+// let test: number | boolean;
 
 export const Proofread = () => {
+    const [test, setTest] = useState(false);
     const [res, setRes] = useState<Mock[]>([]);
 
     async function getProfile() {
@@ -58,7 +59,11 @@ export const Proofread = () => {
             if (mocks.status === 200) {
                 const dumyRes = await mocks.data;
                 const realRes = await dumyRes.data;
-                test = realRes.working;
+                if (realRes.working === 1) {
+                    setTest(true);
+                } else {
+                    setTest(false);
+                }
             }
         } catch (e: any) {
             console.log(e);
@@ -121,11 +126,11 @@ export const Proofread = () => {
     };
 
     const toggleChange = async () => {
-        test === 1 ? (test = 0) : (test = 1);
+        setTest((test: boolean) => !test);
         try {
             const res = await axios.patch(
                 `${API.BASE_URL}/users/individuals`,
-                { working: test },
+                { working: !test },
                 { headers: { authorization: `Bearer ${token}` } },
             );
         } catch (e) {
@@ -142,7 +147,7 @@ export const Proofread = () => {
         lengthReq = res.filter((e: any) => e.step === '요청중').length;
         lengthPro = res.filter((e: any) => e.step === '진행중').length;
     }, [res]);
-
+    console.log(test, '양반넘아! 이 애물딴지');
     return (
         <div
             style={{
@@ -153,12 +158,8 @@ export const Proofread = () => {
             }}
         >
             <div style={{ marginBottom: '20px', display: 'flex', flexDirection: 'row-reverse' }}>
-                <h5 style={{ marginBottom: '0px', marginTop: '0px' }}>첨삭ON/OFF</h5>
-                <Switch
-                    defaultChecked={test}
-                    onChange={toggleChange}
-                    style={{ marginLeft: '10px' }}
-                />
+                <Button onClick={toggleChange}>첨삭ON/OFF</Button>
+                {test ? <Badge status="success" /> : <Badge status="error"></Badge>}
             </div>
             <Divider orientation="left" orientationMargin="0">
                 <p style={{ fontWeight: 'bold' }}>
