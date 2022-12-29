@@ -44,6 +44,7 @@ const token = localStorage.getItem('accessToken');
 let lengthReq = 0;
 let lengthPro = 0;
 let test: number | boolean;
+// const [test,setTest] = useState()
 
 export const Proofread = () => {
     const [res, setRes] = useState<Mock[]>([]);
@@ -156,11 +157,7 @@ export const Proofread = () => {
             <div style={{ marginBottom: '20px', display: 'flex', flexDirection: 'row-reverse' }}>
                 <h5 style={{ marginBottom: '0px', marginTop: '0px' }}>첨삭ON/OFF</h5>
                 {test ? (
-                    <Switch
-                        defaultChecked={true}
-                        onChange={toggleChange}
-                        style={{ marginLeft: '10px' }}
-                    />
+                    <Switch defaultChecked onChange={toggleChange} style={{ marginLeft: '10px' }} />
                 ) : (
                     <Switch onChange={toggleChange} style={{ marginLeft: '10px' }} />
                 )}

@@ -284,6 +284,17 @@ export const findMatchQ = async (userId: number): Promise<MatchInfo> => {
     },
     cancelAble: false,
   };
+  const [matchingId] = await db.query(
+    `
+    SELECT
+      matching
+    FROM user
+    WHERE
+      id = ?
+  `,
+    [userId]
+  );
+  const parseMatching = utils.jsonParse(matchingId)[0];
   const [connect] = await db.query(
     `
       SELECT 
@@ -300,9 +311,9 @@ export const findMatchQ = async (userId: number): Promise<MatchInfo> => {
       JOIN user u
       on mentoId = u.id
       WHERE 
-        menteeId = ?
+        u.matching = ?
     `,
-    [userId]
+    [parseMatching.matching]
   );
   const parseConnect = utils.jsonParse(connect)[0];
   console.log("현재 진행중인 매칭", parseConnect);
