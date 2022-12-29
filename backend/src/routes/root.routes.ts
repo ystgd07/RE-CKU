@@ -20,7 +20,7 @@ rootRoute.post("/file/url", middlewares.boardImg.single("image"), (req, res, nex
         });
       });
     return res.status(200).json({
-      imageUrl: req.file.path,
+      imageUrl: `api/${req.file.path}`,
     });
   } catch (err) {
     next(err);
