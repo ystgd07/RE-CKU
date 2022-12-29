@@ -143,7 +143,7 @@ export const Proofread = () => {
         lengthReq = res.filter((e: any) => e.step === '요청중').length;
         lengthPro = res.filter((e: any) => e.step === '진행중').length;
     }, [res]);
-
+    console.log(test, '양반넘아! 이 애물딴지');
     return (
         <div
             style={{
