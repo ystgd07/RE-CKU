@@ -19,15 +19,14 @@ import AdminContent from 'components/Admin/AdminContent';
 import Comunity from 'pages/Comunity';
 
 const Router = () => {
-    const isLogined = localStorage.getItem('accessToken') ? true : false;
-    const isAdmin = localStorage.getItem('isAdmin') ? true : false;
-
+    // const isLogined = localStorage.getItem('accessToken') ? true : false;
+    // const isAdmin = localStorage.getItem('isAdmin') ? true : false;
     return (
         <BrowserRouter>
             <Routes>
-                {isLogined ? (
+                {localStorage.getItem('accessToken') ? (
                     <>
-                        {isAdmin && (
+                        {localStorage.getItem('isAdmin') === 'admin' && (
                             <>
                                 {/* Admin 전용 라우터 */}
                                 <Route path="/admin" element={<Admin />}>
