@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Col, Row, Slider, Modal, List } from 'antd';
 import axios from 'axios';
 import * as S from './style';
-import './index.css';
+import './style.css';
 import API from 'utils/api';
 import Header from 'components/Header';
 import { Outlet } from 'react-router-dom';
