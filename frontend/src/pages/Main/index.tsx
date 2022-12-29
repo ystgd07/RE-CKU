@@ -29,6 +29,13 @@ const Wrapper = styled.div`
     font-size: 1.6rem;
 `;
 
+const ImgDiv = styled.div`
+    & img {
+        width: 100%;
+        height: 100%;
+    }
+`;
+
 const Posts = styled.div`
     display: grid;
     grid-template-columns: 1fr;
@@ -149,6 +156,7 @@ const Quest = styled.div`
     cursor: pointer;
     border: 1px solid #e2e2e2;
     img {
+        width: 100%;
         height: 100%;
     }
     :hover {
@@ -274,27 +282,26 @@ const Main = () => {
             placement,
         });
     };
-    // \[?(!)(?'alt'\[[^\]\[]*\[?[^\]\[]*\]?[^\]\[]*)\]\((?'url'[^\s]+?)(?:\s+(["'])(?'title'.*?)\4)?\)
 
     return (
         <Layout>
             {contextHolder}
             <Carousel autoplay afterChange={onChange}>
-                <div>
+                <ImgDiv>
                     <img src={carousel01} alt="carousel" />
-                </div>
-                <div>
+                </ImgDiv>
+                <ImgDiv>
                     <img src={carousel02} alt="carousel" />
-                </div>
-                <div>
+                </ImgDiv>
+                <ImgDiv>
                     <img src={carousel03} alt="carousel" />
-                </div>
-                <div>
+                </ImgDiv>
+                <ImgDiv>
                     <img src={carousel04} alt="carousel" />
-                </div>
-                <div>
+                </ImgDiv>
+                <ImgDiv>
                     <img src={carousel05} alt="carousel" />
-                </div>
+                </ImgDiv>
             </Carousel>
             <Container>
                 <Wrapper>

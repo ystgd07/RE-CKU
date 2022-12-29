@@ -8,7 +8,9 @@ import API from 'utils/api';
 const Header = () => {
     const navigate = useNavigate();
     const token = localStorage.getItem('accessToken');
-    const [isAdmin, setIsAdmin] = useState<boolean>(localStorage.getItem('isAdmin') ? true : false);
+
+    const admin = localStorage.getItem('isAdmin') ? false : true;
+    const [isAdmin, setIsAdmin] = useState<boolean>(admin);
 
     const userInfo = async () => {
         try {
