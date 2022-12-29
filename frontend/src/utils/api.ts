@@ -7,7 +7,6 @@ class axiosAPI {
 
     constructor() {
         this.instance = axios.create();
-        // token 인증 추가
         this.instance.interceptors.request.use(
             (config): any => {
                 const headers = config.headers;

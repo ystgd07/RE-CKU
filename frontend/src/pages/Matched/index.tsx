@@ -27,11 +27,9 @@ const Matched = () => {
     async function getMatching() {
         try {
             const res = await API.get(`/users/rots`);
-            console.log(res.matchInfo);
             if (res.matchInfo) {
                 setData(res.matchInfo);
                 setStep(res.matchInfo.step);
-                // setMatchId(res.matchInfo.matchingId);
             } else {
                 navigate('/match');
             }
@@ -39,6 +37,7 @@ const Matched = () => {
             console.log(e);
         }
     }
+
     useEffect(() => {
         getMatching();
     }, []);
@@ -47,12 +46,9 @@ const Matched = () => {
         const data = { matchingId };
         const token = localStorage.getItem('accessToken');
         try {
-            console.log('matchingId', matchingId);
-            console.log('matchingId', typeof matchingId);
-            // const res = await axios.delete(`/users/match`, { matchingId });
             const res = await axios({
                 method: 'delete',
-                url: '/users/match',
+                url: `${API.BASE_URL}/users/match`,
                 data: {
                     matchingId,
                 },
@@ -67,8 +63,6 @@ const Matched = () => {
         const data = { matchingId, role: mentee };
         try {
             const res = await API.post(`/users/match/success`, data);
-            console.log('complateMatching');
-            console.log(res);
             navigate('/match');
         } catch (e) {
             console.log(e);

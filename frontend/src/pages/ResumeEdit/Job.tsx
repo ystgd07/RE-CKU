@@ -1,12 +1,9 @@
 import { DatePicker } from 'antd';
-import React, { FunctionComponent, SetStateAction, useEffect, useState } from 'react';
-import { FormStore, WorkFormData, CareerData } from 'models/resumeEdit-model';
-import axios, { AxiosResponse } from 'axios';
+import React, { useState } from 'react';
+import { FormStore, WorkFormData } from 'models/resumeEdit-model';
+import axios from 'axios';
 import { useParams } from 'react-router-dom';
-
-// export type FunctionType={
-//     onCareerCreated((value: any) =>  void);
-// }
+import API from 'utils/api';
 
 type WorkFormState = {
     setIsWorkFormToggle: React.Dispatch<React.SetStateAction<boolean>>;
@@ -37,14 +34,12 @@ const Job = ({
 
     const params = useParams();
     const resumeIds = params.id;
-    const token = localStorage.getItem('accessToken');
 
     const workFormHandler = (
         e: React.ChangeEvent<HTMLTextAreaElement> | React.ChangeEvent<HTMLInputElement>,
     ) => {
         const target = e.target;
         const checked = isStilWork ? false : true;
-        console.log(checked, 'state');
 
         setWorkFormDataState({
             ...workFormDataState,
@@ -71,7 +66,6 @@ const Job = ({
         const deleteFilter = addJobElement.filter((tem: FormStore) => tem.list !== idx);
         setAddJobElement(deleteFilter);
         if (deleteFilter.length === 0) setIsWorkFormToggle(e => !e);
-        console.log(deleteFilter, 'fil');
     };
 
     const validationForm = async (e: React.FormEvent) => {
@@ -83,31 +77,30 @@ const Job = ({
         }
 
         try {
-            const res = await axios.post(`/my-portfolio/resumes/${resumeIds}/new-career`, {
-                company: workFormDataState.company,
-                position: workFormDataState.position,
-                startDate: workFormDataState.startDate,
-                endDate: workFormDataState.endDate,
-                reward: workFormDataState.reward,
-                notDevlop: workFormDataState.notDevlop,
-                workNow: workFormDataState.workNow,
-            });
+            const res = await axios.post(
+                `${API.BASE_URL}/my-portfolio/resumes/${resumeIds}/new-career`,
+                {
+                    company: workFormDataState.company,
+                    position: workFormDataState.position,
+                    startDate: workFormDataState.startDate,
+                    endDate: workFormDataState.endDate,
+                    reward: workFormDataState.reward,
+                    notDevlop: workFormDataState.notDevlop,
+                    workNow: workFormDataState.workNow,
+                },
+            );
 
             const insertId = res.data.data[0].insertId;
-            const result = await axios.get(`/my-portfolio/careers/${insertId}`);
+            const result = await axios.get(`${API.BASE_URL}/my-portfolio/careers/${insertId}`);
 
             if (res.status === 200) {
                 onCareerCreated(result.data.data);
                 setIsWorkFormToggle(false);
             }
-
-            console.log(res, ' data state', result);
         } catch (err: unknown) {
             console.log(err);
         }
     };
-
-    console.log(workFormDataState, 'state');
 
     return (
         <form onSubmit={validationForm}>

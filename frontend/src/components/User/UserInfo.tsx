@@ -5,15 +5,13 @@ import { PswChangeModal } from './PswChangeModal';
 import GitHubModal from './GitHubModal';
 import { UserDelete } from './UserDelete';
 import axios from 'axios';
+import API from 'utils/api';
+
 type Mock = {
-    // id: string;
     email: string;
-    // password: string;
     phoneNumber: string;
-    // point: number;
+    point: number;
     username: string;
-    // created: string;
-    // avatarUrl: string;
     gitHubUrl: string;
     tierColor: string;
 };
@@ -25,8 +23,9 @@ type UserProps = {
 
 const anytype: any = null;
 const token = localStorage.getItem('accessToken');
+
 export const UserInfo = ({ user, getEvent }: UserProps) => {
-    let { username, phoneNumber, email, gitHubUrl, tierColor } = user;
+    let { username, phoneNumber, email, gitHubUrl, tierColor, point } = user;
     const [propsOpen, setPropsOpen] = useState(false);
 
     const changeOpen = () => {
@@ -37,19 +36,17 @@ export const UserInfo = ({ user, getEvent }: UserProps) => {
         gitHubUrl = gitURl;
         try {
             const res = axios.patch(
-                '/users/individuals',
+                `${API.BASE_URL}/users/individuals`,
                 { gitHubUrl: `${gitURl}` },
                 {
                     headers: { authorization: `Bearer ${token}` },
                 },
             );
-            console.log(res);
         } catch (e) {
             console.log(e);
         }
     };
-    // { avatarUrl: `${res.data.imageUrl}` },
-    // { headers: { authorization: `Bearer ${token}` } },
+
     return (
         <>
             <div
@@ -135,6 +132,17 @@ export const UserInfo = ({ user, getEvent }: UserProps) => {
                         labelStyle={{ fontWeight: '600', fontSize: '1.5rem' }}
                     >
                         <UserDelete></UserDelete>
+                    </Descriptions.Item>
+                    <Descriptions.Item
+                        label="point"
+                        contentStyle={{
+                            fontWeight: '500',
+                            fontSize: '1.5rem',
+                            color: `${tierColor}`,
+                        }}
+                        labelStyle={{ fontWeight: '600', fontSize: '1.5rem' }}
+                    >
+                        {point}P
                     </Descriptions.Item>
                 </Descriptions>
             </div>
