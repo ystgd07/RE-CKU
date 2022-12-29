@@ -8,9 +8,7 @@ import { send } from "../config/sendMail";
 import { EmailAuth, UserProfile } from "../db/schemas";
 
 // 매칭 관련
-export const getRotListOrMatchingStatus = async (
-  userId: number
-): Promise<userRepo.RotList | userRepo.MatchInfo> => {
+export const getRotListOrMatchingStatus = async (userId: number): Promise<userRepo.RotList | userRepo.MatchInfo> => {
   try {
     const connect = await userRepo.findMatchQ(userId);
     console.log("connect", connect);
@@ -26,10 +24,7 @@ export const getRotListOrMatchingStatus = async (
     throw new Error(`500, 서버오류`);
   }
 };
-export const createMatch = async (
-  menteeId: number,
-  mentoId: number
-): Promise<number> => {
+export const createMatch = async (menteeId: number, mentoId: number): Promise<number> => {
   const data = {
     step: "요청중",
     menteeId,
@@ -39,14 +34,12 @@ export const createMatch = async (
     const alreadyMatch = await userRepo.findMatchQ(menteeId);
     console.log("alreadyMatch", alreadyMatch);
 
-    if (alreadyMatch.matchInfo !== undefined)
-      throw new Error(`이미 요청한 고인물입니다.`);
+    if (alreadyMatch.matchInfo !== undefined) throw new Error(`이미 요청한 고인물입니다.`);
     const matchingId = await userRepo.createMatchQ(data);
     return matchingId;
   } catch (err) {
     console.log(err.message);
-    if (err.message === "이미 요청한 고인물입니다.")
-      throw new Error(`400, 고인물 요청을 이미 했습니다.`);
+    if (err.message === "이미 요청한 고인물입니다.") throw new Error(`400, 고인물 요청을 이미 했습니다.`);
     throw new Error(`500, 서버오류`);
   }
 };
@@ -59,16 +52,11 @@ export const cancelMatch = async (matchingId: number) => {
     return deleteMatch;
   } catch (err) {
     console.log(err.message);
-    if (err.message === "존재하지 않은 매칭입니다.")
-      throw new Error(`404, 존재하지 않은 매칭입니다.`);
+    if (err.message === "존재하지 않은 매칭입니다.") throw new Error(`404, 존재하지 않은 매칭입니다.`);
     throw new Error(`500, 서버 오류`);
   }
 };
-export const acceptMatch = async (
-  userId: number,
-  matchingId: number,
-  menteeId: number
-) => {
+export const acceptMatch = async (userId: number, matchingId: number, menteeId: number) => {
   try {
     const mentoInfo = await userRepo.unIncludePasswordUserInfoQ(userId);
     if (mentoInfo.point < 200) throw new Error(`당신은 고이지 않았다.`);
@@ -76,15 +64,11 @@ export const acceptMatch = async (
     return result;
   } catch (err) {
     console.log(err.message);
-    if (err.message === "당신은 고이지 않았다.")
-      throw new Error(`400, 당신은 고이지 않았따.`);
+    if (err.message === "당신은 고이지 않았다.") throw new Error(`400, 당신은 고이지 않았따.`);
     throw new Error(`500, 서버 오류`);
   }
 };
-export const successMatch = async (
-  matchingId: number,
-  role: string
-): Promise<string> => {
+export const successMatch = async (matchingId: number, role: string): Promise<string> => {
   const data: { role: string; deleteMenteeIdQuery?: string } = {
     role: "",
     deleteMenteeIdQuery: "",
@@ -139,25 +123,19 @@ export const getUserList = async () => {
 };
 
 // 유저한명정보 불러오기 섭스
-export const individualInfo = async (
-  userIdOrEmail: number | string
-): Promise<UserProfile> => {
+export const individualInfo = async (userIdOrEmail: number | string): Promise<UserProfile> => {
   const user = await userRepo.findOneUser(userIdOrEmail);
   return user;
 };
 
 // 클라에서 쓸 서비스
-export const unIncludePasswordUserInfo = async (
-  userIdOrEmail: number | string
-): Promise<UserProfile> => {
+export const unIncludePasswordUserInfo = async (userIdOrEmail: number | string): Promise<UserProfile> => {
   const user = await userRepo.unIncludePasswordUserInfoQ(userIdOrEmail);
   return user;
 };
 
 // 회원가입 서비스
-export const join = async (
-  data: CreateUserDto
-): Promise<{ insertId: number }> => {
+export const join = async (data: CreateUserDto): Promise<{ insertId: number }> => {
   // 우선 인증을 완료했는지 검증,
   const inserData = {
     email: data.email,
@@ -167,14 +145,9 @@ export const join = async (
   };
   const statusVerify = await authRepo.findOneAuthData(data.email);
   console.log(statusVerify);
-  if (!statusVerify)
-    throw Error(
-      `404, [${data.email}] 해당 이메일로 진행된 인증절차가 없습니다.`
-    );
+  if (!statusVerify) throw Error(`404, [${data.email}] 해당 이메일로 진행된 인증절차가 없습니다.`);
   if (statusVerify.verify === false || !statusVerify)
-    throw Error(
-      `404, [${data.email}] 해당 이메일에 대한 인증 내역을 확인할 수 없습니다.`
-    );
+    throw Error(`404, [${data.email}] 해당 이메일에 대한 인증 내역을 확인할 수 없습니다.`);
 
   // 이미 가입한 회원이지 확인,
   const overlapUser = await userRepo.findOneUser(data.email);
@@ -240,19 +213,12 @@ export const login = async (email: string, password?: string) => {
 };
 
 // 정보수정 서비스
-export const updateInfo = async (
-  id: number,
-  data: Record<string, string>,
-  currentPw?: string
-): Promise<boolean> => {
+export const updateInfo = async (id: number, data: Record<string, string>, currentPw?: string): Promise<boolean> => {
   // 비밀번호 일치 여부
   try {
     // 변경하려는 유저가 없는 예외
     const user = await userRepo.findOneUser(id);
-    if (!user)
-      throw new Error(
-        "404, 유저정보를 찾을 수 없습니다. 관리자에게 문의하세요."
-      );
+    if (!user) throw new Error("404, 유저정보를 찾을 수 없습니다. 관리자에게 문의하세요.");
 
     // const existence = user.password;
     // const comparePw = await bcrypt.compare(currentPw, existence);
@@ -269,10 +235,7 @@ export const updateInfo = async (
   return true;
 };
 
-export const logout = async (
-  id: number,
-  data: { RT: null }
-): Promise<boolean> => {
+export const logout = async (id: number, data: { RT: null }): Promise<boolean> => {
   try {
     await userRepo.updateUser(id, data);
     return true;
@@ -283,9 +246,7 @@ export const logout = async (
 };
 
 // 임시 비밀번호 보내기 서비스
-export const findPassword = async (
-  email: string
-): Promise<boolean | string> => {
+export const findPassword = async (email: string): Promise<boolean | string> => {
   const user = await userRepo.findOneUser(email);
 
   if (!user) throw Error(`404, ${email}로 가입한 유저는 없습니다.`);
@@ -299,11 +260,11 @@ export const findPassword = async (
   }
 
   const mailInfo = {
-    from: "jinytree1403@naver.com",
+    from: process.env.MAILER_USER,
     to: email,
-    subject: "[헤드헌터] 비밀번호 발송 ",
+    subject: "[RE-CHU] 비밀번호 발송 ",
     text: `      
-    헤드헌터 ${email} 
+    RE-CHU ${email} 
     
     임시 비밀번호 :  ${randomStr}
     
@@ -332,11 +293,11 @@ export const sendEmail = async (toEmail: string, number?: number) => {
   }
   // 이메일 내용
   const mailInfo = {
-    from: "jinytree1403@naver.com",
+    from: process.env.MAILER_USER,
     to: toEmail,
-    subject: "[헤드헌터] 인증번호 발송 ",
+    subject: "[re-chu] 인증번호 발송 ",
     text: `      
-    헤드헌터 회원가입 인증번호
+    re-chu 회원가입 인증번호
     
     인증번호 입력란에 ${number} 를 입력해주세요.`,
   };
@@ -353,12 +314,8 @@ export const sendEmail = async (toEmail: string, number?: number) => {
 export const authEmail = async (email: string, code: number) => {
   // 우선 해당하는 이메일 찾아서
   const statusVerify = await authRepo.findOneAuthData(email);
-  if (!statusVerify)
-    throw Error(
-      `404, [${email}] 해당 이메일로 인증번호가 보내지지 않았습니다.`
-    );
-  if (statusVerify.code !== code)
-    throw Error(`400, 입력된 코드가 올바르지 않습니다.`);
+  if (!statusVerify) throw Error(`404, [${email}] 해당 이메일로 인증번호가 보내지지 않았습니다.`);
+  if (statusVerify.code !== code) throw Error(`400, 입력된 코드가 올바르지 않습니다.`);
   // 4분안에 인증했을 경우
   if (statusVerify.time.getTime() + 300000 - Date.now() <= 0)
     throw Error(`400, 인증시간이 지났습니다. 인증번호를 재발급 해주세요.`);
@@ -369,10 +326,7 @@ export const authEmail = async (email: string, code: number) => {
 };
 
 // 신고여부
-export const checkReported = async (
-  reporter: number,
-  defendant: number
-): Promise<boolean> => {
+export const checkReported = async (reporter: number, defendant: number): Promise<boolean> => {
   try {
     const checked = await userRepo.checkReportedQ(reporter, defendant);
     console.log(checked);
@@ -392,17 +346,13 @@ export const report = async (data: {
 }): Promise<boolean> => {
   try {
     console.log("신고하기 ");
-    const alreadyReport = await userRepo.checkReportedQ(
-      data.reporterUserId,
-      data.defendantUserId
-    );
+    const alreadyReport = await userRepo.checkReportedQ(data.reporterUserId, data.defendantUserId);
     if (alreadyReport) throw new Error(`이미 신고한 게시글입니다.`);
     await userRepo.reportQ(data);
     return true;
   } catch (err) {
     console.log(err.message);
-    if (err.message === "이미 신고한 게시글입니다.")
-      throw new Error(`400, 이미 신고한 게시글입니다.`);
+    if (err.message === "이미 신고한 게시글입니다.") throw new Error(`400, 이미 신고한 게시글입니다.`);
     throw new Error(`500 , 서버 오류`);
   }
 };
@@ -417,8 +367,7 @@ export const cancelReport = async (reportId: number, defendantId: number) => {
     return cancel;
   } catch (err) {
     console.log(err.message);
-    if (err.message === "신고하려는 사람이 없는디요")
-      throw new Error(`400, 신고하려는 사람이 없는디요`);
+    if (err.message === "신고하려는 사람이 없는디요") throw new Error(`400, 신고하려는 사람이 없는디요`);
     throw new Error(`500, 서버오류`);
   }
 };
@@ -431,8 +380,7 @@ export const savePointByDayQuest = async (userId: number) => {
     return success;
   } catch (err) {
     console.log(err.message);
-    if (err.message === "잔여횟수가 없습니다.")
-      throw new Error(`400, 잔여횟수가 없습니다.`);
+    if (err.message === "잔여횟수가 없습니다.") throw new Error(`400, 잔여횟수가 없습니다.`);
     throw new Error(`500, 서버 오류`);
   }
 };

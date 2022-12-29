@@ -466,7 +466,7 @@ const Post = () => {
                     <Title level={2}>{boardData?.title}</Title>
                     <Profile>
                         <ProfileImg
-                            src={boardData?.avatarUrl}
+                            src={`/${boardData?.avatarUrl}`}
                             onClick={() => checkReportBoardUser(boardData?.ownUserId)}
                         ></ProfileImg>
                         <ProfileInfo>
@@ -524,7 +524,7 @@ const Post = () => {
                                 title={
                                     <Profile>
                                         <ProfileImg
-                                            src={item.avatarUrl}
+                                            src={`/${item.avatarUrl}`}
                                             onClick={() => checkReportBoardUser(item.fromUserId)}
                                         ></ProfileImg>
                                         <ProfileInfo>

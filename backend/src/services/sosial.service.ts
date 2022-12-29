@@ -64,11 +64,13 @@ export const kakaoAuth = async (code: string) => {
           avatarUrl,
           email,
           howToLogin: "sosial",
+          phoneNumber: "010-0000-0000",
         };
         await userRepo.createIndiUser(joinData);
         // 로그인 진행 후 리턴
       }
       const result = await userService.login(email);
+      console.log(result, "카카오 리져트");
       return result;
     }
   } catch (err) {
