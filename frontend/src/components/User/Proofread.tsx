@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Card, List, Switch, Button, Divider } from 'antd';
+import { Card, List, Switch, Button, Divider, Badge } from 'antd';
 import axios from 'axios';
 import { off } from 'process';
 import API from 'utils/api';
@@ -157,12 +157,8 @@ export const Proofread = () => {
             }}
         >
             <div style={{ marginBottom: '20px', display: 'flex', flexDirection: 'row-reverse' }}>
-                <h5 style={{ marginBottom: '0px', marginTop: '0px' }}>첨삭ON/OFF</h5>
-                <Switch
-                    defaultChecked={test}
-                    onChange={toggleChange}
-                    style={{ marginLeft: '10px' }}
-                />
+                <Button onClick={toggleChange}>첨삭ON/OFF</Button>
+                {test ? <Badge status="success" /> : <Badge status="warning"></Badge>}
             </div>
             <Divider orientation="left" orientationMargin="0">
                 <p style={{ fontWeight: 'bold' }}>
