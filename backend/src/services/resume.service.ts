@@ -92,12 +92,12 @@ export const findMyResume = async (userId: number, resumeId: number): Promise<Ob
   Promise.all([userInfo, resumeInfo, careers, projects]).catch((error) => {
     console.log(error.message);
   });
-
   myResume["userData"] = userInfo;
   myResume["resumeData"] = resumeInfo;
   myResume["careersData"] = careers;
   myResume["projectsData"] = projects;
 
+  console.log(myResume, "으악 난 잠을 안자는 우두루");
   return myResume;
 };
 
