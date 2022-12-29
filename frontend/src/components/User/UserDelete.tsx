@@ -55,7 +55,7 @@ export const UserDelete: React.FC = () => {
 
     return (
         <>
-            <Button type="primary" onClick={showModal}>
+            <Button type="primary" onClick={showModal} danger>
                 회원탈퇴
             </Button>
             <Modal
@@ -65,6 +65,7 @@ export const UserDelete: React.FC = () => {
                 onOk={handleOk}
                 onCancel={handleCancel}
                 confirmLoading={loading}
+                okType="danger"
             >
                 {<p>정말로 탈퇴하시겠습니까?(복구 불가능!!)</p>}
             </Modal>

@@ -3,7 +3,7 @@ import { Button, Modal, Form, Input } from 'antd';
 import { LockOutlined } from '@ant-design/icons';
 import axios from 'axios';
 
-export const InfoModal: React.FC = () => {
+export const PswChangeModal: React.FC = () => {
     const [form] = Form.useForm();
     const [open, setOpen] = useState(false);
     const [newPass, setNewPass] = useState(''); //input1
@@ -93,7 +93,7 @@ export const InfoModal: React.FC = () => {
                 비밀번호 변경
             </Button>
             <Modal
-                // TODO: {...==='passwordChange'?title='비밀번호 변경':title='회원탈퇴'}
+                // TODO: {...==='passwordChange'?title='비밀번호 변경':title='회원탈퇴'}->재사용 참고 로직
                 title="비밀번호 변경"
                 open={open}
                 onOk={handleOk}

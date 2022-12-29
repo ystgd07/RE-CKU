@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { GithubOutlined, UserOutlined } from '@ant-design/icons';
 import { Descriptions, Tag, Col, Row, Button, Badge } from 'antd';
-import { InfoModal } from './InfoModal';
+import { PswChangeModal } from './PswChangeModal';
 import GitHubModal from './GitHubModal';
 import { UserDelete } from './UserDelete';
 import axios from 'axios';
@@ -127,7 +127,7 @@ export const UserInfo = ({ user, getEvent }: UserProps) => {
                         contentStyle={{ fontWeight: '500', fontSize: '1.5rem' }}
                         labelStyle={{ fontWeight: '600', fontSize: '1.5rem' }}
                     >
-                        <InfoModal></InfoModal>
+                        <PswChangeModal></PswChangeModal>
                     </Descriptions.Item>
                     <Descriptions.Item
                         label="회원탈퇴"
