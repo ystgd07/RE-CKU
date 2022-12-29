@@ -61,7 +61,7 @@ export const Proofread = () => {
                 test = realRes.working;
             }
         } catch (e: any) {
-            if (e.response.status !== 200) navigate('/*');
+            console.log(e);
         }
     }
 
