@@ -2,6 +2,7 @@ import React, { useRef, useState } from 'react';
 import { Button, Modal, Form, Input } from 'antd';
 import { LockOutlined } from '@ant-design/icons';
 import axios from 'axios';
+import API from 'utils/api';
 
 export const PswChangeModal: React.FC = () => {
     const [form] = Form.useForm();
@@ -13,21 +14,25 @@ export const PswChangeModal: React.FC = () => {
     const [loading, setLoading] = useState(false);
     const passRef: any = useRef();
     const newPassRef: any = useRef();
+
     const onReset = () => {
         form.resetFields();
     };
+
     const showModal = () => {
         setOpen(true);
         setValid(true);
     };
+
     const onFinish = (values: any) => {
         console.log('Received values of form: ', values);
     };
+
     const patchNewPass = async () => {
         const token = localStorage.getItem('accessToken');
         try {
             const res = await axios.patch(
-                '/users/individuals',
+                `${API.BASE_URL}/users/individuals`,
                 { password: `${newPassRef.current.input.value}` },
                 { headers: { authorization: `Bearer ${token}` } },
             );
@@ -36,10 +41,10 @@ export const PswChangeModal: React.FC = () => {
             console.log(e);
         }
     };
+
     const handleOk = (e: any) => {
         setLoading(true);
         setModalText('잠시만 기다려 주세요 ^^.');
-        console.log(e.currentTarget.id);
         setTimeout(() => {
             setLoading(false);
             setOpen(false);
@@ -49,17 +54,15 @@ export const PswChangeModal: React.FC = () => {
             setNewPass('');
             onReset();
         }, 1000);
-        console.log(checkPass, newPass);
     };
 
     const handleCancel = () => {
         onReset();
-        console.log('Clicked cancel button');
         setCheckPass('');
         setNewPass('');
         setOpen(false);
     };
-    //FIXME: e:any-> 이부분 이벤트 타입 검색해서 수정하자!
+
     const newPasswordChange = (e: any) => {
         setNewPass(e.target.value);
         if (
@@ -73,6 +76,7 @@ export const PswChangeModal: React.FC = () => {
             else console.log('no correct');
         }
     };
+
     const checkPasswordChnage = (e: any) => {
         setCheckPass(e.target.value);
         if (
@@ -93,7 +97,6 @@ export const PswChangeModal: React.FC = () => {
                 비밀번호 변경
             </Button>
             <Modal
-                // TODO: {...==='passwordChange'?title='비밀번호 변경':title='회원탈퇴'}->재사용 참고 로직
                 title="비밀번호 변경"
                 open={open}
                 onOk={handleOk}

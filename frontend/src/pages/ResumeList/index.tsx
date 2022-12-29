@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, Button, Modal, List } from 'antd';
+import API from 'utils/api';
 
 import Layout from 'components/Layout';
 type Mock = { resumeName: string; address: string; updatedAt: string; resumeId: any };
@@ -16,25 +17,22 @@ const ResumeMain = () => {
     const navigate = useNavigate();
     const showModal = (e: any) => {
         e.stopPropagation();
-        // setPortfolioId(e.target.parentNode.value);
         test = e.currentTarget.value;
         setIsModalOpen(true);
         setPortfolioId(test);
     };
+
     const handleOk = () => {
         setIsModalOpen(false);
         deletePortfolio(portfolioId);
     };
-    console.log('hi');
+
     const handleCancel = () => {
         setIsModalOpen(false);
     };
-    // /my-portfolio/resumes/:resumeId
     async function deletePortfolio(id: string) {
-        console.log(portfolioId);
-
         try {
-            const res = await axios.delete(`/my-portfolio/resumes/${id}`);
+            const res = await axios.delete(`${API.BASE_URL}/my-portfolio/resumes/${id}`);
 
             if (res.status === 200) {
                 getPortfolio();
@@ -56,7 +54,7 @@ const ResumeMain = () => {
             const token = localStorage.getItem('accessToken');
 
             const mocks = await axios
-                .get('/my-portfolio/resumes', {
+                .get(`${API.BASE_URL}/my-portfolio/resumes`, {
                     headers: { authorization: `Bearer ${token}` },
                 })
                 .then(res => res.data)
@@ -71,7 +69,7 @@ const ResumeMain = () => {
         try {
             const token = localStorage.getItem('accessToken');
             const mocks = await axios.post(
-                '/my-portfolio/new-resume',
+                `${API.BASE_URL}/my-portfolio/new-resume`,
                 {},
                 {
                     headers: { authorization: `Bearer ${token}` },

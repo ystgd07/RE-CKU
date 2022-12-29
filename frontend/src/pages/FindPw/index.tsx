@@ -4,6 +4,7 @@ import axios from 'axios';
 import * as S from './style';
 import Logo from 'assets/images/logo.png';
 import { useForm } from 'react-hook-form';
+import API from 'utils/api';
 
 const FindPw = () => {
     const navigate = useNavigate();
@@ -18,8 +19,7 @@ const FindPw = () => {
 
     const onSubmitHandler = async (data: FormData) => {
         try {
-            const res = await axios.post('/users/eamil/password', data);
-            console.log(res, '성공');
+            const res = await axios.post(`${API.BASE_URL}/users/eamil/password`, data);
 
             alert('비밀번호가 전송되었습니다.');
             navigate('/login');
