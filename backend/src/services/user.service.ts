@@ -12,7 +12,7 @@ export const getRotListOrMatchingStatus = async (userId: number): Promise<userRe
   try {
     const connect = await userRepo.findMatchQ(userId);
     console.log("connect", connect);
-    if (!connect.matchInfo) {
+    if (connect.matchInfo) {
       console.log("고인물 리스트 리턴 로직");
       const list = await userRepo.getRotListQ(userId);
       return list;
