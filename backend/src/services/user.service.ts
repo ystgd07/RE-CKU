@@ -71,7 +71,6 @@ export const acceptMatch = async (userId: number, matchingId: number, menteeId: 
 export const successMatch = async (matchingId: number, role: string): Promise<string> => {
   const data: { role: string; deleteMenteeIdQuery?: string } = {
     role: "",
-    deleteMenteeIdQuery: "",
   };
   switch (role) {
     case "mento":
@@ -84,11 +83,11 @@ export const successMatch = async (matchingId: number, role: string): Promise<st
 
   try {
     const success = await userRepo.successMatchQ(matchingId, data);
-    const matchInfo = await userRepo.findMatchByMatchingId(matchingId);
-    const menteeComplate = Number(matchInfo.menteeComplate);
-    const mentoComplate = Number(matchInfo.mentoComplate);
-    console.log("데이타", data.role);
-    console.log("매치인포 ", matchInfo);
+    // const matchInfo = await userRepo.findMatchByMatchingId(matchingId);
+    const menteeComplate = Number(success.menteeComplate);
+    const mentoComplate = Number(success.mentoComplate);
+    console.log("데이타", data.role, "가 누름");
+    // console.log("매치인포 ", matchInfo);
     console.log("멘티컴플리트 ", menteeComplate);
     console.log("멘토컴플리트 ", mentoComplate);
     if (mentoComplate > 0 && menteeComplate > 0) {

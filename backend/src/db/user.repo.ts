@@ -416,10 +416,7 @@ export const acceptMatchQ = async (matchingId: number, menteeId: number): Promis
 };
 
 // 매칭 끝내기버튼
-export const successMatchQ = async (
-  matchingId: number,
-  data: { role: string; deleteMenteeIdQuery?: string }
-): Promise<string> => {
+export const successMatchQ = async (matchingId: number, data: { role: string; deleteMenteeIdQuery?: string }) => {
   const conn = await db.getConnection();
   conn.beginTransaction();
   try {
@@ -451,9 +448,15 @@ export const successMatchQ = async (
   `,
       [matchingId]
     );
-    const result = data.role === "menteeComplate" ? "멘티가 종료누름" : "멘토가 종료누름";
+    const [select] = await conn.query(`
+      SELECT 
+      menteeComplate,
+      mentoComplate
+    `);
+    const resultValue = utils.jsonParse(select)[0];
+    // const result = data.role === "menteeComplate" ? "멘티가 종료누름" : "멘토가 종료누름";
     conn.commit();
-    return result;
+    return resultValue;
   } catch (err) {
     console.log(err.message);
     conn.rollback();
