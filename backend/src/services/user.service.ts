@@ -89,6 +89,7 @@ export const successMatch = async (matchingId: number, role: string): Promise<st
     const mentoComplate = Number(matchInfo.mentoComplate);
     if (mentoComplate > 0 && menteeComplate > 0) {
       console.log("ㅋㅋ");
+      // 완료로
       const complateMatch = await userRepo.complateMatch(matchingId);
       console.log(complateMatch);
       return complateMatch;

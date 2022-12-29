@@ -423,12 +423,15 @@ export const successMatchQ = async (
   const conn = await db.getConnection();
   conn.beginTransaction();
   try {
-    if (data.deleteMenteeIdQuery) {
+    if (data.role === "menteeComplate") {
       console.log("멘티제거");
+      // 멘티의 matching을 0으로 만들어서 추후 고인물조회가 가능하도록 함.
+
       await conn.query(
         `
       UPDATE user 
       SET 
+        point = point -50,
         matching = 0 
       WHERE 
         id IN (
@@ -504,17 +507,6 @@ export const complateMatch = async (matchingId: number) => {
         id = ?
     `,
         [mentoId]
-      ),
-      conn.query(
-        `
-      UPDATE user
-      SET
-        matching = 0,
-        point = point -50
-      WHERE
-        id = ?
-    `,
-        [menteeId]
       ),
     ]);
     conn.commit();
