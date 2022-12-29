@@ -55,7 +55,7 @@ const Loading = () => {
     // 유효성 검사... 어케 하지...?
     const getToken = async () => {
         try {
-            const res = await axios.get(`sosial/kakao/auth?code=${getCode}`);
+            const res = await axios.get(`/sosial/kakao/auth?code=${getCode}`);
             console.log(res);
             const accessToken = res.data.accessToken;
             const refreshToken = res.data.refreshToken;

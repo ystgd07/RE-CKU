@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Col, Row, Slider, Modal, List } from 'antd';
+import { Col, Row, Slider, Modal, List, Alert } from 'antd';
 import axios from 'axios';
-import * as S from './style';
-import './index.css';
+import { Title, MobileDiv } from './style';
+import './style.css';
 import API from 'utils/api';
 import Header from 'components/Header';
 import { Outlet } from 'react-router-dom';
 import { Link, useNavigate } from 'react-router-dom';
+import Layout from 'components/Layout';
 
 interface data {
     corrections: number;
@@ -14,12 +15,29 @@ interface data {
     username: string;
     point: number;
 }
+interface myData {
+    avatarUrl: string;
+    chance: number;
+    clickedLikes: 1;
+    created: string;
+    email: string;
+    gitHubUrl: string;
+    howToLogin: string;
+    id: number;
+    matching: number;
+    phoneNumber: string;
+    point: number;
+    role: string;
+    username: string;
+    working: number;
+}
 
 const Match = () => {
     const [modalIdContent, setModalIdContent] = useState<number | string>();
     const [modalUserNameContent, setModalUserNameContent] = useState<number | string>('');
     const [modalPointContent, setModalPointContent] = useState<number | string>();
     const [data, setData] = useState<data[]>([]);
+    const [myData, setMyData] = useState<myData>();
     const [modalOpen, setModalOpen] = useState(false);
     const navigate = useNavigate();
     async function getMatching() {
@@ -49,8 +67,29 @@ const Match = () => {
         }
     }
 
+    async function getMyData() {
+        try {
+            const res = await API.get(`/users/individuals`);
+            console.log(res);
+            setMyData(res);
+            getPoint(res);
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
+    async function getPoint(res: myData) {
+        console.log(res);
+        if (res.point <= 49) {
+            alert(`포인트가 50 이상 필요합니다.(내 포인트 : ${res.point} point)`);
+            navigate('/');
+        } else {
+            getMatching();
+        }
+    }
+
     useEffect(() => {
-        getMatching();
+        getMyData();
     }, []);
 
     const onClickModal = async (data: any) => {
@@ -66,29 +105,28 @@ const Match = () => {
     };
 
     return (
-        <>
-            <Header />
-            <h1>이력서 첨삭 매칭</h1>
-            <S.MobileDiv>
+        <Layout>
+            <Title className="title">
+                <h1>이력서 첨삭 매칭</h1>
+            </Title>
+            <MobileDiv>
                 <Row gutter={[0, 0]}>
                     {data.map((data: any) => (
-                        <>
-                            <Col span={12} key={data.id} className="col">
-                                <div className="div" onClick={() => onClickModal(data)}>
-                                    <div>
-                                        <h3>{data.username}</h3>
-                                        <p>
-                                            <strong>등급 : </strong>
-                                            {data.point}
-                                        </p>
-                                        <p>
-                                            <strong>부탁건수 : </strong>
-                                            {data.corrections}회
-                                        </p>
-                                    </div>
+                        <Col span={12} key={data.id} className="col">
+                            <div className="content" onClick={() => onClickModal(data)}>
+                                <div>
+                                    <h3>{data.username}</h3>
+                                    <p>
+                                        <strong>등급 : </strong>
+                                        {data.point}
+                                    </p>
+                                    <p>
+                                        <strong>부탁건수 : </strong>
+                                        {data.corrections}회
+                                    </p>
                                 </div>
-                            </Col>
-                        </>
+                            </div>
+                        </Col>
                     ))}
                     <Outlet />
                     <Modal
@@ -115,6 +153,18 @@ const Match = () => {
                             <strong>부탁건수 : </strong>20회
                         </p>
                     </Modal>
+                    {/* {myData.point <= 50 ? (
+                        <Alert
+                            message="Error Text"
+                            description="Error Description Error Description Error Description Error Description Error Description Error Description"
+                            type="error"
+                            closable
+                            onClose={navigate('/')}
+                        />
+                    ) : (
+                        ''
+                    )} */}
+
                     {/* <List
                         grid={{ gutter: 16, column: 12 }}
                         dataSource={user}
@@ -149,8 +199,8 @@ const Match = () => {
                         )}
                     /> */}
                 </Row>
-            </S.MobileDiv>
-        </>
+            </MobileDiv>
+        </Layout>
     );
 };
 

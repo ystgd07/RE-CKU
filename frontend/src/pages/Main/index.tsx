@@ -3,13 +3,16 @@ import { useNavigate } from 'react-router-dom';
 import styled from '@emotion/styled';
 import Layout from 'components/Layout';
 import { calcElapsed } from 'utils/format';
-import { Link } from 'react-router-dom';
-import { Skeleton, Carousel, Card } from 'antd';
+import { Skeleton, Carousel, notification } from 'antd';
+import type { NotificationPlacement } from 'antd/es/notification/interface';
 import { LikeOutlined, CommentOutlined, RightOutlined } from '@ant-design/icons';
 import API from 'utils/api';
-import carousel1 from 'assets/images/carousel1.png';
-import carousel2 from 'assets/images/carousel2.png';
-import carousel3 from 'assets/images/carousel3.png';
+import carousel01 from 'assets/images/001.png';
+import carousel02 from 'assets/images/002.png';
+import carousel03 from 'assets/images/003.png';
+import carousel04 from 'assets/images/004.png';
+import carousel05 from 'assets/images/005.png';
+import randomGame from 'assets/images/random-game.png';
 
 const Wrapper = styled.div`
     display: flex;
@@ -44,7 +47,7 @@ const Post = styled.div`
     background-color: #fffbe3;
     border: 0.1rem solid #fffbe3;
     padding: 3rem;
-    gap: 0.5rem;
+    gap: 1rem;
     cursor: pointer;
     &:hover {
         border-color: #ccb94c;
@@ -76,7 +79,6 @@ const PostContents = styled.p`
 `;
 
 const PostsProfile = styled.div`
-    margin: 1rem 0;
     display: flex;
 `;
 
@@ -129,13 +131,17 @@ const Quest = styled.div`
     align-items: center;
     width: 70%;
     height: 20rem;
-    border: 1px solid #fffbe3;
-    background-color: #fffbe3;
     border-radius: 1rem;
     font-size: 10rem;
+    overflow: hidden;
     cursor: pointer;
+    img {
+        height: 100%;
+    }
     :hover {
-        border-color: #ccb94c;
+        border: 1px solid #e2e2e2;
+        transform: scale(1.05);
+        transition: scale 0.4s;
     }
     h3 {
         font-size: 4rem;
@@ -223,9 +229,16 @@ const Main = () => {
     };
 
     const handleQuestClick = async () => {
-        //Users/individuals patch
+        if (questData?.chance === 0) {
+            openNotification(
+                'bottomRight',
+                `금일 잔여 횟수를 모두 소진했습니다. 내일 다시 시도해주세요.`,
+            );
+            return;
+        }
         try {
-            // const res = await API.patch("/users/individuals")
+            await API.get('/users/point');
+            fetchQuestData();
         } catch (err) {
             console.log(err);
         }
@@ -240,19 +253,34 @@ const Main = () => {
     }, []);
 
     const onChange = (currentSlide: number) => {};
+
+    const [api, contextHolder] = notification.useNotification();
+    const openNotification = (placement: NotificationPlacement, message: string) => {
+        api.info({
+            message: message,
+            placement,
+        });
+    };
     // \[?(!)(?'alt'\[[^\]\[]*\[?[^\]\[]*\]?[^\]\[]*)\]\((?'url'[^\s]+?)(?:\s+(["'])(?'title'.*?)\4)?\)
 
     return (
         <Layout>
+            {contextHolder}
             <Carousel autoplay afterChange={onChange}>
                 <div>
-                    <img src={carousel1} alt="carousel" />
+                    <img src={carousel01} alt="carousel" />
                 </div>
                 <div>
-                    <img src={carousel2} alt="carousel" />
+                    <img src={carousel02} alt="carousel" />
                 </div>
                 <div>
-                    <img src={carousel3} alt="carousel" />
+                    <img src={carousel03} alt="carousel" />
+                </div>
+                <div>
+                    <img src={carousel04} alt="carousel" />
+                </div>
+                <div>
+                    <img src={carousel05} alt="carousel" />
                 </div>
             </Carousel>
             <Wrapper>
@@ -355,13 +383,13 @@ const Main = () => {
                     )}
                 </Posts>
 
-                <Title>오늘의 일일 퀘스트</Title>
+                <Title>일일 퀘스트</Title>
                 <QuestWrapper>
                     <QuestText>{`오늘 잔여 횟수 : ${
                         questData === null ? '' : questData?.chance
                     }`}</QuestText>
                     <Quest onClick={handleQuestClick}>
-                        <h3>이력서 보고 포인트 얻기!</h3>
+                        <img src={randomGame} alt="img" />
                     </Quest>
                 </QuestWrapper>
             </Wrapper>

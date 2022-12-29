@@ -10,7 +10,7 @@ export class Stack {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne((type) => Project, (project) => project.stacks)
+  @ManyToOne((type) => Project, (project) => project.skills)
   project: Project;
 
   @ManyToOne((type) => Skill, (skill) => skill.id)

@@ -56,6 +56,7 @@ export const createCareer = async (resumeId: number, newCareerInfo: Record<strin
 
 // 1-3. 프로젝트 생성
 export const createProject = async (resumeId: number, newProjectInfo: Record<string, string | number | boolean>): Promise<Object> => {
+  console.log(newProjectInfo,"consoleconsoleconsoleconsoleconsoleconsoleconsoleconsole")
   const newProject = await createProjectQ(resumeId, newProjectInfo);
 
   return newProject;
