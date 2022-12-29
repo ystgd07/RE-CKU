@@ -112,22 +112,20 @@ const Match = () => {
             <MobileDiv>
                 <Row gutter={[0, 0]}>
                     {data.map((data: any) => (
-                        <>
-                            <Col span={12} key={data.id} className="col">
-                                <div className="div" onClick={() => onClickModal(data)}>
-                                    <div>
-                                        <h3>{data.username}</h3>
-                                        <p>
-                                            <strong>등급 : </strong>
-                                            {data.point}
-                                        </p>
-                                        <p>
-                                            <strong>부탁건수 : </strong>
-                                            {data.corrections}회
-                                        </p>
-                                    </div>
-                                    <div>{/* <img src=""></img> */}</div>
+                        <Col span={12} key={data.id} className="col">
+                            <div className="div" onClick={() => onClickModal(data)}>
+                                <div>
+                                    <h3>{data.username}</h3>
+                                    <p>
+                                        <strong>등급 : </strong>
+                                        {data.point}
+                                    </p>
+                                    <p>
+                                        <strong>부탁건수 : </strong>
+                                        {data.corrections}회
+                                    </p>
                                 </div>
+                                {/* <div><img src=""></img></div> */}
                             </div>
                         </Col>
                     ))}
