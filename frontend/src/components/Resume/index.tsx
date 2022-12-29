@@ -97,7 +97,7 @@ const Resume = ({ resumeId }: any) => {
                             </Paragraph>
                             <Paragraph strong>포지션:</Paragraph>
                             <Paragraph> {data.position}&nbsp;&nbsp;&nbsp;</Paragraph>
-                            <Paragraph strong>리워드가뭐야?: </Paragraph>
+                            <Paragraph strong>성과: </Paragraph>
                             <Paragraph>{data.reward}&nbsp;&nbsp;&nbsp;</Paragraph>
                         </div>
                     </S.BorderDiv>
