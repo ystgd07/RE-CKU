@@ -125,6 +125,7 @@ const Match = () => {
                                             {data.corrections}회
                                         </p>
                                     </div>
+                                    <div>{/* <img src=""></img> */}</div>
                                 </div>
                             </Col>
                         </>
@@ -148,57 +149,12 @@ const Match = () => {
                             <strong>{modalUserNameContent}</strong>님께 이력서 첨삭 부탁하기
                         </p>
                         <p>
-                            <strong>등급 : </strong>다이아
+                            <strong>등급 :</strong> {modalPointContent}
                         </p>
                         <p>
                             <strong>부탁건수 : </strong>20회
                         </p>
                     </Modal>
-                    {/* {myData.point <= 50 ? (
-                        <Alert
-                            message="Error Text"
-                            description="Error Description Error Description Error Description Error Description Error Description Error Description"
-                            type="error"
-                            closable
-                            onClose={navigate('/')}
-                        />
-                    ) : (
-                        ''
-                    )} */}
-
-                    {/* <List
-                        grid={{ gutter: 16, column: 12 }}
-                        dataSource={user}
-                        renderItem={user => (
-                            <List.Item>
-                                <Col span={12} key={user.id}>
-                                    <div onClick={() => onClickModal(user)}>
-                                        <div>{user.id}</div>
-                                    </div>
-                                </Col>
-                                <Modal
-                                    title={<h1>{user.id}</h1>}
-                                    centered
-                                    cancelText="싫어요"
-                                    okText={`부탁할래요(${user.point}point)`}
-                                    open={modalOpen}
-                                    onOk={() => setModalOpen(false)}
-                                    onCancel={() => setModalOpen(false)}
-                                >
-                                    <hr />
-                                    <p>
-                                        <strong>{user.userName}</strong>님께 이력서 첨삭 부탁하기
-                                    </p>
-                                    <p>
-                                        <strong>등급 : </strong>다이아
-                                    </p>
-                                    <p>
-                                        <strong>부탁건수 : </strong>20회
-                                    </p>
-                                </Modal>
-                            </List.Item>
-                        )}
-                    /> */}
                 </Row>
             </S.MobileDiv>
         </>

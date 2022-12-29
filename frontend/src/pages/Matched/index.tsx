@@ -48,6 +48,7 @@ const Matched = () => {
         const token = localStorage.getItem('accessToken');
         try {
             console.log('matchingId', matchingId);
+            console.log('matchingId', typeof matchingId);
             // const res = await axios.delete(`/users/match`, { matchingId });
             const res = await axios({
                 method: 'delete',

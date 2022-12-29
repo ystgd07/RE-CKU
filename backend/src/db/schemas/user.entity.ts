@@ -1,4 +1,10 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany, OneToOne } from "typeorm";
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  OneToMany,
+  OneToOne,
+} from "typeorm";
 import { Connect } from "./connect.entity";
 import { Resume } from "./resume.entity";
 import { Board } from "./board.entity";
@@ -86,8 +92,8 @@ export class User {
   @Column({ default: false })
   working: boolean;
 
-  // @Column({ default: false })
-  // matching: boolean;
+  @Column({ default: false })
+  matching: boolean;
 
   @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP" })
   created: Date;
