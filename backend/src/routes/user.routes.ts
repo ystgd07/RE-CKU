@@ -108,6 +108,7 @@ userRoute.get("/req", tokenValidator, async (req, res, next) => {
   }
 });
 
+//회원탈퇴
 userRoute.patch("/off", tokenValidator, async (req, res, next) => {
   const userId = Number(req.body.jwtDecoded.id);
   try {
