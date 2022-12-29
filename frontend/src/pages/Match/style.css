@@ -10,8 +10,8 @@
     width: 40vh;
     font-size: 14px;
     /* line-height: 120px; */
-    /* background: #99c3e4; */
-    border: 1px solid black;
+    background: #99c3e4af;
+    /* border: 1px solid black; */
     border-radius: 4px;
     margin: 3vh;
     padding: 1vh;
@@ -33,4 +33,7 @@ pre.demo-code {
 
 h3 {
     text-align: start;
+}
+img {
+    width: 5rem;
 }

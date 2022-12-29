@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Col, Row, Slider, Modal, List, Alert } from 'antd';
+import { Col, Row, Slider, Modal, List, Alert, Avatar } from 'antd';
 import axios from 'axios';
 import { Title, MobileDiv } from './style';
 import './style.css';
@@ -9,12 +9,6 @@ import { Outlet } from 'react-router-dom';
 import { Link, useNavigate } from 'react-router-dom';
 import Layout from 'components/Layout';
 
-interface data {
-    corrections: number;
-    id: number;
-    username: string;
-    point: number;
-}
 interface myData {
     avatarUrl: string;
     chance: number;
@@ -34,9 +28,12 @@ interface myData {
 
 const Match = () => {
     const [modalIdContent, setModalIdContent] = useState<number | string>();
+    const [modalAvatarUrl, setModalAvatarUrl] = useState<number | string>();
     const [modalUserNameContent, setModalUserNameContent] = useState<number | string>('');
     const [modalPointContent, setModalPointContent] = useState<number | string>();
-    const [data, setData] = useState<data[]>([]);
+    const [modalEmail, setModalEmail] = useState<number | string>();
+    const [modalGitHubUrl, setModalGitHubUrl] = useState<number | string | undefined>();
+    const [data, setData] = useState<myData[]>([]);
     const [myData, setMyData] = useState<myData>();
     const [modalOpen, setModalOpen] = useState(false);
     const navigate = useNavigate();
@@ -96,11 +93,16 @@ const Match = () => {
         const id = data.id;
         const userName = data.username;
         const point = data.point;
+        const email = data.email;
+        const gitHubUrl = data.gitHubUrl;
+        const avatarUrl = data.avatarUrl;
 
+        setModalGitHubUrl(gitHubUrl);
+        setModalEmail(email);
         setModalIdContent(id);
         setModalUserNameContent(userName);
         setModalPointContent(point);
-
+        setModalAvatarUrl(avatarUrl);
         setModalOpen(true);
     };
 
@@ -121,11 +123,13 @@ const Match = () => {
                                         {data.point}
                                     </p>
                                     <p>
-                                        <strong>부탁건수 : </strong>
-                                        {data.corrections}회
+                                        <strong>이메일 : </strong>
+                                        {data.email}
                                     </p>
                                 </div>
-                                {/* <div><img src=""></img></div> */}
+                                {/* <div>
+                                    <img src={data.avatarUrl}></img>
+                                </div> */}
                             </div>
                         </Col>
                     ))}
@@ -151,7 +155,11 @@ const Match = () => {
                             <strong>등급 :</strong> {modalPointContent}
                         </p>
                         <p>
-                            <strong>부탁건수 : </strong>20회
+                            <strong>이메일 :</strong> {modalEmail}
+                        </p>
+                        <p>
+                            <strong>URL : </strong>
+                            {modalGitHubUrl}
                         </p>
                     </Modal>
                 </Row>
