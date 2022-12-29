@@ -44,7 +44,7 @@ const Post = styled.div`
     background-color: #fffbe3;
     border: 0.1rem solid #fffbe3;
     padding: 3rem;
-    gap: 0.5rem;
+    gap: 1rem;
     cursor: pointer;
     &:hover {
         border-color: #ccb94c;
@@ -76,7 +76,6 @@ const PostContents = styled.p`
 `;
 
 const PostsProfile = styled.div`
-    margin: 1rem 0;
     display: flex;
 `;
 
