@@ -67,7 +67,7 @@ const Loading = () => {
             localStorage.setItem('accessToken', accessToken);
             localStorage.setItem('refreshToken', refreshToken);
             localStorage.setItem('userId', userId);
-            // window.location.href = '/';
+            window.location.href = '/';
         } catch (e) {
             console.log(e);
         }
