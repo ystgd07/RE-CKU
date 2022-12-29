@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Col, Row, Slider, Modal, List, Alert } from 'antd';
 import axios from 'axios';
-import * as S from './style';
-import './index.css';
+import { Title, MobileDiv } from './style';
+import './style.css';
 import API from 'utils/api';
 import Header from 'components/Header';
 import { Outlet } from 'react-router-dom';
 import { Link, useNavigate } from 'react-router-dom';
+import Layout from 'components/Layout';
 
 interface data {
     corrections: number;
@@ -76,6 +77,7 @@ const Match = () => {
             console.log(e);
         }
     }
+
     async function getPoint(res: myData) {
         console.log(res);
         if (res.point <= 49) {
@@ -103,31 +105,28 @@ const Match = () => {
     };
 
     return (
-        <>
-            <Header />
-            <div style={{ textAlign: 'center' }}>
+        <Layout>
+            <Title className="title">
                 <h1>이력서 첨삭 매칭</h1>
-            </div>
-            <S.MobileDiv>
+            </Title>
+            <MobileDiv>
                 <Row gutter={[0, 0]}>
                     {data.map((data: any) => (
-                        <>
-                            <Col span={12} key={data.id} className="col">
-                                <div className="div" onClick={() => onClickModal(data)}>
-                                    <div>
-                                        <h3>{data.username}</h3>
-                                        <p>
-                                            <strong>등급 : </strong>
-                                            {data.point}
-                                        </p>
-                                        <p>
-                                            <strong>부탁건수 : </strong>
-                                            {data.corrections}회
-                                        </p>
-                                    </div>
+                        <Col span={12} key={data.id} className="col">
+                            <div className="content" onClick={() => onClickModal(data)}>
+                                <div>
+                                    <h3>{data.username}</h3>
+                                    <p>
+                                        <strong>등급 : </strong>
+                                        {data.point}
+                                    </p>
+                                    <p>
+                                        <strong>부탁건수 : </strong>
+                                        {data.corrections}회
+                                    </p>
                                 </div>
-                            </Col>
-                        </>
+                            </div>
+                        </Col>
                     ))}
                     <Outlet />
                     <Modal
@@ -200,8 +199,8 @@ const Match = () => {
                         )}
                     /> */}
                 </Row>
-            </S.MobileDiv>
-        </>
+            </MobileDiv>
+        </Layout>
     );
 };
 
