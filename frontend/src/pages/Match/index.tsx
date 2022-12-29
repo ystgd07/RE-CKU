@@ -14,6 +14,8 @@ interface data {
     id: number;
     username: string;
     point: number;
+    tier: string;
+    tierColor: string;
 }
 interface myData {
     avatarUrl: string;
@@ -31,7 +33,20 @@ interface myData {
     username: string;
     working: number;
 }
-
+const tierColors = {
+    bronze: '#964b00',
+    silver: '#c0c0c0',
+    gold: '#ffbd1b',
+    platinum: '#005666',
+    diamond: '#00a3d2',
+    challenger: '#dc143c',
+};
+const arr = [40, 60, 200, 1000, 10000];
+let upperLimit = arr[0];
+let lowerLimit = 0;
+let tier = 'Bronze';
+let tierColor = tierColors.bronze;
+let point = 0;
 const Match = () => {
     const [modalIdContent, setModalIdContent] = useState<number | string>();
     const [modalUserNameContent, setModalUserNameContent] = useState<number | string>('');
@@ -84,6 +99,8 @@ const Match = () => {
             alert(`포인트가 50 이상 필요합니다.(내 포인트 : ${res.point} point)`);
             navigate('/');
         } else {
+            point = res.point;
+
             getMatching();
         }
     }
@@ -104,6 +121,46 @@ const Match = () => {
         setModalOpen(true);
     };
 
+    const tierCreate = (point: any): void => {
+        arr.map((e: number, idx: number): void => {
+            if (e <= point) {
+                upperLimit = arr[idx + 1];
+                if (upperLimit === 60) {
+                    tier = 'Silver';
+                    tierColor = tierColors.silver;
+                } else if (upperLimit === 200) {
+                    tier = 'Gold';
+                    tierColor = tierColors.gold;
+                } else if (upperLimit === 1000) {
+                    tier = 'Platinum';
+                    tierColor = tierColors.platinum;
+                } else if (upperLimit === 10000) {
+                    tier = 'Diamond';
+                    tierColor = tierColors.diamond;
+                } else if (point >= 10000) {
+                    tier = 'Challenger';
+                    tierColor = tierColors.challenger;
+                }
+                if (upperLimit === arr[0]) {
+                    lowerLimit = 0;
+                } else {
+                    if (point >= 10000) {
+                        lowerLimit = 10000;
+                        upperLimit = 10000;
+                    } else {
+                        lowerLimit = arr[idx];
+                    }
+                }
+            }
+        });
+    };
+    let realData = data.map((e: any, idx: number) => {
+        tierCreate(e.point);
+        data[idx].tier = tier;
+        data[idx].tierColor = tierColor;
+    });
+    console.log(point);
+    console.log(upperLimit, lowerLimit);
     return (
         <Layout>
             <Title className="title">
@@ -118,7 +175,7 @@ const Match = () => {
                                     <h3>{data.username}</h3>
                                     <p>
                                         <strong>등급 : </strong>
-                                        {data.point}
+                                        {data.tier}
                                     </p>
                                     <p>
                                         <strong>부탁건수 : </strong>
