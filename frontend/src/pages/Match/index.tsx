@@ -24,6 +24,8 @@ interface myData {
     role: string;
     username: string;
     working: number;
+    tier: string;
+    tierColor: string;
 }
 const tierColors = {
     bronze: '#964b00',
