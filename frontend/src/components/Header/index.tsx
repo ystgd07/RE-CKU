@@ -48,6 +48,12 @@ const Header = () => {
 
                 <div>
                     <nav>
+                        {/* <div className={}>
+                        <span className="line"></span>
+                        <span className="line"></span>
+                        <span className="line"></span>
+                    </div> */}
+
                         <ul>
                             {isAdmin === true && (
                                 <li>
