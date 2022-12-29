@@ -6,10 +6,9 @@ import { Proofread } from 'components/User/Proofread';
 import axios from 'axios';
 import Layout from 'components/Layout';
 import { useNavigate } from 'react-router-dom';
+import API from 'utils/api';
 
 const token = localStorage.getItem('accessToken');
-
-//TODO:코드라인이 심각하게 많아지고 있다 컴포넌트의 필요성을 절실하게 느끼는 중..
 
 const tierColors = {
     bronze: '#964b00',
@@ -23,6 +22,7 @@ const tierColors = {
 const onChange = (key: string) => {
     console.log(key);
 };
+
 type Mock = {
     id: string;
     email: string;
@@ -35,6 +35,7 @@ type Mock = {
     gitHubUrl: string;
     tierColor: string;
 };
+
 const Profile: React.FC = () => {
     const [open, setOpen] = useState(false);
     const [confirmLoading, setConfirmLoading] = useState(false);
@@ -45,10 +46,11 @@ const Profile: React.FC = () => {
 
     const imgFileSend = async (body: any) => {
         try {
-            const res = await await axios.post('/file/url', body);
+            const res = await axios.post(`${API.BASE_URL}/file/url`, body);
+
             if (res.status === 200) {
                 await axios.patch(
-                    '/users/individuals',
+                    `${API.BASE_URL}/users/individuals`,
                     { avatarUrl: `${res.data.imageUrl}` },
                     { headers: { authorization: `Bearer ${token}` } },
                 );
@@ -58,14 +60,13 @@ const Profile: React.FC = () => {
             console.log(e);
         }
     };
+
     const showModal = () => {
         setOpen(true);
     };
 
     const handleOk = (e: any) => {
         const formData1: any = new FormData();
-        // const blob = new Blob(, { type: 'image/png' });
-        // console.log(blob);
 
         formData1.append('image', imgLoadRef.current.files[0]);
         setModalText('The modal will be closed after two seconds');
@@ -81,7 +82,6 @@ const Profile: React.FC = () => {
 
     const handleCancel = (e: any) => {
         e.target.parentElement.parentElement.parentElement.children[1].children[0].value = '';
-        console.log('Clicked cancel button');
         setOpen(false);
     };
     const {
@@ -104,7 +104,7 @@ const Profile: React.FC = () => {
         try {
             const token = localStorage.getItem('accessToken');
 
-            const mocks = await axios.get('/users/individuals', {
+            const mocks = await axios.get(`${API.BASE_URL}/users/individuals`, {
                 headers: { authorization: `Bearer ${token}` },
             });
             if (mocks.status === 200) {
@@ -113,7 +113,6 @@ const Profile: React.FC = () => {
                 setRes(realRes);
             }
         } catch (e: any) {
-            console.log(e);
             if (e.response.status !== 200) navigate('/*');
         }
     }
@@ -159,14 +158,12 @@ const Profile: React.FC = () => {
             }
         }
     });
-    console.log(upperLimit, lowerLimit);
 
     let testWidth: number = ((res.point - lowerLimit) / (upperLimit - lowerLimit)) * 100;
     testWidth = Math.floor(testWidth);
     if (testWidth === 100) testWidth = 0;
     if (lowerLimit === 10000) testWidth = 100;
     res.tierColor = tierColor;
-    console.log(testWidth);
 
     return (
         <Layout>
@@ -206,16 +203,7 @@ const Profile: React.FC = () => {
                         <div>
                             <div style={{ width: `${testWidth}%` }}></div>
                         </div>
-                        {/* <p
-                        style={{
-                            color: `${tierColor}`,
-                            fontWeight: 'bold',
-                            marginLeft: '10px',
-                            marginRight: '10px',
-                        }}
-                    >
-                        {tier}
-                    </p> */}
+
                         <Tag color={tierColor}>{tier}</Tag>
                     </Space>
                 </div>
@@ -228,7 +216,6 @@ const Profile: React.FC = () => {
                         width: '98%',
                     }}
                 />
-                {/* //TODO: 추후 Tabs 이부분 컴포넌트화 해야함^^ */}
                 {upperLimit >= 1000 ? (
                     <Tabs
                         tabBarStyle={{

@@ -1,14 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import {
-    UserData,
-    ResumeData,
-    WorkFormData,
-    ProjectFormData,
-    FormStore,
-} from 'models/resumeEdit-model';
+import { ProjectFormData, FormStore } from 'models/resumeEdit-model';
 import axios, { AxiosResponse } from 'axios';
 import { useParams } from 'react-router-dom';
 import { GiCancel } from '@react-icons/all-files/gi/GiCancel';
+import API from 'utils/api';
 
 type ProjectFormState = {
     setIsProjectFormToggle: React.Dispatch<React.SetStateAction<boolean>>;
@@ -29,7 +24,6 @@ const Project = ({
     const [AllStacks, setAllStacks] = useState([]);
     const [stackInputValue, setStackInputValue] = useState<string>('');
     const [tagListItem, setTagListItem] = useState<string[]>([]);
-    const [tagItemActive, setTagItemActive] = useState<boolean>(false);
     const [projectFormDataState, setProjectFormDataState] = useState<ProjectFormData>({
         projectName: '',
         year: '',
@@ -41,11 +35,10 @@ const Project = ({
 
     const params = useParams();
     const resumeIds = params.id;
-    const token = localStorage.getItem('accessToken');
 
     const getStack = async () => {
         try {
-            const res = await axios.get<AxiosResponse>(`/my-portfolio/skills`);
+            const res = await axios.get<AxiosResponse>(`${API.BASE_URL}/my-portfolio/skills`);
             const data = res.data.data;
             setAllStacks(data);
         } catch (err: unknown) {
@@ -70,7 +63,6 @@ const Project = ({
     };
 
     const addTagList = (tagItem: string, idx: number) => {
-        console.log(tagItem, '123123123 - oncl');
         const newTagItem = new Set<string>([...tagListItem]);
         newTagItem.add(tagItem);
         setTagListItem([...newTagItem]);
@@ -109,7 +101,6 @@ const Project = ({
         const deleteFilter = addProjectElement.filter((tem: FormStore) => tem.list !== idx);
         setAddProjectElement(deleteFilter);
         if (deleteFilter.length === 0) setIsProjectFormToggle(e => !e);
-        console.log(deleteFilter, 'fil');
     };
 
     const validationForm = async (e: React.FormEvent) => {
@@ -121,23 +112,25 @@ const Project = ({
         }
 
         try {
-            const res = await axios.post(`/my-portfolio/resumes/${resumeIds}/new-project`, {
-                projectName: projectFormDataState.projectName,
-                year: projectFormDataState.year,
-                information: projectFormDataState.information,
-                link1: projectFormDataState.link1,
-                link2: projectFormDataState.link2,
-                skills: projectFormDataState.stacks,
-            });
+            const res = await axios.post(
+                `${API.BASE_URL}/my-portfolio/resumes/${resumeIds}/new-project`,
+                {
+                    projectName: projectFormDataState.projectName,
+                    year: projectFormDataState.year,
+                    information: projectFormDataState.information,
+                    link1: projectFormDataState.link1,
+                    link2: projectFormDataState.link2,
+                    skills: projectFormDataState.stacks,
+                },
+            );
 
-            // const insertId = res.data.data[0].insertId;
-            // const result = await axios.get(`/my-portfolio/careers/${insertId}`);
+            const insertId = res.data.data[0].insertId;
+            const result = await axios.get(`${API.BASE_URL}/my-portfolio/projects/${insertId}`);
 
             if (res.status === 200) {
-                // onProjectCreated();
+                onProjectCreated(result.data.data);
                 setIsProjectFormToggle(false);
             }
-            console.log(res.data, ' project sususususususususuussusu');
         } catch (err: unknown) {
             console.log(err);
         }

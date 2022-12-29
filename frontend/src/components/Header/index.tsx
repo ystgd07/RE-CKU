@@ -8,13 +8,13 @@ import API from 'utils/api';
 const Header = () => {
     const navigate = useNavigate();
     const token = localStorage.getItem('accessToken');
-    const [isAdmin, setIsAdmin] = useState<boolean>(localStorage.getItem('isAdmin') ? true : false);
+
+    const admin = localStorage.getItem('isAdmin') ? false : true;
+    const [isAdmin, setIsAdmin] = useState<boolean>(admin);
 
     const userInfo = async () => {
         try {
             const res = await API.get(`/users/individuals`);
-            setIsAdmin(res.role);
-            console.log(isAdmin);
         } catch (err: unknown) {
             console.log(err);
         }
@@ -26,7 +26,11 @@ const Header = () => {
 
     const logout = useCallback(() => {
         try {
-            axios.patch(`/users/sign-out`, {}, { headers: { authorization: `Bearer ${token}` } });
+            axios.patch(
+                `${API.BASE_URL}/users/sign-out`,
+                {},
+                { headers: { authorization: `Bearer ${token}` } },
+            );
 
             localStorage.clear();
             window.location.replace('/');

@@ -5,6 +5,7 @@ import * as S from './style';
 import Logo from 'assets/images/logo.png';
 import { useForm } from 'react-hook-form';
 import Layout from 'components/Layout';
+import API from 'utils/api';
 
 const Join = () => {
     const [email, setEmail] = useState();
@@ -40,9 +41,7 @@ const Join = () => {
         };
 
         try {
-            console.log('data', jsondata);
-            const res = await axios.post('/users/individuals', jsondata);
-            console.log(res, '성공');
+            const res = await axios.post(`${API.BASE_URL}/users/individuals`, jsondata);
 
             alert('회원가입이 완료되었습니다.');
             navigate('/login');
@@ -66,8 +65,7 @@ const Join = () => {
         };
 
         try {
-            const res = await axios.post('/users/email', jsondata);
-            console.log(res, '성공');
+            const res = await axios.post(`${API.BASE_URL}/users/email`, jsondata);
             alert('이메일을 확인 해 주세요');
         } catch (err: any) {
             console.error(err.stack);
@@ -81,11 +79,8 @@ const Join = () => {
             code: Number(code),
         };
 
-        console.log('data', jsondata);
-
         try {
-            const res = await axios.post('/users/email/auth', jsondata);
-            console.log(res, '성공');
+            const res = await axios.post(`${API.BASE_URL}/users/email/auth`, jsondata);
 
             const reqConfirm = res.data.msg;
 

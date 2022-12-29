@@ -149,6 +149,7 @@ const Quest = styled.div`
     cursor: pointer;
     border: 1px solid #e2e2e2;
     img {
+        width: 100%;
         height: 100%;
     }
     :hover {
@@ -274,7 +275,6 @@ const Main = () => {
             placement,
         });
     };
-    // \[?(!)(?'alt'\[[^\]\[]*\[?[^\]\[]*\]?[^\]\[]*)\]\((?'url'[^\s]+?)(?:\s+(["'])(?'title'.*?)\4)?\)
 
     return (
         <Layout>
