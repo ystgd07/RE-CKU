@@ -10,7 +10,8 @@ const Container = styled.div`
     color: #666;
 `;
 const Img = styled.img`
-    height: 17px; ;
+    height: 17px;
+    cursor: pointer;
 `;
 const Div = styled.div`
     margin: 0 10px;
@@ -22,7 +23,7 @@ const Footer = () => {
         <Container>
             Copyrigh {year}. RE-CHU All rights reserved with
             <Div>
-                <Img src={Elice}></Img>
+                <Img src={Elice} onClick={() => window.location.replace('https://elice.io/')}></Img>
             </Div>
         </Container>
     );
