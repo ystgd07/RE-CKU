@@ -41,6 +41,7 @@ const Login = () => {
     };
 
     const LoginByKakao = async () => {
+        console.log(process.env.REACT_APP_KAKAO_KEY);
         try {
             const baseUrl = 'https://kauth.kakao.com/oauth/authorize?';
             const zz = `client_id=${process.env.REACT_APP_KAKAO_KEY}&redirect_uri=${process.env.REACT_APP_REDIRECT_URI}&response_type=code&scope=profile_nickname,profile_image,account_email`;
@@ -102,13 +103,11 @@ const Login = () => {
                                 </li>
                             </ul>
                             <ul className="kakaoLogin">
-                                <li>
+                                <li onClick={LoginByKakao}>
                                     <span>
                                         <img src={Kakao} alt="kakao" />
                                     </span>
-                                    <button type="button" onClick={LoginByKakao}>
-                                        카카오 로그인
-                                    </button>
+                                    <button type="button">카카오 로그인</button>
                                 </li>
                             </ul>
                         </article>
