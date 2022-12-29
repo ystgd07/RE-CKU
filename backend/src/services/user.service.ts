@@ -79,7 +79,6 @@ export const successMatch = async (matchingId: number, role: string): Promise<st
       break;
     default:
       data.role = "menteeComplate";
-      data.deleteMenteeIdQuery = ", menteeId = 0";
       break;
   }
 
@@ -100,6 +99,7 @@ export const successMatch = async (matchingId: number, role: string): Promise<st
     throw new Error(`500, 서버 오류`);
   }
 };
+// 고인물이 마이페이지에서 요청들어온거 보는거임
 export const getRequestCorrection = async (userId: number) => {
   try {
     console.log(userId);

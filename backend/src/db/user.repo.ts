@@ -442,7 +442,7 @@ export const successMatchQ = async (
       `
     UPDATE connect
     SET
-      ${data.role} = 1 ${data.deleteMenteeIdQuery}
+      ${data.role} = 1 
     WHERE
       id = ?
   `,
