@@ -43,10 +43,10 @@ let matchData: [];
 const token = localStorage.getItem('accessToken');
 let lengthReq = 0;
 let lengthPro = 0;
-let test: number | boolean;
-// const [test,setTest] = useState()
+// let test: number | boolean;
 
 export const Proofread = () => {
+    const [test, setTest] = useState(false);
     const [res, setRes] = useState<Mock[]>([]);
 
     async function getProfile() {
@@ -59,8 +59,11 @@ export const Proofread = () => {
             if (mocks.status === 200) {
                 const dumyRes = await mocks.data;
                 const realRes = await dumyRes.data;
-                test = realRes.working;
-                test === 1 ? (test = true) : (test = false);
+                if (realRes.working === 1) {
+                    setTest(true);
+                } else {
+                    setTest(false);
+                }
             }
         } catch (e: any) {
             console.log(e);
@@ -123,11 +126,10 @@ export const Proofread = () => {
     };
 
     const toggleChange = async () => {
-        test = !test;
         try {
             const res = await axios.patch(
                 `${API.BASE_URL}/users/individuals`,
-                { working: test },
+                { working: !test },
                 { headers: { authorization: `Bearer ${token}` } },
             );
         } catch (e) {
@@ -161,6 +163,17 @@ export const Proofread = () => {
                 ) : (
                     <Switch onChange={toggleChange} style={{ marginLeft: '10px' }} />
                 )}
+                <Switch defaultChecked onChange={toggleChange} style={{ marginLeft: '20px' }} />
+                <Switch
+                    defaultChecked={true}
+                    onChange={toggleChange}
+                    style={{ marginLeft: '20px' }}
+                />
+                <Switch
+                    defaultChecked={false}
+                    onChange={toggleChange}
+                    style={{ marginLeft: '20px' }}
+                />
             </div>
             <Divider orientation="left" orientationMargin="0">
                 <p style={{ fontWeight: 'bold' }}>
