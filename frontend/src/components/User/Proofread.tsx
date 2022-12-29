@@ -158,7 +158,7 @@ export const Proofread = () => {
         >
             <div style={{ marginBottom: '20px', display: 'flex', flexDirection: 'row-reverse' }}>
                 <Button onClick={toggleChange}>첨삭ON/OFF</Button>
-                {test ? <Badge status="success" /> : <Badge status="warning"></Badge>}
+                {test ? <Badge status="success" /> : <Badge status="error"></Badge>}
             </div>
             <Divider orientation="left" orientationMargin="0">
                 <p style={{ fontWeight: 'bold' }}>
