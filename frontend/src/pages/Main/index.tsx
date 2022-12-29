@@ -14,6 +14,13 @@ import carousel04 from 'assets/images/004.png';
 import carousel05 from 'assets/images/005.png';
 import randomGame from 'assets/images/random-game.png';
 
+const Container = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0 10rem;
+`;
+
 const Wrapper = styled.div`
     display: flex;
     flex-direction: column;
@@ -41,7 +48,7 @@ const Posts = styled.div`
 const Post = styled.div`
     display: flex;
     flex-direction: column;
-    width: 24rem;
+    width: 20rem;
     height: 16rem;
     border-radius: 1rem;
     background-color: #fffbe3;
@@ -67,6 +74,11 @@ const Title = styled.h2`
 const PostTitle = styled.h3`
     font-size: 1.8rem;
     font-weight: 600;
+    display: -webkit-box;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
 `;
 
 const PostContents = styled.p`
@@ -135,6 +147,7 @@ const Quest = styled.div`
     font-size: 10rem;
     overflow: hidden;
     cursor: pointer;
+    border: 1px solid #e2e2e2;
     img {
         height: 100%;
     }
@@ -283,116 +296,118 @@ const Main = () => {
                     <img src={carousel05} alt="carousel" />
                 </div>
             </Carousel>
-            <Wrapper>
-                <Title>최근 등록된 게시물</Title>
-                <Posts>
-                    {latestBoardList.length === 0 ? (
-                        <SkeletonPosts />
-                    ) : (
-                        latestBoardList.map((item, index) => (
-                            <Post key={index} onClick={() => navigate(`/post/${item.postId}`)}>
-                                <PostTitle>{item.postTitle}</PostTitle>
-                                <PostContents>{item.postDescription}</PostContents>
-                                <PostsProfile>
-                                    <PostsProfileImg src={item.userProfileSrc} />
-                                    <PostsProfileInfoWrapper>
-                                        <p>{item.username}</p>
-                                        <PostsCreated>
-                                            {calcElapsed(item.createdAt)} 전
-                                        </PostsCreated>
-                                    </PostsProfileInfoWrapper>
-                                </PostsProfile>
-                                <PostsIconWrapper>
-                                    <PostsIcon>
-                                        <LikeOutlined />
-                                        {item.likeCount}
-                                    </PostsIcon>
-                                    <PostsIcon>
-                                        <CommentOutlined />
-                                        {item.commentCount}
-                                    </PostsIcon>
-                                </PostsIconWrapper>
-                            </Post>
-                        ))
-                    )}
-                </Posts>
+            <Container>
+                <Wrapper>
+                    <Title>최근 등록된 게시물</Title>
+                    <Posts>
+                        {latestBoardList.length === 0 ? (
+                            <SkeletonPosts />
+                        ) : (
+                            latestBoardList.map((item, index) => (
+                                <Post key={index} onClick={() => navigate(`/post/${item.postId}`)}>
+                                    <PostTitle>{item.postTitle}</PostTitle>
+                                    <PostContents>{item.postDescription}</PostContents>
+                                    <PostsProfile>
+                                        <PostsProfileImg src={item.userProfileSrc} />
+                                        <PostsProfileInfoWrapper>
+                                            <p>{item.username}</p>
+                                            <PostsCreated>
+                                                {calcElapsed(item.createdAt)} 전
+                                            </PostsCreated>
+                                        </PostsProfileInfoWrapper>
+                                    </PostsProfile>
+                                    <PostsIconWrapper>
+                                        <PostsIcon>
+                                            <LikeOutlined />
+                                            {item.likeCount}
+                                        </PostsIcon>
+                                        <PostsIcon>
+                                            <CommentOutlined />
+                                            {item.commentCount}
+                                        </PostsIcon>
+                                    </PostsIconWrapper>
+                                </Post>
+                            ))
+                        )}
+                    </Posts>
 
-                <Title>인기 게시물</Title>
-                <Posts>
-                    {hotLikesBoardList.length === 0 ? (
-                        <SkeletonPosts />
-                    ) : (
-                        hotLikesBoardList.map((item, index) => (
-                            <Post key={index} onClick={() => navigate(`/post/${item.postId}`)}>
-                                <PostTitle>{item.postTitle}</PostTitle>
-                                <PostContents>{item.postDescription}</PostContents>
-                                <PostsProfile>
-                                    <PostsProfileImg src={item.userProfileSrc} />
-                                    <PostsProfileInfoWrapper>
-                                        <p>{item.username}</p>
-                                        <PostsCreated>
-                                            {calcElapsed(item.createdAt)} 전
-                                        </PostsCreated>
-                                    </PostsProfileInfoWrapper>
-                                </PostsProfile>
-                                <PostsIconWrapper>
-                                    <PostsIcon>
-                                        <LikeOutlined />
-                                        {item.likeCount}
-                                    </PostsIcon>
-                                    <PostsIcon>
-                                        <CommentOutlined />
-                                        {item.commentCount}
-                                    </PostsIcon>
-                                </PostsIconWrapper>
-                            </Post>
-                        ))
-                    )}
-                </Posts>
+                    <Title>인기 게시물</Title>
+                    <Posts>
+                        {hotLikesBoardList.length === 0 ? (
+                            <SkeletonPosts />
+                        ) : (
+                            hotLikesBoardList.map((item, index) => (
+                                <Post key={index} onClick={() => navigate(`/post/${item.postId}`)}>
+                                    <PostTitle>{item.postTitle}</PostTitle>
+                                    <PostContents>{item.postDescription}</PostContents>
+                                    <PostsProfile>
+                                        <PostsProfileImg src={item.userProfileSrc} />
+                                        <PostsProfileInfoWrapper>
+                                            <p>{item.username}</p>
+                                            <PostsCreated>
+                                                {calcElapsed(item.createdAt)} 전
+                                            </PostsCreated>
+                                        </PostsProfileInfoWrapper>
+                                    </PostsProfile>
+                                    <PostsIconWrapper>
+                                        <PostsIcon>
+                                            <LikeOutlined />
+                                            {item.likeCount}
+                                        </PostsIcon>
+                                        <PostsIcon>
+                                            <CommentOutlined />
+                                            {item.commentCount}
+                                        </PostsIcon>
+                                    </PostsIconWrapper>
+                                </Post>
+                            ))
+                        )}
+                    </Posts>
 
-                <Title>가장 토론이 활발한 게시물</Title>
-                <Posts>
-                    {hotCommentBoardList.length === 0 ? (
-                        <SkeletonPosts />
-                    ) : (
-                        hotCommentBoardList.map((item, index) => (
-                            <Post key={index} onClick={() => navigate(`/post/${item.postId}`)}>
-                                <PostTitle>{item.postTitle}</PostTitle>
-                                <PostContents>{item.postDescription}</PostContents>
-                                <PostsProfile>
-                                    <PostsProfileImg src={item.userProfileSrc} />
-                                    <PostsProfileInfoWrapper>
-                                        <p>{item.username}</p>
-                                        <PostsCreated>
-                                            {calcElapsed(item.createdAt)} 전
-                                        </PostsCreated>
-                                    </PostsProfileInfoWrapper>
-                                </PostsProfile>
-                                <PostsIconWrapper>
-                                    <PostsIcon>
-                                        <LikeOutlined />
-                                        {item.likeCount}
-                                    </PostsIcon>
-                                    <PostsIcon>
-                                        <CommentOutlined />
-                                        {item.commentCount}
-                                    </PostsIcon>
-                                </PostsIconWrapper>
-                            </Post>
-                        ))
-                    )}
-                </Posts>
+                    <Title>가장 토론이 활발한 게시물</Title>
+                    <Posts>
+                        {hotCommentBoardList.length === 0 ? (
+                            <SkeletonPosts />
+                        ) : (
+                            hotCommentBoardList.map((item, index) => (
+                                <Post key={index} onClick={() => navigate(`/post/${item.postId}`)}>
+                                    <PostTitle>{item.postTitle}</PostTitle>
+                                    <PostContents>{item.postDescription}</PostContents>
+                                    <PostsProfile>
+                                        <PostsProfileImg src={item.userProfileSrc} />
+                                        <PostsProfileInfoWrapper>
+                                            <p>{item.username}</p>
+                                            <PostsCreated>
+                                                {calcElapsed(item.createdAt)} 전
+                                            </PostsCreated>
+                                        </PostsProfileInfoWrapper>
+                                    </PostsProfile>
+                                    <PostsIconWrapper>
+                                        <PostsIcon>
+                                            <LikeOutlined />
+                                            {item.likeCount}
+                                        </PostsIcon>
+                                        <PostsIcon>
+                                            <CommentOutlined />
+                                            {item.commentCount}
+                                        </PostsIcon>
+                                    </PostsIconWrapper>
+                                </Post>
+                            ))
+                        )}
+                    </Posts>
 
-                <Title>일일 퀘스트</Title>
-                <QuestWrapper>
-                    <QuestText>{`오늘 잔여 횟수 : ${
-                        questData === null ? '' : questData?.chance
-                    }`}</QuestText>
-                    <Quest onClick={handleQuestClick}>
-                        <img src={randomGame} alt="img" />
-                    </Quest>
-                </QuestWrapper>
-            </Wrapper>
+                    <Title>일일 퀘스트</Title>
+                    <QuestWrapper>
+                        <QuestText>{`오늘 잔여 횟수 : ${
+                            questData === null ? '' : questData?.chance
+                        }`}</QuestText>
+                        <Quest onClick={handleQuestClick}>
+                            <img src={randomGame} alt="img" />
+                        </Quest>
+                    </QuestWrapper>
+                </Wrapper>
+            </Container>
         </Layout>
     );
 };
