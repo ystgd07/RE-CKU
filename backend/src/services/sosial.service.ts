@@ -69,6 +69,7 @@ export const kakaoAuth = async (code: string) => {
         // 로그인 진행 후 리턴
       }
       const result = await userService.login(email);
+      console.log(result, "카카오 리져트");
       return result;
     }
   } catch (err) {
