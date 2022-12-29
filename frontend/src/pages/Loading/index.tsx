@@ -4,6 +4,7 @@ import Spinner from 'assets/images/Spinner.gif';
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import API from 'utils/api';
 
 const Div = styled.div`
     display: flex;
@@ -43,6 +44,7 @@ const LoadingText = styled.div`
     font: 1rem 'Noto Sans KR';
     text-align: center;
 `;
+
 const Loading = () => {
     const navigate = useNavigate();
     const locaiton = useLocation();
@@ -52,10 +54,10 @@ const Loading = () => {
     }, []);
 
     const getCode = new URLSearchParams(window.location.search).get('code');
-    // 유효성 검사... 어케 하지...?
+
     const getToken = async () => {
         try {
-            const res = await axios.get(`/sosial/kakao/auth?code=${getCode}`);
+            const res = await axios.get(`${API.BASE_URL}/sosial/kakao/auth?code=${getCode}`);
             console.log(res);
             const accessToken = res.data.accessToken;
             const refreshToken = res.data.refreshToken;

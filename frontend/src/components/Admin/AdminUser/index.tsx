@@ -18,6 +18,7 @@ import type { PaginationProps } from 'antd';
 import API from 'utils/api';
 import axios from 'axios';
 import styled from '@emotion/styled';
+
 const { Content } = Layout;
 const { Search } = Input;
 const { Paragraph } = Typography;
@@ -106,13 +107,8 @@ const AdminContent: React.FC = () => {
             if (searchEmail === '') {
                 getPages();
             } else {
-                console.log('searchEmail', typeof searchEmail);
                 const res = await API.get(`/admin/users/search`, `${searchEmail}`);
-                console.log('getPages😀');
-                console.log('res', res.length);
                 setTotalPages(Math.ceil(res.length / 4));
-                // getCountPage(current);
-                // setUserData(res);
                 searchPage(res, page);
                 setSearchpage(1);
             }
@@ -128,10 +124,7 @@ const AdminContent: React.FC = () => {
             for (let i = 0; i < data.length; i += 4) {
                 arr.push(data.slice(i, i + 4));
             }
-            console.log('arr', arr);
-            console.log('page', current);
             setUserData(arr[current - 1]);
-            console.log('arr[page - 1]', arr[current - 1]);
         } catch (e) {
             console.log(e);
         }
@@ -151,21 +144,19 @@ const AdminContent: React.FC = () => {
 
     const onChange: PaginationProps['onChange'] = page => {
         if (searchpage === 0) {
-            console.log('전부');
             setCurrent(page);
             getCountPage(page);
         } else {
-            console.log('검색');
             setCurrent(page);
-            // getSearchUser();
             getSearchUser(page);
         }
     };
 
     async function updatePoint(userId: any) {
         try {
-            const res = await axios.patch(`/admin/users/${userId}`, { point: point });
-            console.log('😀');
+            const res = await axios.patch(`${API.BASE_URL}/admin/users/${userId}`, {
+                point: point,
+            });
             setUserData(res.data.data);
         } catch (e) {
             console.log(e);
@@ -177,10 +168,11 @@ const AdminContent: React.FC = () => {
     }, []);
 
     const onChangeActive = async (userId: string, active: boolean): Promise<void> => {
-        // const onChangeActivetrue = async (userId: any) => {
         try {
             console.log(userId);
-            const res = await axios.patch(`/admin/users/${userId}`, { active: active });
+            const res = await axios.patch(`${API.BASE_URL}/admin/users/${userId}`, {
+                active: active,
+            });
             console.log('0');
             console.log(res);
             setUserData(res.data.data);

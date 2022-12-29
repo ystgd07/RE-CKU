@@ -17,8 +17,8 @@ import { useParams } from 'react-router-dom';
 import Job from './Job';
 import Project from './Project';
 import { UserData, ResumeData, FormStore, CareerData, ProjectData } from 'models/resumeEdit-model';
-import { useSelector, useDispatch } from 'react-redux';
-import { RootState } from 'context/store';
+
+import API from 'utils/api';
 
 const Resume = () => {
     const [isWorkFormToggle, setIsWorkFormToggle] = useState<boolean>(false);
@@ -35,8 +35,6 @@ const Resume = () => {
     const params = useParams();
     const resumeIds = params.id;
     const token = localStorage.getItem('accessToken');
-    // const value = useSelector<RootState>(state => state.form.workFormToggle);
-    // console.log(value, 'susususuusussususu');
 
     const fetchDatas = async () => {
         try {
@@ -47,7 +45,7 @@ const Resume = () => {
                     careersData: CareerData[];
                     projectsData: ProjectData[];
                 }>
-            >(`/my-portfolio/resumes/${resumeIds}`, {
+            >(`${API.BASE_URL}/my-portfolio/resumes/${resumeIds}`, {
                 headers: { authorization: `Bearer ${token}` },
             });
             const userInfoData = res.data.data.userData;
@@ -59,17 +57,6 @@ const Resume = () => {
             setUserInfo(userInfoData);
             setCreateCareerData(careerData);
             setCreateProjectData(projectData);
-
-            console.log(
-                res,
-                'res',
-
-                careerData,
-                'carrerData',
-
-                projectData,
-                'projectDAta',
-            );
         } catch (err) {
             console.log(err);
         }
@@ -82,7 +69,7 @@ const Resume = () => {
     const choiceJob = async (e: React.ChangeEvent<HTMLSelectElement>) => {
         const posionValue = e.target.value;
         try {
-            const res = await axios.patch(`/my-portfolio/resumes/${resumeIds}`, {
+            const res = await axios.patch(`${API.BASE_URL}/my-portfolio/resumes/${resumeIds}`, {
                 position: posionValue,
             });
             setResumeTitle({ ...resumeTitle, position: posionValue });
@@ -101,7 +88,7 @@ const Resume = () => {
 
     const resumeNameChange = async () => {
         try {
-            const res = await axios.patch(`/my-portfolio/resumes/${resumeIds}`, {
+            const res = await axios.patch(`${API.BASE_URL}/my-portfolio/resumes/${resumeIds}`, {
                 name: resumeTitle.title,
             });
 
@@ -116,23 +103,21 @@ const Resume = () => {
         setAddJobElement(newJob);
         setIsWorkFormToggle(true);
     };
-    // console.log(addJob, ' addjob list');
 
     const addProjectComponents = () => {
         const newProject = [...addProjectElement, { list: addProjectElement.length, state: false }];
         setAddProjectElement(newProject);
         setIsProjectFormToggle(true);
     };
-    // console.log(addProject, ' addProject list');
 
     const deleteJobComponent = async (carrerId: number) => {
-        await axios.delete(`/my-portfolio/careers/${carrerId}`);
+        await axios.delete(`${API.BASE_URL}/my-portfolio/careers/${carrerId}`);
         const flteredId = createCareerData.filter(e => e.careerId !== carrerId);
         setCreateCareerData(flteredId);
     };
 
     const deleteProjectComponent = async (projectId: number) => {
-        await axios.delete(`/my-portfolio/projects/${projectId}`);
+        await axios.delete(`${API.BASE_URL}/my-portfolio/projects/${projectId}`);
         const flteredId = createProjectData.filter(e => e.projectId !== projectId);
         setCreateProjectData(flteredId);
     };

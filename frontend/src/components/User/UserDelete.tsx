@@ -3,6 +3,8 @@ import { Button, Modal, Form, Input } from 'antd';
 import { LockOutlined } from '@ant-design/icons';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import API from 'utils/api';
+
 const token = localStorage.getItem('accessToken');
 
 export const UserDelete: React.FC = () => {
@@ -23,10 +25,9 @@ export const UserDelete: React.FC = () => {
     };
     const deleteUserInfo = async () => {
         try {
-            const res = await axios.patch('users/off', '', {
+            const res = await axios.patch(`${API.BASE_URL}/users/off`, '', {
                 headers: { authorization: `Bearer ${token}` },
             });
-            console.log(res);
             if (res.status === 200) {
                 window.localStorage.clear();
                 navigate('/');
@@ -37,7 +38,6 @@ export const UserDelete: React.FC = () => {
     };
     const handleOk = (e: any) => {
         setLoading(true);
-        console.log(e.currentTarget.id);
         setTimeout(() => {
             setLoading(false);
             setOpen(false);
@@ -49,7 +49,6 @@ export const UserDelete: React.FC = () => {
 
     const handleCancel = () => {
         onReset();
-        console.log('Clicked cancel button');
         setOpen(false);
     };
 

@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { useForm } from 'react-hook-form';
 import Kakao from 'assets/images/kakao.png';
+import API from 'utils/api';
 
 const Login = () => {
     const {
@@ -23,8 +24,7 @@ const Login = () => {
             password: data.password,
         };
         try {
-            console.log('jsondata', jsondata);
-            const res = await axios.post('/users', jsondata);
+            const res = await axios.post(`${API.BASE_URL}/users`, jsondata);
             const accessToken = res.data.accessToken;
             const refreshToken = res.data.refreshToken;
             const userId = res.data.userId;
@@ -41,7 +41,6 @@ const Login = () => {
     };
 
     const LoginByKakao = async () => {
-        console.log(process.env.REACT_APP_KAKAO_KEY);
         try {
             const baseUrl = 'https://kauth.kakao.com/oauth/authorize?';
             const zz = `client_id=${process.env.REACT_APP_KAKAO_KEY}&redirect_uri=${process.env.REACT_APP_REDIRECT_URI}&response_type=code&scope=profile_nickname,profile_image,account_email`;
