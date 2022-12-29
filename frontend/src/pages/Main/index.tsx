@@ -7,9 +7,11 @@ import { Skeleton, Carousel, notification } from 'antd';
 import type { NotificationPlacement } from 'antd/es/notification/interface';
 import { LikeOutlined, CommentOutlined, RightOutlined } from '@ant-design/icons';
 import API from 'utils/api';
-import carousel1 from 'assets/images/carousel1.png';
-import carousel2 from 'assets/images/carousel2.png';
-import carousel3 from 'assets/images/carousel3.png';
+import carousel01 from 'assets/images/001.png';
+import carousel02 from 'assets/images/002.png';
+import carousel03 from 'assets/images/003.png';
+import carousel04 from 'assets/images/004.png';
+import carousel05 from 'assets/images/005.png';
 
 const Wrapper = styled.div`
     display: flex;
@@ -261,13 +263,19 @@ const Main = () => {
             {contextHolder}
             <Carousel autoplay afterChange={onChange}>
                 <div>
-                    <img src={carousel1} alt="carousel" />
+                    <img src={carousel01} alt="carousel" />
                 </div>
                 <div>
-                    <img src={carousel2} alt="carousel" />
+                    <img src={carousel02} alt="carousel" />
                 </div>
                 <div>
-                    <img src={carousel3} alt="carousel" />
+                    <img src={carousel03} alt="carousel" />
+                </div>
+                <div>
+                    <img src={carousel04} alt="carousel" />
+                </div>
+                <div>
+                    <img src={carousel05} alt="carousel" />
                 </div>
             </Carousel>
             <Wrapper>

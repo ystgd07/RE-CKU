@@ -57,6 +57,7 @@ const Matched = () => {
                 },
                 headers: { authorization: `Bearer ${token}` },
             });
+            navigate('/match');
         } catch (e) {
             console.log(e);
         }
