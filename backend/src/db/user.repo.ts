@@ -640,10 +640,10 @@ export const offUserQ = async (userId: number) => {
         `
         UPDATE user
         SET
-          email = '${text}',
+          email = NULL,
           username = '${text}',
           avatarUrl = '${"https://url.kr/7h42va"}',
-          phoneNumber = "",
+          phoneNumber = NULL,
           gitHubUrl = ""
         WHERE 
           id = ?

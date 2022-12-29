@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Col, Row, Slider, Modal, List, Alert } from 'antd';
+import { Col, Row, Slider, Modal, List, Alert, Avatar } from 'antd';
 import axios from 'axios';
 import { Title, MobileDiv } from './style';
 import './style.css';
@@ -9,14 +9,6 @@ import { Outlet } from 'react-router-dom';
 import { Link, useNavigate } from 'react-router-dom';
 import Layout from 'components/Layout';
 
-interface data {
-    corrections: number;
-    id: number;
-    username: string;
-    point: number;
-    tier: string;
-    tierColor: string;
-}
 interface myData {
     avatarUrl: string;
     chance: number;
@@ -49,9 +41,12 @@ let tierColor = tierColors.bronze;
 let point = 0;
 const Match = () => {
     const [modalIdContent, setModalIdContent] = useState<number | string>();
+    const [modalAvatarUrl, setModalAvatarUrl] = useState<number | string>();
     const [modalUserNameContent, setModalUserNameContent] = useState<number | string>('');
     const [modalPointContent, setModalPointContent] = useState<number | string>();
-    const [data, setData] = useState<data[]>([]);
+    const [modalEmail, setModalEmail] = useState<number | string>();
+    const [modalGitHubUrl, setModalGitHubUrl] = useState<number | string | undefined>();
+    const [data, setData] = useState<myData[]>([]);
     const [myData, setMyData] = useState<myData>();
     const [modalOpen, setModalOpen] = useState(false);
     const navigate = useNavigate();
@@ -113,11 +108,16 @@ const Match = () => {
         const id = data.id;
         const userName = data.username;
         const point = data.point;
+        const email = data.email;
+        const gitHubUrl = data.gitHubUrl;
+        const avatarUrl = data.avatarUrl;
 
+        setModalGitHubUrl(gitHubUrl);
+        setModalEmail(email);
         setModalIdContent(id);
         setModalUserNameContent(userName);
         setModalPointContent(point);
-
+        setModalAvatarUrl(avatarUrl);
         setModalOpen(true);
     };
 
@@ -170,7 +170,7 @@ const Match = () => {
                 <Row gutter={[0, 0]}>
                     {data.map((data: any) => (
                         <Col span={12} key={data.id} className="col">
-                            <div className="content" onClick={() => onClickModal(data)}>
+                            <div className="div" onClick={() => onClickModal(data)}>
                                 <div>
                                     <h3>{data.username}</h3>
                                     <p>
@@ -178,10 +178,13 @@ const Match = () => {
                                         {data.tier}
                                     </p>
                                     <p>
-                                        <strong>부탁건수 : </strong>
-                                        {data.corrections}회
+                                        <strong>이메일 : </strong>
+                                        {data.email}
                                     </p>
                                 </div>
+                                {/* <div>
+                                    <img src={data.avatarUrl}></img>
+                                </div> */}
                             </div>
                         </Col>
                     ))}
@@ -204,57 +207,16 @@ const Match = () => {
                             <strong>{modalUserNameContent}</strong>님께 이력서 첨삭 부탁하기
                         </p>
                         <p>
-                            <strong>등급 : </strong>다이아
+                            <strong>등급 :</strong> {modalPointContent}
                         </p>
                         <p>
-                            <strong>부탁건수 : </strong>20회
+                            <strong>이메일 :</strong> {modalEmail}
+                        </p>
+                        <p>
+                            <strong>URL : </strong>
+                            {modalGitHubUrl}
                         </p>
                     </Modal>
-                    {/* {myData.point <= 50 ? (
-                        <Alert
-                            message="Error Text"
-                            description="Error Description Error Description Error Description Error Description Error Description Error Description"
-                            type="error"
-                            closable
-                            onClose={navigate('/')}
-                        />
-                    ) : (
-                        ''
-                    )} */}
-
-                    {/* <List
-                        grid={{ gutter: 16, column: 12 }}
-                        dataSource={user}
-                        renderItem={user => (
-                            <List.Item>
-                                <Col span={12} key={user.id}>
-                                    <div onClick={() => onClickModal(user)}>
-                                        <div>{user.id}</div>
-                                    </div>
-                                </Col>
-                                <Modal
-                                    title={<h1>{user.id}</h1>}
-                                    centered
-                                    cancelText="싫어요"
-                                    okText={`부탁할래요(${user.point}point)`}
-                                    open={modalOpen}
-                                    onOk={() => setModalOpen(false)}
-                                    onCancel={() => setModalOpen(false)}
-                                >
-                                    <hr />
-                                    <p>
-                                        <strong>{user.userName}</strong>님께 이력서 첨삭 부탁하기
-                                    </p>
-                                    <p>
-                                        <strong>등급 : </strong>다이아
-                                    </p>
-                                    <p>
-                                        <strong>부탁건수 : </strong>20회
-                                    </p>
-                                </Modal>
-                            </List.Item>
-                        )}
-                    /> */}
                 </Row>
             </MobileDiv>
         </Layout>
