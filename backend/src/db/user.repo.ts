@@ -448,11 +448,17 @@ export const successMatchQ = async (matchingId: number, data: { role: string; de
   `,
       [matchingId]
     );
-    const [select] = await conn.query(`
+    const [select] = await conn.query(
+      `
       SELECT 
       menteeComplate,
       mentoComplate
-    `);
+      FROM connect
+      WHERE
+       id = ?
+    `,
+      [matchingId]
+    );
     const resultValue = utils.jsonParse(select)[0];
     // const result = data.role === "menteeComplate" ? "멘티가 종료누름" : "멘토가 종료누름";
     conn.commit();
