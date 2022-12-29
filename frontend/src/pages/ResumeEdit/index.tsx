@@ -61,6 +61,9 @@ const Resume = () => {
             setCreateProjectData(projectData);
 
             console.log(
+                res,
+                'res',
+
                 careerData,
                 'carrerData',
 
@@ -79,9 +82,11 @@ const Resume = () => {
     const choiceJob = async (e: React.ChangeEvent<HTMLSelectElement>) => {
         const posionValue = e.target.value;
         try {
-            await axios.patch(`/my-portfolio/resumes/${resumeIds}`, {
+            const res = await axios.patch(`/my-portfolio/resumes/${resumeIds}`, {
                 position: posionValue,
             });
+            setResumeTitle({ ...resumeTitle, position: posionValue });
+            console.log(res, 'position position position position position');
         } catch (err: unknown) {
             console.log(err);
         }
@@ -194,10 +199,11 @@ const Resume = () => {
                             <div className="inputFlex">
                                 <section>
                                     <div className="positionDiv">
-                                        <select onChange={choiceJob} defaultValue={'position'}>
+                                        <select onChange={choiceJob} defaultValue={`position`}>
                                             <option value="position" disabled>
-                                                포지션 선택
+                                                {resumeTitle.position}
                                             </option>
+                                            <option>포지션 선택</option>
                                             <option>전체</option>
                                             <option>개발</option>
                                             <option>게임개발</option>
