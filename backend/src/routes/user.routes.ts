@@ -201,7 +201,7 @@ userRoute.patch("/individuals", tokenValidator, async (req, res, next) => {
     ...(chance && { chance }),
   };
   // 0값으로 들어오면 위 코드로 잡히지 않음.
-  if (req.body.working === 0) {
+  if (req.body.working === false) {
     toUpdate.working = 0;
   }
   console.log("업데이트 할 것들", toUpdate);
