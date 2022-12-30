@@ -9,7 +9,6 @@ type WorkFormState = {
     setIsWorkFormToggle: React.Dispatch<React.SetStateAction<boolean>>;
     setAddJobElement: React.Dispatch<React.SetStateAction<FormStore[]>>;
     addJobElement: FormStore[];
-    idx: number;
     onCareerCreated: (state: any) => void;
 };
 
@@ -17,7 +16,6 @@ const Job = ({
     setIsWorkFormToggle,
     setAddJobElement,
     addJobElement,
-    idx,
     onCareerCreated,
 }: WorkFormState) => {
     const [isStilWork, setIsStilWork] = useState<boolean>(true);
@@ -62,11 +60,11 @@ const Job = ({
         });
     };
 
-    const deleteWorkForm = (e: React.MouseEvent<HTMLButtonElement>) => {
-        const deleteFilter = addJobElement.filter((tem: FormStore) => tem.list !== idx);
-        setAddJobElement(deleteFilter);
-        if (deleteFilter.length === 0) setIsWorkFormToggle(e => !e);
-    };
+    // const deleteWorkForm = (e: React.MouseEvent<HTMLButtonElement>) => {
+    //     const deleteFilter = addJobElement.filter((tem: FormStore) => tem.list !== idx);
+    //     setAddJobElement(deleteFilter);
+    //     if (deleteFilter.length === 0) setIsWorkFormToggle(e => !e);
+    // };
 
     const validationForm = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -211,7 +209,7 @@ const Job = ({
             </div>
 
             <div className="formBtn">
-                <button type="button" onClick={deleteWorkForm}>
+                <button type="button" onClick={() => setIsWorkFormToggle(e => !e)}>
                     취소
                 </button>
                 <button type="submit">저장</button>

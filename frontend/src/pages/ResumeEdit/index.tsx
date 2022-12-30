@@ -34,6 +34,7 @@ const Resume = () => {
 
     const params = useParams();
     const resumeIds = params.id;
+    console.log(resumeIds, 'ididdi');
     const token = localStorage.getItem('accessToken');
 
     const fetchDatas = async () => {
@@ -184,11 +185,18 @@ const Resume = () => {
                             <div className="inputFlex">
                                 <section>
                                     <div className="positionDiv">
-                                        <select onChange={choiceJob} defaultValue={`position`}>
-                                            <option value="position" disabled>
+                                        <select
+                                            onChange={choiceJob}
+                                            defaultValue={
+                                                resumeTitle.position ? 'choice' : `position`
+                                            }
+                                        >
+                                            <option value="choice" disabled>
                                                 {resumeTitle.position}
                                             </option>
-                                            <option>포지션 선택</option>
+                                            <option value="position" disabled>
+                                                포지션 선택
+                                            </option>
                                             <option>전체</option>
                                             <option>개발</option>
                                             <option>게임개발</option>
@@ -201,7 +209,9 @@ const Resume = () => {
                                 <section>
                                     <FormTitle>
                                         <label>업무경험</label>
-                                        <span onClick={addJobComponents}>
+                                        <span
+                                            onClick={() => setIsWorkFormToggle(!isWorkFormToggle)}
+                                        >
                                             <BiPlus className={isWorkFormToggle ? 'rotate' : ''} />
                                         </span>
                                     </FormTitle>
@@ -249,30 +259,29 @@ const Resume = () => {
                                         );
                                     })}
 
-                                    {isWorkFormToggle &&
-                                        addJobElement.map((jobItem: any, idx: number) => {
-                                            return (
-                                                <Job
-                                                    key={idx}
-                                                    onCareerCreated={state => {
-                                                        setCreateCareerData([
-                                                            ...createCareerData,
-                                                            ...state,
-                                                        ]);
-                                                    }}
-                                                    setIsWorkFormToggle={setIsWorkFormToggle}
-                                                    setAddJobElement={setAddJobElement}
-                                                    addJobElement={addJobElement}
-                                                    idx={idx}
-                                                />
-                                            );
-                                        })}
+                                    {isWorkFormToggle && (
+                                        <Job
+                                            onCareerCreated={state => {
+                                                setCreateCareerData([
+                                                    ...createCareerData,
+                                                    ...state,
+                                                ]);
+                                            }}
+                                            setIsWorkFormToggle={setIsWorkFormToggle}
+                                            setAddJobElement={setAddJobElement}
+                                            addJobElement={addJobElement}
+                                        />
+                                    )}
                                 </section>
 
                                 <section>
                                     <FormTitle>
                                         <label>프로젝트</label>
-                                        <span onClick={addProjectComponents}>
+                                        <span
+                                            onClick={() =>
+                                                setIsProjectFormToggle(!isprojectFormToggle)
+                                            }
+                                        >
                                             <BiPlus
                                                 className={isprojectFormToggle ? 'rotate' : ''}
                                             />
@@ -321,24 +330,19 @@ const Resume = () => {
                                             </ExistForm>
                                         );
                                     })}
-                                    {isprojectFormToggle &&
-                                        addProjectElement.map((projectTem: any, idx: number) => {
-                                            return (
-                                                <Project
-                                                    key={idx}
-                                                    setIsProjectFormToggle={setIsProjectFormToggle}
-                                                    setAddProjectElement={setAddProjectElement}
-                                                    addProjectElement={addProjectElement}
-                                                    onProjectCreated={state => {
-                                                        setCreateProjectData([
-                                                            ...createProjectData,
-                                                            ...state,
-                                                        ]);
-                                                    }}
-                                                    idx={idx}
-                                                />
-                                            );
-                                        })}
+                                    {isprojectFormToggle && (
+                                        <Project
+                                            setIsProjectFormToggle={setIsProjectFormToggle}
+                                            setAddProjectElement={setAddProjectElement}
+                                            addProjectElement={addProjectElement}
+                                            onProjectCreated={state => {
+                                                setCreateProjectData([
+                                                    ...createProjectData,
+                                                    ...state,
+                                                ]);
+                                            }}
+                                        />
+                                    )}
                                 </section>
                             </div>
                         </InputForm>
