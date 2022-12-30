@@ -58,6 +58,10 @@ export const Title = styled.div`
     }
 
     & span {
+        & :hover {
+            cursor: pointer;
+        }
+
         & button[type='button'] {
             border: 0;
             outline: 0;
