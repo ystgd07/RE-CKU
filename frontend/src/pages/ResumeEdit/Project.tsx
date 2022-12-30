@@ -9,7 +9,6 @@ type ProjectFormState = {
     setIsProjectFormToggle: React.Dispatch<React.SetStateAction<boolean>>;
     setAddProjectElement: React.Dispatch<React.SetStateAction<FormStore[]>>;
     addProjectElement: FormStore[];
-    idx: number;
     onProjectCreated: (state: any) => void;
 };
 
@@ -17,7 +16,6 @@ const Project = ({
     setIsProjectFormToggle,
     addProjectElement,
     setAddProjectElement,
-    idx,
     onProjectCreated,
 }: ProjectFormState) => {
     const [searchStackToggle, setSearchStackToggle] = useState<boolean>(false);
@@ -97,11 +95,11 @@ const Project = ({
         });
     }, [tagListItem]);
 
-    const deleteProjectForm = (e: React.MouseEvent<HTMLButtonElement>) => {
-        const deleteFilter = addProjectElement.filter((tem: FormStore) => tem.list !== idx);
-        setAddProjectElement(deleteFilter);
-        if (deleteFilter.length === 0) setIsProjectFormToggle(e => !e);
-    };
+    // const deleteProjectForm = (e: React.MouseEvent<HTMLButtonElement>) => {
+    //     const deleteFilter = addProjectElement.filter((tem: FormStore) => tem.list !== idx);
+    //     setAddProjectElement(deleteFilter);
+    //     if (deleteFilter.length === 0) setIsProjectFormToggle(e => !e);
+    // };
 
     const validationForm = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -275,7 +273,7 @@ const Project = ({
                 </section>
 
                 <div className="formBtn">
-                    <button type="button" onClick={deleteProjectForm}>
+                    <button type="button" onClick={() => setIsProjectFormToggle(e => !e)}>
                         취소
                     </button>
                     <button type="submit">저장</button>

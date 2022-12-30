@@ -317,7 +317,7 @@ function PostCreate() {
                                             {item.resumeName}
                                         </Radio>
                                     ))}
-                                    <Button onClick={() => navigate('/')}>
+                                    <Button onClick={() => navigate('/resume/list')}>
                                         이력서 작성하러가기
                                     </Button>
                                 </Space>

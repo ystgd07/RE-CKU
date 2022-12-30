@@ -201,7 +201,9 @@ const Resume = () => {
                                 <section>
                                     <FormTitle>
                                         <label>업무경험</label>
-                                        <span onClick={addJobComponents}>
+                                        <span
+                                            onClick={() => setIsWorkFormToggle(!isWorkFormToggle)}
+                                        >
                                             <BiPlus className={isWorkFormToggle ? 'rotate' : ''} />
                                         </span>
                                     </FormTitle>
@@ -249,30 +251,29 @@ const Resume = () => {
                                         );
                                     })}
 
-                                    {isWorkFormToggle &&
-                                        addJobElement.map((jobItem: any, idx: number) => {
-                                            return (
-                                                <Job
-                                                    key={idx}
-                                                    onCareerCreated={state => {
-                                                        setCreateCareerData([
-                                                            ...createCareerData,
-                                                            ...state,
-                                                        ]);
-                                                    }}
-                                                    setIsWorkFormToggle={setIsWorkFormToggle}
-                                                    setAddJobElement={setAddJobElement}
-                                                    addJobElement={addJobElement}
-                                                    idx={idx}
-                                                />
-                                            );
-                                        })}
+                                    {isWorkFormToggle && (
+                                        <Job
+                                            onCareerCreated={state => {
+                                                setCreateCareerData([
+                                                    ...createCareerData,
+                                                    ...state,
+                                                ]);
+                                            }}
+                                            setIsWorkFormToggle={setIsWorkFormToggle}
+                                            setAddJobElement={setAddJobElement}
+                                            addJobElement={addJobElement}
+                                        />
+                                    )}
                                 </section>
 
                                 <section>
                                     <FormTitle>
                                         <label>프로젝트</label>
-                                        <span onClick={addProjectComponents}>
+                                        <span
+                                            onClick={() =>
+                                                setIsProjectFormToggle(!isprojectFormToggle)
+                                            }
+                                        >
                                             <BiPlus
                                                 className={isprojectFormToggle ? 'rotate' : ''}
                                             />
@@ -309,8 +310,12 @@ const Resume = () => {
                                                         </li>
                                                         <li>{tem.skills}</li>
                                                         <li>
-                                                            <span>Link: {tem.link1}</span>
-                                                            <span>Link: {tem.link2}</span>
+                                                            {tem.link1 && (
+                                                                <span>Link: {tem.link1}</span>
+                                                            )}
+                                                            {tem.link2 && (
+                                                                <span>Link: {tem.link2}</span>
+                                                            )}
                                                         </li>
                                                     </ul>
 
@@ -321,24 +326,19 @@ const Resume = () => {
                                             </ExistForm>
                                         );
                                     })}
-                                    {isprojectFormToggle &&
-                                        addProjectElement.map((projectTem: any, idx: number) => {
-                                            return (
-                                                <Project
-                                                    key={idx}
-                                                    setIsProjectFormToggle={setIsProjectFormToggle}
-                                                    setAddProjectElement={setAddProjectElement}
-                                                    addProjectElement={addProjectElement}
-                                                    onProjectCreated={state => {
-                                                        setCreateProjectData([
-                                                            ...createProjectData,
-                                                            ...state,
-                                                        ]);
-                                                    }}
-                                                    idx={idx}
-                                                />
-                                            );
-                                        })}
+                                    {isprojectFormToggle && (
+                                        <Project
+                                            setIsProjectFormToggle={setIsProjectFormToggle}
+                                            setAddProjectElement={setAddProjectElement}
+                                            addProjectElement={addProjectElement}
+                                            onProjectCreated={state => {
+                                                setCreateProjectData([
+                                                    ...createProjectData,
+                                                    ...state,
+                                                ]);
+                                            }}
+                                        />
+                                    )}
                                 </section>
                             </div>
                         </InputForm>
