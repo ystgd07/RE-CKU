@@ -17,7 +17,7 @@ let matchData: [];
 const token = localStorage.getItem('accessToken');
 let lengthReq = 0;
 let lengthPro = 0;
-// let test: number | boolean;
+
 
 export const Proofread = () => {
     const [test, setTest] = useState(false);
