@@ -4,32 +4,6 @@ import axios from 'axios';
 import { off } from 'process';
 import API from 'utils/api';
 
-const data = [
-    {
-        title: 'Title 1',
-    },
-    {
-        title: 'Title 2',
-    },
-    {
-        title: 'Title 3',
-    },
-    {
-        title: 'Title 4',
-    },
-    {
-        title: 'Title 5',
-    },
-    {
-        title: 'Title 6',
-    },
-    {
-        title: 'Title 6',
-    },
-    {
-        title: 'Title 6',
-    },
-];
 
 type Mock = {
     matchingId: string;
@@ -147,7 +121,7 @@ export const Proofread = () => {
         lengthReq = res.filter((e: any) => e.step === '요청중').length;
         lengthPro = res.filter((e: any) => e.step === '진행중').length;
     }, [res]);
-    console.log(test, '양반넘아! 이 애물딴지');
+
     return (
         <div
             style={{
