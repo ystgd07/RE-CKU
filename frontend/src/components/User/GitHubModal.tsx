@@ -5,7 +5,6 @@ const GitHubModal = (props: any) => {
     const [open, setOpen] = useState(false);
     const [confirmLoading, setConfirmLoading] = useState(false);
     const githubUrlRef: any = useRef();
-    console.log(props.open, '여기는 프롭스공간');
 
     const showModal = () => {
         setOpen(true);
@@ -17,7 +16,6 @@ const GitHubModal = (props: any) => {
 
     const handleOk = async (e: any) => {
         setConfirmLoading(true);
-        console.log(githubUrlRef.current.input.value);
         await props.updateGitURL(githubUrlRef.current.input.value);
         setTimeout(() => {
             setOpen(false);
