@@ -8,7 +8,7 @@ export const HContainer = styled.section`
 export const HHeader = styled.header`
     display: flex;
     justify-content: space-around;
-    padding: 1.9rem;
+    padding: 1rem;
     align-items: center;
     font-size: 2rem;
     border-bottom: 1px solid #b0e0e6;

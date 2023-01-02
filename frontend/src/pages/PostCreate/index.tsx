@@ -179,7 +179,6 @@ function PostCreate() {
             return;
         }
 
-        // const resumeId = isResume ? 0 : 0;
         const data = {
             ...form,
             content,
@@ -318,7 +317,7 @@ function PostCreate() {
                                             {item.resumeName}
                                         </Radio>
                                     ))}
-                                    <Button onClick={() => navigate('/')}>
+                                    <Button onClick={() => navigate('/resume/list')}>
                                         이력서 작성하러가기
                                     </Button>
                                 </Space>
@@ -351,7 +350,7 @@ function PostCreate() {
                     />
                 </Wrapper>
                 <Wrapper>
-                    <Title level={4}>태그</Title>
+                    {/* <Title level={4}>태그</Title>
                     <TagWrapper>
                         {hashTags !== '' &&
                             hashTags.split(',').map((item, index) => (
@@ -367,7 +366,7 @@ function PostCreate() {
                         value={tag}
                         onChange={handleTagInput}
                         onKeyDown={onKeyDown}
-                    />
+                    /> */}
                 </Wrapper>
                 <ButtonDiv>
                     <Button type="default" size="large">

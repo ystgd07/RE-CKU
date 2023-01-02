@@ -1,19 +1,22 @@
-[class~='ant-col'] {
+.col {
     background: transparent;
     border: 0;
     display: flex;
     justify-content: space-around;
 }
 
-[class~='ant-col'] > div {
+.div {
     /* height: 300px; */
     width: 40vh;
     font-size: 14px;
     /* line-height: 120px; */
-    background: #0092ff;
+    background: #99c3e4af;
+    /* border: 1px solid black; */
     border-radius: 4px;
     margin: 3vh;
     padding: 1vh;
+    display: flex;
+    flex-direction: row;
 }
 
 [class~='ant-col'] > div > div > p {
@@ -26,4 +29,8 @@ pre.demo-code {
 }
 .ant-col {
     padding: 0;
+}
+
+h3 {
+    text-align: start;
 }

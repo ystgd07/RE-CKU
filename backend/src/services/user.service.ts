@@ -10,24 +10,21 @@ import { EmailAuth, UserProfile } from "../db/schemas";
 // 매칭 관련
 export const getRotListOrMatchingStatus = async (userId: number): Promise<userRepo.RotList | userRepo.MatchInfo> => {
   try {
-    const mentee = await userRepo.unIncludePasswordUserInfoQ(userId);
-    // 매칭이 없을경우 리스트 O
-    console.log("어디서");
-    if (!mentee.matching) {
+    const connect = await userRepo.findMatchQ(userId);
+    console.log("connect", connect);
+    if (!connect.matchInfo) {
+      console.log("고인물 리스트 리턴 로직");
       const list = await userRepo.getRotListQ(userId);
-      console.log("어디서");
       return list;
     }
     // 이미 매칭중이라면 리스트 X 현재 매칭정보 O
-    const connect = await userRepo.findMatchQ(userId);
-    console.log(connect);
     return connect;
   } catch (err) {
     console.log(err.message);
     throw new Error(`500, 서버오류`);
   }
 };
-export const createMatch = async (menteeId: number, mentoId: number): Promise<any> => {
+export const createMatch = async (menteeId: number, mentoId: number): Promise<number> => {
   const data = {
     step: "요청중",
     menteeId,
@@ -35,12 +32,14 @@ export const createMatch = async (menteeId: number, mentoId: number): Promise<an
   };
   try {
     const alreadyMatch = await userRepo.findMatchQ(menteeId);
-    if (alreadyMatch) throw new Error(`이미 요청한 고인물입니다.`);
+    console.log("alreadyMatch", alreadyMatch);
+
+    if (alreadyMatch.matchInfo !== undefined) throw new Error(`이미 요청한 상태입니다.`);
     const matchingId = await userRepo.createMatchQ(data);
     return matchingId;
   } catch (err) {
     console.log(err.message);
-    if (err.message === "이미 요청한 고인물입니다.") throw new Error(`400, 이미 요청한 고인물입니다.`);
+    if (err.message === "이미 요청한 고인물입니다.") throw new Error(`400, 고인물 요청을 이미 했습니다.`);
     throw new Error(`500, 서버오류`);
   }
 };
@@ -70,7 +69,7 @@ export const acceptMatch = async (userId: number, matchingId: number, menteeId: 
   }
 };
 export const successMatch = async (matchingId: number, role: string): Promise<string> => {
-  const data: { role: string } = {
+  const data: { role: string; deleteMenteeIdQuery?: string } = {
     role: "",
   };
   switch (role) {
@@ -84,11 +83,16 @@ export const successMatch = async (matchingId: number, role: string): Promise<st
 
   try {
     const success = await userRepo.successMatchQ(matchingId, data);
-    const matchInfo = await userRepo.findMatchByMatchingId(matchingId);
-    const menteeComplate = Number(matchInfo.menteeComplate);
-    const mentoComplate = Number(matchInfo.mentoComplate);
+    // const matchInfo = await userRepo.findMatchByMatchingId(matchingId);
+    const menteeComplate = Number(success.menteeComplate);
+    const mentoComplate = Number(success.mentoComplate);
+    console.log("데이타", data.role, "가 누름");
+    // console.log("매치인포 ", matchInfo);
+    console.log("멘티컴플리트 ", menteeComplate);
+    console.log("멘토컴플리트 ", mentoComplate);
     if (mentoComplate > 0 && menteeComplate > 0) {
       console.log("ㅋㅋ");
+      // 완료로
       const complateMatch = await userRepo.complateMatch(matchingId);
       console.log(complateMatch);
       return complateMatch;
@@ -99,11 +103,15 @@ export const successMatch = async (matchingId: number, role: string): Promise<st
     throw new Error(`500, 서버 오류`);
   }
 };
+// 고인물이 마이페이지에서 요청들어온거 보는거임
 export const getRequestCorrection = async (userId: number) => {
   try {
+    console.log(userId);
     const list = await userRepo.getRequestCorrectionQ(userId);
+    console.log("zzz");
     return list;
   } catch (err) {
+    console.log(err.message);
     throw new Error(`500, 서버 오류`);
   }
 };
@@ -224,6 +232,7 @@ export const updateInfo = async (id: number, data: Record<string, string>, curre
     }
     await updateUser(id, data);
   } catch (err) {
+    console.log(err.message);
     throw Error("500, 서버 오류");
   }
 
@@ -255,11 +264,11 @@ export const findPassword = async (email: string): Promise<boolean | string> => 
   }
 
   const mailInfo = {
-    from: "jinytree1403@naver.com",
+    from: process.env.MAILER_USER,
     to: email,
-    subject: "[헤드헌터] 비밀번호 발송 ",
+    subject: "[RE-CHU] 비밀번호 발송 ",
     text: `      
-    헤드헌터 ${email} 
+    RE-CHU ${email} 
     
     임시 비밀번호 :  ${randomStr}
     
@@ -288,11 +297,11 @@ export const sendEmail = async (toEmail: string, number?: number) => {
   }
   // 이메일 내용
   const mailInfo = {
-    from: "jinytree1403@naver.com",
+    from: process.env.MAILER_USER,
     to: toEmail,
-    subject: "[헤드헌터] 인증번호 발송 ",
+    subject: "[re-chu] 인증번호 발송 ",
     text: `      
-    헤드헌터 회원가입 인증번호
+    re-chu 회원가입 인증번호
     
     인증번호 입력란에 ${number} 를 입력해주세요.`,
   };
@@ -363,6 +372,29 @@ export const cancelReport = async (reportId: number, defendantId: number) => {
   } catch (err) {
     console.log(err.message);
     if (err.message === "신고하려는 사람이 없는디요") throw new Error(`400, 신고하려는 사람이 없는디요`);
+    throw new Error(`500, 서버오류`);
+  }
+};
+
+export const savePointByDayQuest = async (userId: number) => {
+  try {
+    const user = await unIncludePasswordUserInfo(userId);
+    if (user.chance === 0) throw new Error(`잔여횟수가 없습니다.`);
+    const success = await userRepo.savePointByDayQuestQ(userId);
+    return success;
+  } catch (err) {
+    console.log(err.message);
+    if (err.message === "잔여횟수가 없습니다.") throw new Error(`400, 잔여횟수가 없습니다.`);
+    throw new Error(`500, 서버 오류`);
+  }
+};
+
+export const offUser = async (userId: number) => {
+  try {
+    await userRepo.offUserQ(userId);
+    return true;
+  } catch (err) {
+    console.log(err.message);
     throw new Error(`500, 서버오류`);
   }
 };

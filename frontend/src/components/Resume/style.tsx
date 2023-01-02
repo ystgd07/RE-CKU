@@ -1,28 +1,15 @@
 import styled from '@emotion/styled';
 
-export const MobileDiv = styled.div`
-    display: flex;
-    flex-direction: column;
-    /* width: 100%; */
-    justify-content: start;
-    /* max-width: 1280px; */
-    min-width: 320px;
-    margin: 2% auto 0;
-    text-align: start;
-    align-items: center;
-    /* background-color: #b4c1db; */
-    opacity: 0.8;
-    border-radius: 5px;
+export const ResumeFrame = styled.section`
+    max-width: 128rem;
+    margin: 0 auto;
+    padding-top: 6rem;
 
     & p {
         text-align: start;
         padding: 0px 30px;
     }
-    & h1 {
-        margin: 80px;
-        font-weight: bold;
-        font-size: 40px;
-    }
+
     & h2 {
         font-size: 20px;
         font-weight: bold;
@@ -36,28 +23,12 @@ export const MobileDiv = styled.div`
         width: 100px;
         height: 100px;
     }
-
-    @media (max-width: 860px) {
-        & h1 {
-            font-size: 30px;
-        }
-    }
-    @media (max-width: 640px) {
-        & h1 {
-            font-size: 20px;
-        }
-    }
 `;
 
 export const BorderDiv = styled.div`
-    width: 90%;
-    max-width: 1280px;
-    margin: 0 0 30px 0;
-    /* border-top: 2px solid gray; */
     padding: 20px;
     box-sizing: border-box;
     flex-wrap: wrap;
-    background-color: #ffffffc1;
 
     & div {
         display: flex;
@@ -82,6 +53,50 @@ export const H2 = styled.h2`
 `;
 
 export const LineDiv = styled.div`
-    width: 90%;
+    width: 100%;
     border-bottom: 3px solid black;
+`;
+
+export const TopSection = styled.section`
+    background-color: #4169e1;
+    max-width: 100%;
+
+    & h1 {
+        font-size: 3rem;
+        padding: 1rem 0 1rem 6rem;
+        border-bottom: 2px solid #fff;
+    }
+
+    & .infoWrap {
+        padding-left: 6rem;
+
+        & label {
+            font-size: 3rem;
+            font-weight: 600;
+            line-height: 1.6;
+        }
+
+        & div {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 3rem;
+            padding: 1rem 0 2rem 0;
+
+            & img {
+                height: 160px;
+            }
+
+            & dl {
+                display: flex;
+                flex-direction: column;
+                gap: 1rem;
+
+                & dt {
+                    font-size: 2.2rem;
+                }
+            }
+        }
+    }
 `;

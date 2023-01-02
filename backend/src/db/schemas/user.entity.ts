@@ -42,10 +42,10 @@ export class User {
   @Column({ length: 20, nullable: false })
   username: string;
 
-  @Column({ unique: true, nullable: false })
+  @Column({ unique: true, nullable: true })
   email: string;
 
-  @Column({ unique: true, nullable: true, default: null })
+  @Column({ nullable: true, default: null })
   phoneNumber: string;
 
   @Column({ nullable: true })
@@ -83,7 +83,7 @@ export class User {
   @Column({ default: 3 })
   chance: number;
 
-  @Column({ default: false })
+  @Column({ default: true })
   working: boolean;
 
   @Column({ default: false })

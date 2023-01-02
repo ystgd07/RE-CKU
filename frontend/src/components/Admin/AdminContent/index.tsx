@@ -13,6 +13,7 @@ import {
     Collapse,
 } from 'antd';
 import axios, { AxiosResponse } from 'axios';
+import API from 'utils/api';
 
 import styled from '@emotion/styled';
 import e from 'express';
@@ -89,9 +90,7 @@ const AdminContent: React.FC = () => {
 
     async function getId() {
         try {
-            const res = await axios.get(`/admin/worst-users`);
-            console.log('😈');
-            console.log(res.data.data);
+            const res = await axios.get(`${API.BASE_URL}/admin/worst-users`);
             setUserData(res.data.data);
         } catch (e) {
             console.log(e);
@@ -100,9 +99,7 @@ const AdminContent: React.FC = () => {
 
     async function getReport(userId: number) {
         try {
-            const res = await axios.get(`/admin/worst-users/${userId}`);
-            console.log('😫');
-            console.log(res.data.data);
+            const res = await axios.get(`${API.BASE_URL}/admin/worst-users/${userId}`);
             setUserReportData(res.data.data);
         } catch (e) {
             console.log(e);
@@ -114,10 +111,9 @@ const AdminContent: React.FC = () => {
 
     const onChangeBan = async (userId: number) => {
         try {
-            console.log('userId', userId);
-            const res = await axios.patch(`/admin/worst-users/${userId}/ban`, { type: 'BAN' });
-            console.log('🥶✋');
-            console.log(res);
+            const res = await axios.patch(`${API.BASE_URL}/admin/worst-users/${userId}/ban`, {
+                type: 'BAN',
+            });
             getId();
         } catch (e) {
             console.log(e);
@@ -125,10 +121,9 @@ const AdminContent: React.FC = () => {
     };
     const onChangeBanCancel = async (userId: number) => {
         try {
-            console.log('userId', userId);
-            const res = await axios.patch(`/admin/worst-users/${userId}/ban`, { type: 'RECOVERY' });
-            console.log('😊✋');
-            console.log(res);
+            const res = await axios.patch(`${API.BASE_URL}/admin/worst-users/${userId}/ban`, {
+                type: 'RECOVERY',
+            });
             getId();
         } catch (e) {
             console.log(e);
@@ -157,17 +152,18 @@ const AdminContent: React.FC = () => {
                     renderItem={item => (
                         <List.Item>
                             <List.Item.Meta
-                                avatar={<Avatar src={item.avatarUrl} />}
+                                avatar={<Avatar size={64} src={item.avatarUrl} />}
                                 title={
-                                    <>
+                                    <div>
                                         {item.email}/{item.username}
-                                    </>
+                                    </div>
                                 }
                                 description={
                                     <>
                                         <div
                                             style={{
                                                 display: 'flex',
+                                                flexDirection: 'row',
                                                 justifyContent: 'space-between',
                                             }}
                                         >

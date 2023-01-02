@@ -3,22 +3,41 @@ import Logo from 'assets/images/logo.png';
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
 import { HContainer, HHeader } from './style';
+import API from 'utils/api';
 
 const Header = () => {
     const navigate = useNavigate();
     const token = localStorage.getItem('accessToken');
-    const [login, setLogin] = useState<boolean>(false);
 
-    const logout = useCallback(() => {
+    const admin = localStorage.getItem('isAdmin') ? false : true;
+    const [isAdmin, setIsAdmin] = useState<boolean>(admin);
+
+    const userInfo = async () => {
         try {
-            axios.patch(`/users/sign-out`, {}, { headers: { authorization: `Bearer ${token}` } });
-
-            localStorage.clear();
-            setLogin(!login);
+            const res = await API.get(`/users/individuals`);
         } catch (err: unknown) {
             console.log(err);
         }
-    }, [login]);
+    };
+
+    useEffect(() => {
+        userInfo();
+    }, [token]);
+
+    const logout = useCallback(() => {
+        try {
+            axios.patch(
+                `${API.BASE_URL}/users/sign-out`,
+                {},
+                { headers: { authorization: `Bearer ${token}` } },
+            );
+
+            localStorage.clear();
+            window.location.replace('/');
+        } catch (err: unknown) {
+            console.log(err);
+        }
+    }, []);
 
     return (
         <HContainer>
@@ -30,9 +49,22 @@ const Header = () => {
                 <div>
                     <nav>
                         <ul>
-                            <li>상점</li>
-                            <li>이력서</li>
-                            <li>커뮤니티</li>
+                            {isAdmin === true && (
+                                <li>
+                                    <Link to="/admin">관리자</Link>
+                                </li>
+                            )}
+
+                            <li>
+                                <Link to="/comunity">커뮤니티</Link>
+                            </li>
+
+                            <li>
+                                <Link to="/resume/list">이력서</Link>
+                            </li>
+                            <li>
+                                <Link to="/match">상점</Link>
+                            </li>
                         </ul>
                     </nav>
 
@@ -40,7 +72,7 @@ const Header = () => {
                         {token ? (
                             <>
                                 <li>
-                                    <Link to="profile">마이페이지</Link>
+                                    <Link to="/profile">마이페이지</Link>
                                 </li>
                                 <li onClick={logout}>로그아웃</li>
                             </>

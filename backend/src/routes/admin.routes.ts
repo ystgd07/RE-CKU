@@ -86,6 +86,22 @@ adminRoute.get("/worst-users/:userId", async (req, res, next) => {
   }
 });
 
+// 2-5. 검색
+adminRoute.get("/users/search/:keyword", async (req, res, next) => {
+  const keyword = req.params.keyword;
+
+  try {
+    const findUser = await adminService.findUser(keyword);
+
+    return res.status(200).json({
+      msg: "유저 검색 성공",
+      data: findUser,
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
 // 3-1. 포인트 / 비활성화 수정
 adminRoute.patch("/users/:userId", async (req, res, next) => {
   try {
@@ -94,7 +110,6 @@ adminRoute.patch("/users/:userId", async (req, res, next) => {
     const count = Number(req.query.count);
     const pages = Number(req.query.pages);
     const offset = count * pages - count;
-
     const updatedUser = await adminService.updateUser(userId, updateInfo, count, offset);
 
     return res.status(203).json({

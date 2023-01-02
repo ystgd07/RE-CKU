@@ -2,8 +2,9 @@ import React, { useRef, useState } from 'react';
 import { Button, Modal, Form, Input } from 'antd';
 import { LockOutlined } from '@ant-design/icons';
 import axios from 'axios';
+import API from 'utils/api';
 
-export const InfoModal: React.FC = () => {
+export const PswChangeModal: React.FC = () => {
     const [form] = Form.useForm();
     const [open, setOpen] = useState(false);
     const [newPass, setNewPass] = useState(''); //input1
@@ -13,21 +14,25 @@ export const InfoModal: React.FC = () => {
     const [loading, setLoading] = useState(false);
     const passRef: any = useRef();
     const newPassRef: any = useRef();
+
     const onReset = () => {
         form.resetFields();
     };
+
     const showModal = () => {
         setOpen(true);
         setValid(true);
     };
+
     const onFinish = (values: any) => {
         console.log('Received values of form: ', values);
     };
+
     const patchNewPass = async () => {
         const token = localStorage.getItem('accessToken');
         try {
             const res = await axios.patch(
-                '/users/individuals',
+                `${API.BASE_URL}/users/individuals`,
                 { password: `${newPassRef.current.input.value}` },
                 { headers: { authorization: `Bearer ${token}` } },
             );
@@ -36,7 +41,8 @@ export const InfoModal: React.FC = () => {
             console.log(e);
         }
     };
-    const handleOk = () => {
+
+    const handleOk = (e: any) => {
         setLoading(true);
         setModalText('잠시만 기다려 주세요 ^^.');
         setTimeout(() => {
@@ -47,18 +53,16 @@ export const InfoModal: React.FC = () => {
             setCheckPass('');
             setNewPass('');
             onReset();
-        }, 2000);
-        console.log(checkPass, newPass);
+        }, 1000);
     };
 
     const handleCancel = () => {
         onReset();
-        console.log('Clicked cancel button');
         setCheckPass('');
         setNewPass('');
         setOpen(false);
     };
-    //FIXME: e:any-> 이부분 이벤트 타입 검색해서 수정하자!
+
     const newPasswordChange = (e: any) => {
         setNewPass(e.target.value);
         if (
@@ -72,6 +76,7 @@ export const InfoModal: React.FC = () => {
             else console.log('no correct');
         }
     };
+
     const checkPasswordChnage = (e: any) => {
         setCheckPass(e.target.value);
         if (
@@ -103,6 +108,7 @@ export const InfoModal: React.FC = () => {
                     <Form.Item
                         name="newpassword"
                         rules={[{ required: true, message: 'Please input your Password!' }]}
+                        style={{ marginBottom: '5px' }}
                     >
                         <Input
                             prefix={<LockOutlined className="site-form-item-icon" />}
@@ -115,6 +121,7 @@ export const InfoModal: React.FC = () => {
                     <Form.Item
                         name="checkpassword"
                         rules={[{ required: true, message: 'Please input your Password!' }]}
+                        style={{ marginBottom: '5px' }}
                     >
                         <Input
                             prefix={<LockOutlined className="site-form-item-icon" />}
